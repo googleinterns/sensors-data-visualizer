@@ -49,7 +49,7 @@ class Sample:
         else:
             self.timestamp_diffs.append(0)
 
-        if latency:
+        if latency != None:
             self.latencies.append(latency)
 
         for i, point in enumerate(data):
