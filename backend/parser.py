@@ -45,7 +45,7 @@ class Sample:
         self.timestamps.append(timestamp)
 
         if self.next_index > 0:
-            self.timestamp_diffs[self.next_index] = timestamp - self.timestamps[self.next_index-1]
+            self.timestamp_diffs.append(timestamp - self.timestamps[self.next_index-1])
         else:
             self.timestamp_diffs.append(0)
 
