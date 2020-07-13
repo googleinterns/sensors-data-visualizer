@@ -96,7 +96,7 @@ class Sample:
         self.performed_dimension_set = True
 
 class Parser:
-    """Parse takes in one or more files and converts them to JSON
+    """Parser takes in one or more files and converts them to JSON
 
     Attributes:
         files: A list of files to parse
@@ -161,6 +161,46 @@ class Parser:
                     break
             print("Samples Collected: ", len(samples)) #Test
             print("Samples: ", samples)
+
+            #read data fields
+            while line:
+
+                #determine this sensor ID
+                this_id = matched_id
+                if 'inline_id' in self.regex:
+                    search = re.search(self.regex['inline_id'], line)
+                    if search:
+                        this_id = search.group(0)
+
+                if not this_id:
+                    line = f.readline()
+                    continue
+
+                #determine timestamp
+                search = re.search(self.regex['timestamp'], line)
+                if search:
+                    matched_timestamp = int(search.group(0))
+
+                #determine data lines & determine data dimensions
+                search = re.search(self.regex['data'], line)
+                if search:
+                    matched_data = search.group(0).split()
+                    #convert from str to float
+                    matched_data = [float(i) for i in matched_data]
+
+                if not samples[this_id].performed_dimension_set:
+                    samples[this_id].set_dimensions(len(matched_data))
+
+                print(matched_data)
+                matched_latency = -1
+                if 'latency' in self.regex:
+                    search = re.search(self.regex['latency'], line)
+                    if search:
+                        matched_latency = int(search.group(0))
+
+                samples[this_id].add_point(matched_timestamp, matched_data, matched_latency)
+                line = f.readline()
+
 
 
     def json(self, samples): #TODO document method
