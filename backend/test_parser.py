@@ -14,11 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from parser import Parser, Sample
+from parser import Sample
+from parser import Parser
 import unittest
 
+regex = {}
+#Space separated words preceded by ': ' followed by '. \n'
+regex['sensor_name'] = "(?<=: )[\w\s]+(?=.\n)"
+#A number preceded by 'sensor type '
+regex['sensor_id'] = "(?<=sensor type )[+-]?([0-9]*[.])?[0-9]+"
+#A number preceded by 'TS: '
+regex['timestamp'] = "(?<=TS: )[+-]?([0-9]*[.])?[0-9]+"
+#Matches a series of space separated numbers preceded by 'Data: '
+regex['data'] = "(?<=Data: )([+-]?([0-9]*[.])?[0-9]+\s)+"
+#Matches the number following 'Sensor'
+regex['inline_id'] = "(?<=Sensor: )[+-]?([0-9]*[.])?[0-9]"
+
 class TestParser(unittest.TestCase):
-    
     def test_sample_init(self):
         sample = Sample("Test", 1)
 
@@ -37,7 +49,7 @@ class TestParser(unittest.TestCase):
         sample = Sample("Test", 1)
 
         for i in range(10):
-            sample.add_point(i*10 , [i, -i])
+            sample.add_point(i*10, [i, -i])
 
         for i in range(10):
             self.assertEqual(sample.data[0][i], i)
@@ -53,8 +65,19 @@ class TestParser(unittest.TestCase):
         for i in range(50):
             self.assertEqual(sample.latencies[i], 9*i)
 
-        
+    def test_parser_regex(self):
+        self.assertRaises(KeyError, Parser, ['test'], {})
 
+        try:
+            temp = Parser(['test'], regex)
+        except KeyError:
+            self.fail("Unexpected exception on correct Parser() init.")
+
+    def test_parser_file(self):
+        file_path = '../test_files/test_multi.txt'
+        parser = Parser([file_path], regex)
+
+        parser.parse_files()
 
 if __name__ == '__main__':
     unittest.main()
