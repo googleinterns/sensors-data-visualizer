@@ -139,8 +139,7 @@ class Parser:
 
         return self.json(json_samples) #TODO convert the samples to JSON then return
 
-    def parse(self, file): #parse a single file TODO document method
-        
+    def parse(self, file): #parse a single file TODO document method  
         samples = {}
         with open(file, "r") as f:
             #read the header lines to determine how many samples are present
@@ -159,8 +158,6 @@ class Parser:
                     line = f.readline()
                 else:
                     break
-            print("Samples Collected: ", len(samples)) #Test
-            print("Samples: ", samples)
 
             #read data fields
             while line:
@@ -191,7 +188,6 @@ class Parser:
                 if not samples[this_id].performed_dimension_set:
                     samples[this_id].set_dimensions(len(matched_data))
 
-                print(matched_data)
                 matched_latency = -1
                 if 'latency' in self.regex:
                     search = re.search(self.regex['latency'], line)

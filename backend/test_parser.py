@@ -47,6 +47,7 @@ class TestParser(unittest.TestCase):
 
     def test_sample_add_point_many(self):
         sample = Sample("Test", 1)
+        sample.set_dimensions(2)
 
         for i in range(10):
             sample.add_point(i*10, [i, -i])
@@ -58,12 +59,31 @@ class TestParser(unittest.TestCase):
 
     def test_sample_add_point_with_latency(self):
         sample = Sample("Test", 1)
+        sample.set_dimensions(3)
 
         for i in range(50):
             sample.add_point(i, [i, -i, 10*i], 9*i)
 
         for i in range(50):
             self.assertEqual(sample.latencies[i], 9*i)
+
+    def test_sample_set_dimensions(self):
+        sample_3d = Sample("test", 1)
+        sample_5d = Sample("test", 2)
+
+        #good test
+        sample_3d.set_dimensions(3)
+        sample_5d.set_dimensions(5)
+
+        sample_3d.add_point(1, [1, 2, 3])
+        sample_5d.add_point(1, [1, 2, 3, 4, 5])
+
+        self.assertEqual(sample_3d.data[2], [3])
+        self.assertEqual(sample_5d.data[4], [5])
+
+        #bad test
+        self.assertRaises(ValueError, sample_5d.set_dimensions, -10)
+        self.assertRaises(ValueError, sample_3d.set_dimensions, 1)
 
     def test_parser_regex(self):
         self.assertRaises(KeyError, Parser, ['test'], {})
