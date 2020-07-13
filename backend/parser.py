@@ -144,60 +144,65 @@ class Parser:
         with open(file, "r") as f:
             #read the header lines to determine how many samples are present
             #and create sample objects for each
-
             line = f.readline()
             while line:
-                matched_name = re.search(self.regex['sensor_name'], line)
-                matched_id = re.search(self.regex['sensor_id'], line)
-                
-                if matched_name and matched_id:
-                    matched_name = matched_name.group(0)
-                    matched_id = matched_id.group(0)
-
-                    samples[matched_id] = Sample(matched_name, matched_id)
+                if self.read_header(line, samples):
                     line = f.readline()
                 else:
                     break
 
-            #read data fields
+            #read data fields and add to the corresponding sample object
             while line:
-
-                #determine this sensor ID
-                this_id = matched_id
-                if 'inline_id' in self.regex:
-                    search = re.search(self.regex['inline_id'], line)
-                    if search:
-                        this_id = search.group(0)
-
-                if not this_id:
+                if self.read_body(line, samples):
                     line = f.readline()
-                    continue
-
-                #determine timestamp
-                search = re.search(self.regex['timestamp'], line)
-                if search:
-                    matched_timestamp = int(search.group(0))
-
-                #determine data lines & determine data dimensions
-                search = re.search(self.regex['data'], line)
-                if search:
-                    matched_data = search.group(0).split()
-                    #convert from str to float
-                    matched_data = [float(i) for i in matched_data]
-
-                if not samples[this_id].performed_dimension_set:
-                    samples[this_id].set_dimensions(len(matched_data))
-
-                matched_latency = -1
-                if 'latency' in self.regex:
-                    search = re.search(self.regex['latency'], line)
-                    if search:
-                        matched_latency = int(search.group(0))
-
-                samples[this_id].add_point(matched_timestamp, matched_data, matched_latency)
-                line = f.readline()
+                else:
+                    break
 
 
+    def read_header(self, line, samples) -> bool:
+        matched_name = re.search(self.regex['sensor_name'], line)
+        matched_id = re.search(self.regex['sensor_id'], line)
+
+        if matched_name and matched_id:
+            matched_name = matched_name.group(0)
+            matched_id = matched_id.group(0)
+
+            samples[matched_id] = Sample(matched_name, matched_id)
+            return True
+        else:
+            return False
+
+    def read_body(self, line, samples):
+        #determine sensor  ID
+        if 'inline_id' in self.regex:
+            search = re.search(self.regex['inline_id'], line)
+            if search:
+                this_id = search.group(0)
+            else:
+                this_id = samples.keys()[0]
+            
+        #determine timestamp
+        search = re.search(self.regex['timestamp'], line)
+        if search:
+            matched_timestamp = int(search.group(0))
+
+        #determine data lines & determine data dimensions
+        search = re.search(self.regex['data'], line)
+        if search:
+            matched_data = search.group(0).split()
+            #convert from str to float
+            matched_data = [float(i) for i in matched_data]
+
+        if not samples[this_id].performed_dimension_set:
+            samples[this_id].set_dimensions(len(matched_data))
+
+        matched_latency = -1
+        if 'latency' in self.regex:
+            search = re.search(self.regex['latency'], line)
+            if search:
+                matched_latency = int(search.group(0))
+
+        samples[this_id].add_point(matched_timestamp, matched_data, matched_latency)
 
     def json(self, samples): #TODO document method
         pass #TODO
