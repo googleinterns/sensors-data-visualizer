@@ -84,7 +84,7 @@ class Sample:
                 gyroscope returns (x,y,z) tuples the parser calls set_dimensions(3).
         
         Raises:
-            ValueError: "<= 1 dimension error" 1 dimensions is always initialized and negative/0 dimensions don't exist.
+            ValueError: "< 1 dimension error". 0 or negative dimensions are not valid.
         """
 
         if dimensions < 1:
@@ -257,5 +257,7 @@ class GoogleSensorParser(Parser):
         self.regex['data'] = "(?<=Data: )([+-]?([0-9]*[.])?[0-9]+\s)+"
         # Matches the number following 'Sensor'.
         self.regex['inline_id'] = "(?<=Sensor: )[+-]?([0-9]*[.])?[0-9]"
+        # Matches the number following 'Latency: '.
+        self.regex['latency'] = "(?<=Latency: )[+-]?([0-9]*[.])?[0-9]+"
 
         super().__init__(files, self.regex)
