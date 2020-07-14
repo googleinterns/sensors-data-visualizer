@@ -177,6 +177,18 @@ class Parser:
 
 
     def read_header(self, line, samples) -> bool:
+        """Parses a header line to determine sensor name and id.
+            Creates new Sample objects for sensors.
+
+        Args:
+            line: The file line to be read.
+            samples: The dict of samples to add to when a new Sample is created.
+
+        Returns:
+            True if name and id data was parsed from the line.
+            False if the line did not contain data.
+        """
+
         matched_name = re.search(self.regex['sensor_name'], line)
         matched_id = re.search(self.regex['sensor_id'], line)
 
@@ -189,14 +201,15 @@ class Parser:
         else:
             return False
 
-    def read_body(self, line, samples):
+    def read_body(self, line, samples) -> bool:
+
         #determine sensor  ID
         if 'inline_id' in self.regex:
             search = re.search(self.regex['inline_id'], line)
             if search:
                 this_id = search.group(0)
-            else:
-                this_id = samples.keys()[0]
+        else:
+            this_id = samples.keys()[0]
             
         #determine timestamp
         search = re.search(self.regex['timestamp'], line)
