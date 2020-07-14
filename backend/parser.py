@@ -36,9 +36,9 @@ class Sample:
         self.sensor_name = sensor_name
         self.sensor_id = sensor_id
 
-        #tracks the next index where data will be added
+        # Tracks the next index where data will be added.
         self.next_index = 0
-        #checks if the data dimensions for this sample have already been parsed
+        # Checks if the data dimensions for this sample have already been parsed.
         self.performed_dimension_set = False
 
         self.timestamps = []
@@ -77,26 +77,29 @@ class Sample:
         self.next_index += 1
 
     def set_dimensions(self, dimensions: int):
-        """Initializes empty lists in dict after parser determines data dimensions
+        """Initializes empty lists in dict after parser determines data dimensions.
         
         Args:
             dimensions: The number of dimensions that the data has. e.g. if the
-                gyroscope returns (x,y,z) tuples the parser calls set_dimensions(3)
+                gyroscope returns (x,y,z) tuples the parser calls set_dimensions(3).
         
         Raises:
-            ValueError: "<= 1 dimension error" 1 dimensions is always initialized and negative/0 dimensions don't exist
+            ValueError: "<= 1 dimension error" 1 dimensions is always initialized and negative/0 dimensions don't exist.
         """
 
-        if dimensions <= 1:
-            raise ValueError("<= 1 dimension error")
+        if dimensions < 1:
+            raise ValueError("< 1 dimension error")
+        if dimensions == 1:
+            self.performed_dimension_set = True
+            return
 
-        for i in range(1, dimensions+1):
+        for i in range(1, dimensions):
             self.data[i] = []
 
         self.performed_dimension_set = True
 
 class Parser:
-    """Parse takes in one or more files and converts them to JSON
+    """Parser takes in one or more files and converts them to JSON
 
     Attributes:
         files: A list of files to parse
@@ -123,7 +126,7 @@ class Parser:
         self.regex = regex
         self.samples = []
 
-        try: #Test if any required fields are not defined
+        try: # Test if any required fields are not defined.
             self.regex['sensor_name']
             self.regex['sensor_id']
             self.regex['timestamp']
@@ -131,20 +134,32 @@ class Parser:
         except:
             raise KeyError("One or more required regex fields not defined.")
 
-    def parse_files(self): #TODO Document method
+    def parse_files(self):
+        """Iterates through all files and returns the parsed Sample objects in json format
+
+        Returns:
+            A list of json strings representing each sample contained in the files
+        """
         json_samples = []
 
         for file in self.files:
             json_samples.append(self.parse(file))
 
-        return self.json(json_samples) #TODO convert the samples to JSON then return
+        return self.json(json_samples) # TODO convert the samples to JSON then return.
 
-    def parse(self, file): #parse a single file TODO document method
+    def parse(self, file):
+        """Parses a single file and creates Sample objects based on how many samples are in the file.
+        Args:
+            file: The file containing sensor data.
+
+        Returns:
+            A dict containing Sample objects for each sample contained in the file.
+        """
         
         samples = {}
         with open(file, "r") as f:
-            #read the header lines to determine how many samples are present
-            #and create sample objects for each
+            # Read the header lines to determine how many samples are present
+            # and create sample objects for each.
 
             line = f.readline()
             while line:
@@ -159,9 +174,9 @@ class Parser:
                     line = f.readline()
                 else:
                     break
-            print("Samples Collected: ", len(samples)) #Test
-            print("Samples: ", samples)
+
+        return samples
 
 
-    def json(self, samples): #TODO document method
-        pass #TODO
+    def json(self, samples): # TODO Document and create method.
+        return samples
