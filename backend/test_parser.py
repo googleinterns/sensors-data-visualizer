@@ -15,32 +15,9 @@ limitations under the License.
 """
 
 import unittest
+from parser import GoogleSensorParser
 from parser import Parser
 from parser import Sample
-
-class GoogleSensorParser(Parser):
-    """Implementation of Parser for Google formatted sensor data.
-    
-    Attributes:
-        regex: A dict that defines the Google sensor data format.
-    """
-    def __init__(self, files: list):
-        """Inits class with list of files only."""
-
-        self.regex = {}
-        # Space separated words preceded by ': ' followed by '. \n'.
-        self.regex['sensor_name'] = "(?<=: )[\w\s]+(?=.\n)"
-        # A number preceded by 'sensor type '.
-        self.regex['sensor_id'] = "(?<=sensor type )[+-]?([0-9]*[.])?[0-9]+"
-        # A number preceded by 'TS: '.
-        self.regex['timestamp'] = "(?<=TS: )[+-]?([0-9]*[.])?[0-9]+"
-        # Matches a series of space separated numbers preceded by 'Data: '.
-        self.regex['data'] = "(?<=Data: )([+-]?([0-9]*[.])?[0-9]+\s)+"
-        # Matches the number following 'Sensor'.
-        self.regex['inline_id'] = "(?<=Sensor: )[+-]?([0-9]*[.])?[0-9]"
-
-        super().__init__(files, self.regex)
-
 
 class TestParser(unittest.TestCase):
     def test_sample_init(self):
