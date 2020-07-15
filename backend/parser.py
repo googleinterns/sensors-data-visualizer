@@ -134,7 +134,7 @@ class Parser:
         except:
             raise KeyError("One or more required regex fields not defined.")
 
-    def parse_files(self):
+    def parse_files(self) -> list:
         """Iterates through all files and returns the parsed Sample objects in json format
 
         Returns:
@@ -143,9 +143,10 @@ class Parser:
         json_samples = []
 
         for file in self.files:
-            json_samples.append(self.parse(file))
+            for sample in self.parse(file):
+                json_samples.append(sample)
 
-        return self.json(json_samples) # TODO convert the samples to JSON then return.
+        return self.json(json_samples)
 
     def parse(self, file):
         """Parses a single file and creates Sample objects based on how many samples are in the file.
@@ -153,7 +154,7 @@ class Parser:
             file: The file containing sensor data.
 
         Returns:
-            A dict containing Sample objects for each sample contained in the file.
+            A list containing Sample objects for each sample contained in the file.
         """
         
         samples = {}
@@ -168,13 +169,13 @@ class Parser:
                 else:
                     break
 
-            #read data fields and add to the corresponding sample object
+            # Read data fields and add to the corresponding sample object.
             while line:
-                if self.read_body(line, samples):
-                    line = f.readline()
-                else:
-                    break
+                self.read_body(line, samples)
+                line = f.readline()
 
+        # Return only the values since the keys are no longer relevant.
+        return list(samples.values())
 
     def read_header(self, line, samples) -> bool:
         """Parses a header line to determine sensor name and id.
@@ -201,9 +202,15 @@ class Parser:
         else:
             return False
 
-    def read_body(self, line, samples) -> bool:
+    def read_body(self, line, samples: dict):
+        """Reads a line from a file and parses relevant data fields from it.
 
-        #determine sensor  ID
+        Args:
+            line: The line from a file to be read.
+            samples: A dict with keys: sensor_id and values: Sample objects.
+        """
+        
+        # Determine this sensors ID.
         if 'inline_id' in self.regex:
             search = re.search(self.regex['inline_id'], line)
             if search:
@@ -211,18 +218,24 @@ class Parser:
         else:
             this_id = samples.keys()[0]
             
-        #determine timestamp
+        # Determine the timestamp for this line.
         search = re.search(self.regex['timestamp'], line)
         if search:
             matched_timestamp = int(search.group(0))
+        else: 
+            # Timestamp is required data for a point, return if no timestamp present.
+            return
 
-        #determine data lines & determine data dimensions
+        # Find the data present in this line.
         search = re.search(self.regex['data'], line)
         if search:
             matched_data = search.group(0).split()
             #convert from str to float
             matched_data = [float(i) for i in matched_data]
+        else:
+            return
 
+        # Detect the dimensions of the data if not already done.
         if not samples[this_id].performed_dimension_set:
             samples[this_id].set_dimensions(len(matched_data))
 
@@ -234,8 +247,8 @@ class Parser:
 
         samples[this_id].add_point(matched_timestamp, matched_data, matched_latency)
 
-    def json(self, samples): # TODO Document and create method.
-        return samples
+    def json(self, sample): # TODO Document and create method.
+        return sample
 
 class GoogleSensorParser(Parser):
     """Implementation of Parser for Google formatted sensor data.
