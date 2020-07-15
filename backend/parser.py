@@ -17,7 +17,7 @@ limitations under the License.
 import re
 
 class Sample:
-    """Sample holds the data recorded for some sensor.
+    """Sample holds the data recorded for a sensor.
 
     Attributes:
         sensor_name: A string holding the name of the sensor.
@@ -55,7 +55,8 @@ class Sample:
         Args:
             timestamp: The recorded timestamp for this datapoint
             data: A list of the datapoints to be added ordered by dimension.
-                e.g. if data = [1, 2, 3, 4] then x = 1, y = 2, etc.
+                e.g. If data = [1, 2, 3] and timestamp = 10 for a gyroscope, then
+                the gyroscope returned x-axis = 1, y-axis = 2, z-axis = 3 at time 10.
             latency: The recorded latency for this datapoint. Optional.
         
         Returns: None
