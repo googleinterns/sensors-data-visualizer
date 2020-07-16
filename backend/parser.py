@@ -169,6 +169,10 @@ class Parser:
                 else:
                     break
 
+            # Check if no header detected and create a Sample.
+            if not samples:
+                samples[0] = Sample('unknown_sensor', '0')
+                
             # Read data fields and add to the corresponding sample object.
             while line:
                 self.read_body(line, samples)

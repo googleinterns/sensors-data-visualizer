@@ -66,6 +66,7 @@ class TestParser(unittest.TestCase):
             self.assertEqual(sample.latencies[i], 9 * i)
 
     def test_sample_set_dimensions(self):
+        """Test the set dimensions mechanism."""
         sample_3d = Sample("test", 1)
         sample_5d = Sample("test", 2)
 
