@@ -97,8 +97,8 @@ class TestParser(unittest.TestCase):
             temp = Parser(['test'], {
                 'sensor_name': '',
                 'sensor_id': '',
-                'timestamp': [],
-                'data': []
+                'timestamp': '',
+                'data': ''
             })
         except KeyError:
             self.fail("Unexpected exception on correct Parser() init.")

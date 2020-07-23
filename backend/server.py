@@ -14,14 +14,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask
+from flask import request
+
+from flask_cors import CORS
+
+from parser import GoogleSensorParser
+from parser import Parser
+
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+#development only. https://flask-cors.readthedocs.io/en/latest/#resource-specific-cors
+CORS(app)
 
 @app.route('/')
 def index():
-    return "TODO: Build this"
+    return ""
+
+@app.route('/upload', methods = ['POST'])
+def upload_file():
+    if request.method == "POST":
+        f = request.files['file']
+        f.save(secure_filename(f.filename))
+        
+        samples = GoogleSensorParser([f.filename]).parse_files()
+
+        return samples
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import json
 import re
 
 class Sample:
@@ -151,7 +152,7 @@ class Parser:
             for sample in self.parse(file):
                 json_samples.append(sample)
 
-        return self.json(json_samples)
+        return self.jsonify(json_samples)
 
     def parse(self, file):
         """Parses a single file and creates Sample objects based on how many samples are in the file.
@@ -256,8 +257,15 @@ class Parser:
 
         samples[this_id].add_point(matched_timestamp, matched_data, matched_latency)
 
-    def json(self, sample): # TODO Document and create method.
-        return sample
+    def jsonify(self, sample): # TODO Document method.
+        sample = sample[0]
+        return json.dumps({
+            "sensor_name": sample.sensor_name,
+            "sensor_id": sample.sensor_id,
+            "timestamps": sample.timestamps,
+            "timestamps_diffs": sample.timestamp_diffs,
+            "data": sample.data
+        })
 
 class GoogleSensorParser(Parser):
     """Implementation of Parser for Google formatted sensor data.
