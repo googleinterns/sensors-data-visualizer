@@ -124,16 +124,20 @@ class Parser:
         """
 
         self.files = files
-        self.regex = regex
+        self.compiled = {}
         self.samples = []
 
         try: # Test if any required fields are not defined.
-            self.regex['sensor_name']
-            self.regex['sensor_id']
-            self.regex['timestamp']
-            self.regex['data']
+            regex['sensor_name']
+            regex['sensor_id']
+            regex['timestamp']
+            regex['data']
         except:
             raise KeyError("One or more required regex fields not defined.")
+
+        # Pre-compile regexs for increased parsing speed.
+        for key in regex.keys():
+            self.compiled[key] = re.compile(regex[key])
 
     def parse_files(self) -> list:
         """Iterates through all files and returns the parsed Sample objects in json format
@@ -195,8 +199,8 @@ class Parser:
             False if the line did not contain data.
         """
 
-        matched_name = re.search(self.regex['sensor_name'], line)
-        matched_id = re.search(self.regex['sensor_id'], line)
+        matched_name = self.compiled['sensor_name'].search(line)
+        matched_id = self.compiled['sensor_id'].search(line)
 
         if matched_name and matched_id:
             matched_name = matched_name.group(0)
@@ -216,15 +220,15 @@ class Parser:
         """
         
         # Determine this sensors ID.
-        if 'inline_id' in self.regex:
-            search = re.search(self.regex['inline_id'], line)
+        if 'inline_id' in self.compiled:
+            search = self.compiled['inline_id'].search(line)
             if search:
                 this_id = search.group(0)
         else:
             this_id = samples.keys()[0]
             
         # Determine the timestamp for this line.
-        search = re.search(self.regex['timestamp'], line)
+        search = self.compiled['timestamp'].search(line)
         if search:
             matched_timestamp = int(search.group(0))
         else: 
@@ -232,7 +236,7 @@ class Parser:
             return
 
         # Find the data present in this line.
-        search = re.search(self.regex['data'], line)
+        search = self.compiled['data'].search(line)
         if search:
             matched_data = search.group(0).split()
             #convert from str to float
@@ -245,8 +249,8 @@ class Parser:
             samples[this_id].set_dimensions(len(matched_data))
 
         matched_latency = -1
-        if 'latency' in self.regex:
-            search = re.search(self.regex['latency'], line)
+        if 'latency' in self.compiled:
+            search = self.compiled['latency'].search(line)
             if search:
                 matched_latency = int(search.group(0))
 
