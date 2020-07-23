@@ -42,6 +42,7 @@ class Sample:
         # Checks if the data dimensions for this sample have already been parsed.
         self.performed_dimension_set = False
 
+        self.initial_timestamp = None
         self.timestamps = []
         self.timestamp_diffs = []
 
@@ -63,7 +64,12 @@ class Sample:
         Returns: None
         """
 
-        self.timestamps.append(timestamp)
+        # Normalize timestamps to 0. Also convert from ns to ms.
+        if not self.initial_timestamp:
+            self.initial_timestamp = timestamp
+            self.timestamps.append(0)
+        else:
+            self.timestamps.append(10**-6*(timestamp - self.initial_timestamp))
 
         if self.next_index > 0:
             self.timestamp_diffs.append(timestamp - self.timestamps[self.next_index-1])
