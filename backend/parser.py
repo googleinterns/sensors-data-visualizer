@@ -263,15 +263,30 @@ class Parser:
 
         samples[this_id].add_point(matched_timestamp, matched_data, matched_latency)
 
-    def jsonify(self, sample): # TODO Document method.
-        sample = sample[0]
-        return json.dumps({
-            "sensor_name": sample.sensor_name,
-            "sensor_id": sample.sensor_id,
-            "timestamps": sample.timestamps,
-            "timestamps_diffs": sample.timestamp_diffs,
-            "data": sample.data
-        })
+    def jsonify(self, samples: list):
+        """Takes a list of sample objects and returns a list of JSON versions of those objects.
+
+        Args:
+            samples: A list of sample objects to be converted.
+
+        Returns:
+            A JSON string in the format:
+                {   0: {Sample Object},
+                    1: {Sample Object},
+                    ....   }
+        """
+        ret_dict = {}
+
+        for i, sample in enumerate(samples):
+            ret_dict[i] = json.dumps({
+                "sensor_name": sample.sensor_name,
+                "sensor_id": sample.sensor_id,
+                "timestamps": sample.timestamps,
+                "timestamp_diffs": sample.timestamp_diffs,
+                "data": sample.data
+            })
+
+        return json.dumps(ret_dict)
 
 class GoogleSensorParser(Parser):
     """Implementation of Parser for Google formatted sensor data.
