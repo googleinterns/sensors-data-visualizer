@@ -64,12 +64,7 @@ class Sample:
         Returns: None
         """
 
-        # Normalize timestamps to 0. Also convert from ns to ms.
-        if not self.initial_timestamp:
-            self.initial_timestamp = timestamp
-            self.timestamps.append(0)
-        else:
-            self.timestamps.append(10**-6*(timestamp - self.initial_timestamp))
+        self.timestamps.append(timestamp)
 
         if self.next_index > 0:
             self.timestamp_diffs.append(timestamp - self.timestamps[self.next_index-1])
@@ -134,13 +129,11 @@ class Parser:
         self.compiled = {}
         self.samples = []
 
-        try: # Test if any required fields are not defined.
-            regex['sensor_name']
-            regex['sensor_id']
-            regex['timestamp']
-            regex['data']
-        except:
-            raise KeyError("One or more required regex fields not defined.")
+        # Test if any required fields are not defined.
+        required = ['sensor_name', 'sensor_id', 'timestamp', 'data']
+        for field in required:
+            if field not in regex.keys():
+                raise KeyError("Missing required regex field: " + field)
 
         # Pre-compile regexs for increased parsing speed.
         for key in regex.keys():
