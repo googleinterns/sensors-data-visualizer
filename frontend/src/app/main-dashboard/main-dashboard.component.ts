@@ -21,8 +21,8 @@ export class MainDashboardComponent {
       }
 
       return [
-        { title: 'Card 2', cols: 1, rows: 2 },
-        { title: 'Card 3', cols: 1, rows: 1 }
+        { title: 'Legend', cols: 7, rows: 1 },
+        { title: 'Options', cols: 3, rows: 1 }
       ];
     })
   );

@@ -19,6 +19,8 @@ import { PlotComponent } from './plot/plot.component';
 import { PlotlyModule } from 'angular-plotly.js'
 import * as PlotlyJS from 'plotly.js/dist/plotly.js'
 
+import { HttpClientModule } from '@angular/common/http'
+
 PlotlyModule.plotlyjs = PlotlyJS
 
 @NgModule({
@@ -40,7 +42,8 @@ PlotlyModule.plotlyjs = PlotlyJS
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
-    PlotlyModule
+    PlotlyModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

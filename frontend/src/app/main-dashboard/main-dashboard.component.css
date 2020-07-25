@@ -19,3 +19,9 @@
 .dashboard-card-content {
   text-align: center;
 }
+
+#main-plot { 
+  width: 100%;
+  height: 75%;
+
+}

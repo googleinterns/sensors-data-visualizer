@@ -15,3 +15,22 @@
   top: 0;
   z-index: 1;
 }
+
+.button {
+  padding: 10px 30px;
+  background: red;
+  border: none;
+  border-radius: 0 100px 100px 0;
+}
+
+.btn:hover {
+	box-shadow: 0px 0px 4px #b1b1b1;
+	background: linear-gradient(0deg, #CC360C, #DB3A0D);
+	border: 1px solid #B3320E;
+}
+
+.btn:active {
+	box-shadow: 0px 0px 4px #b1b1b1 inset;
+	background: linear-gradient(0deg, #CC360C, #DB3A0D);
+	border: 1px solid #B3320E;
+}
