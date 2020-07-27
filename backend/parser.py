@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import json
 import re
 
 class Sample:
@@ -41,6 +42,7 @@ class Sample:
         # Checks if the data dimensions for this sample have already been parsed.
         self.performed_dimension_set = False
 
+        self.initial_timestamp = None
         self.timestamps = []
         self.timestamp_diffs = []
 
@@ -124,16 +126,18 @@ class Parser:
         """
 
         self.files = files
-        self.regex = regex
+        self.compiled = {}
         self.samples = []
 
-        try: # Test if any required fields are not defined.
-            self.regex['sensor_name']
-            self.regex['sensor_id']
-            self.regex['timestamp']
-            self.regex['data']
-        except:
-            raise KeyError("One or more required regex fields not defined.")
+        # Test if any required fields are not defined.
+        required = ['sensor_name', 'sensor_id', 'timestamp', 'data']
+        for field in required:
+            if field not in regex.keys():
+                raise KeyError("Missing required regex field: " + field)
+
+        # Pre-compile regexs for increased parsing speed.
+        for key in regex.keys():
+            self.compiled[key] = re.compile(regex[key])
 
     def parse_files(self) -> list:
         """Iterates through all files and returns the parsed Sample objects in json format
@@ -147,7 +151,7 @@ class Parser:
             for sample in self.parse(file):
                 json_samples.append(sample)
 
-        return self.json(json_samples)
+        return self.jsonify(json_samples)
 
     def parse(self, file):
         """Parses a single file and creates Sample objects based on how many samples are in the file.
@@ -195,8 +199,8 @@ class Parser:
             False if the line did not contain data.
         """
 
-        matched_name = re.search(self.regex['sensor_name'], line)
-        matched_id = re.search(self.regex['sensor_id'], line)
+        matched_name = self.compiled['sensor_name'].search(line)
+        matched_id = self.compiled['sensor_id'].search(line)
 
         if matched_name and matched_id:
             matched_name = matched_name.group(0)
@@ -216,15 +220,15 @@ class Parser:
         """
         
         # Determine this sensors ID.
-        if 'inline_id' in self.regex:
-            search = re.search(self.regex['inline_id'], line)
+        if 'inline_id' in self.compiled:
+            search = self.compiled['inline_id'].search(line)
             if search:
                 this_id = search.group(0)
         else:
             this_id = samples.keys()[0]
             
         # Determine the timestamp for this line.
-        search = re.search(self.regex['timestamp'], line)
+        search = self.compiled['timestamp'].search(line)
         if search:
             matched_timestamp = int(search.group(0))
         else: 
@@ -232,7 +236,7 @@ class Parser:
             return
 
         # Find the data present in this line.
-        search = re.search(self.regex['data'], line)
+        search = self.compiled['data'].search(line)
         if search:
             matched_data = search.group(0).split()
             #convert from str to float
@@ -245,15 +249,37 @@ class Parser:
             samples[this_id].set_dimensions(len(matched_data))
 
         matched_latency = -1
-        if 'latency' in self.regex:
-            search = re.search(self.regex['latency'], line)
+        if 'latency' in self.compiled:
+            search = self.compiled['latency'].search(line)
             if search:
                 matched_latency = int(search.group(0))
 
         samples[this_id].add_point(matched_timestamp, matched_data, matched_latency)
 
-    def json(self, sample): # TODO Document and create method.
-        return sample
+    def jsonify(self, samples: list):
+        """Takes a list of sample objects and returns a list of JSON versions of those objects.
+
+        Args:
+            samples: A list of sample objects to be converted.
+
+        Returns:
+            A JSON string in the format:
+                {   0: {Sample Object},
+                    1: {Sample Object},
+                    ....   }
+        """
+        ret_dict = {}
+
+        for i, sample in enumerate(samples):
+            ret_dict[i] = json.dumps({
+                "sensor_name": sample.sensor_name,
+                "sensor_id": sample.sensor_id,
+                "timestamps": sample.timestamps,
+                "timestamp_diffs": sample.timestamp_diffs,
+                "data": sample.data
+            })
+
+        return json.dumps(ret_dict)
 
 class GoogleSensorParser(Parser):
     """Implementation of Parser for Google formatted sensor data.
