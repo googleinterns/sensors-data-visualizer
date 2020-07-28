@@ -22,6 +22,26 @@ export class UploadService {
   }
 
   public nextMessage(message: any){
-    this.message.next(message)
+    // this.message.next(message)
+
+    if(message){
+      var samples = []
+
+      console.log("Upload Service msg: ", message)
+      for(var i in message){
+        samples.push(JSON.parse(message[i]))
+      }
+
+      // console.log("Upload Service msg: " , message.length)
+      // message = JSON.parse(message[0])
+      // console.log("Upload Service msg: " , message)
+
+      // for(var i in message){
+      //   console.log(i)
+      //   //samples.push(JSON.parse(this.message[i]))
+      // }
+
+      this.message.next(samples)
+    }
   }
 }
