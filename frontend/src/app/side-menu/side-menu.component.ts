@@ -1,3 +1,17 @@
+/* Copyright 2020 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. */
+
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
@@ -10,7 +24,12 @@ import { UploadService } from '../upload.service'
   templateUrl: './side-menu.component.html',
   styleUrls: ['./side-menu.component.css']
 })
-export class SideMenuComponent implements OnInit{
+/**
+ * SideMenu defines the collapsible navigation menu on the left side.
+ * The component also uses the UploadService to send files to the backend
+ * when the upload file button is clicked. 
+ */
+export class SideMenuComponent {
 
   @ViewChild("fileUpload", {static: false}) fileUpload: ElementRef
   files = []
@@ -24,6 +43,13 @@ export class SideMenuComponent implements OnInit{
 
   constructor(private breakpointObserver: BreakpointObserver, private sharedService: UploadService) {}
 
+  /**
+   * The upload button onClick function.
+   * Uses the UploadService to send the formData then
+   * when a response arrives uses UploadService to 
+   * share the response with other listening components.
+   * @param file The file to send to the backend.
+   */
   sendFile(file){
     const formData = new FormData()
     formData.append('file', file.data)
@@ -41,7 +67,9 @@ export class SideMenuComponent implements OnInit{
     })
   }
 
-
+  /**
+   * A helper method to send all files collected to the backend.
+   */
   private sendFiles(){
     this.fileUpload.nativeElement.value = ''
     this.files.forEach(file => {
@@ -49,9 +77,12 @@ export class SideMenuComponent implements OnInit{
     })
   }
 
+  /**
+   * Collects all files selected by the users and invokes sendFiles()
+   * to send them to the backend.
+   */
   uploadFiles(){
     const fileUpload = this.fileUpload.nativeElement
-    console.log("Line38")
     console.log(fileUpload)
     fileUpload.onchange = () => {
       for(let index = 0; index < fileUpload.files.length; index++){
@@ -61,10 +92,6 @@ export class SideMenuComponent implements OnInit{
       this.sendFiles()
     }
     fileUpload.click()
-  }
-
-  ngOnInit(){
-    this.sharedService.sharedMessage.subscribe(message => this.message = message)
   }
 
 }
