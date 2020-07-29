@@ -14,6 +14,7 @@ limitations under the License. */
 
 import { Component, OnInit } from '@angular/core';
 import { UploadService } from '../upload.service'
+import { PlotlyModule } from 'angular-plotly.js';
 
 @Component({
   selector: 'app-plot',
@@ -41,40 +42,40 @@ export class PlotComponent implements OnInit {
    *      for each datapoint. 'lines' displays a line through all datapoints. 'lines+markers'
    *      displays both.
    */
-  plot_data = [ {x: [0], y: [0], type: 'scattergl', mode: 'markers'}]
-  message: any
-  constructor(private sharedService: UploadService) { }
+  plot_data = [ {x: [0], y: [0], type: 'scattergl', mode: 'markers', id: 0, visible: 'true'}]
 
-  ngOnInit(): void {
+  // Plot Configurations.
+  plot_layout = { title: 'Add a new dataset.', legend: 'false' }
+  plot_config = { scrollZoom: true, displayModeBar: true}
+  
+  message: any
+  constructor (private sharedService: UploadService) { }
+
+  ngOnInit (): void {
 
     /**
      * Subscribe to the shared service so when a new dataset is loaded
      * it can be added to the plot.
      */
-    this.sharedService.sharedMessage.subscribe(message => {
-      console.log("Plot message received: ", message)
+    this.sharedService.sharedMessage.subscribe (message => {
+      if (message) {
+        console.log("Plot message received: ", message)
 
-      for(var i in message){
-        console.log(message[i])
-        this.plot_data.push(
-          {x: message[i].timestamps, y: message[i].data[0], type: 'scattergl', mode: 'markers' }
-        )
-      }
-      // if(message){
-      //   this.message = message
-      //   console.log("New Message: ", this.message)
+        // This will only be true when no data has been added yet.
+        // Removes the placeholder datapoint and title.
+        if (this.plot_data.length == 1 && this.plot_data[0].id == 0) {
+          this.plot_data.pop()
+          this.plot_layout.title = ""
+        }
 
-      //   // Parse message for datasets.
-      //   var samples = []
-
-      //   for(var i in this.message){
-      //     console.log(this.message[i])
-      //     samples.push(JSON.parse(this.message[i]))
-      //   }
-
-      //   console.log(samples)
-      //   this.plot_data = [ {x: samples[0].timestamps, y: samples[0].data[0], type: 'scattergl' }]
-      // }
+        for (var i in message){
+          console.log(message[i])
+          this.plot_data.push(
+            {x: message[i].timestamps, y: message[i].data[0], type: 'scattergl',
+             mode: 'markers', id: 1, visible: 'true' }
+          )
+        }
+     }
     })
 
   }
