@@ -12,12 +12,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
 import { UploadService } from '../upload.service'
+import { UploadDirective } from '../upload.directive'
 
 @Component({
   selector: 'app-side-menu',
@@ -29,9 +30,14 @@ import { UploadService } from '../upload.service'
  * The component also uses the UploadService to send files to the backend
  * when the upload file button is clicked. 
  */
-export class SideMenuComponent {
+export class SideMenuComponent implements OnInit, OnDestroy {
 
+  @ViewChild(UploadDirective, { static: true }) uploadDirective: UploadDirective
   @ViewChild("fileUpload", {static: false}) fileUpload: ElementRef
+
+  //uploadDirective: UploadDirective
+  private destroySubject = new Subject()
+
   files = []
   message: any
 
@@ -92,6 +98,17 @@ export class SideMenuComponent {
       this.sendFiles()
     }
     fileUpload.click()
+  }
+
+  ngOnInit () {
+    const viewContainerRef = this.uploadDirective.viewContainerRef
+
+    this.sharedService.loadDataset(viewContainerRef)
+  }
+
+  ngOnDestroy () {
+    this.destroySubject.next()
+    this.destroySubject.complete()
   }
 
 }

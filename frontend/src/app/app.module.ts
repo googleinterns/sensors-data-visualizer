@@ -36,7 +36,11 @@ import { SideMenuComponent } from './side-menu/side-menu.component';
 
 // Imports for Plotly.
 import { PlotlyModule } from 'angular-plotly.js'
-import * as PlotlyJS from 'plotly.js/dist/plotly.js'
+import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import { DatasetComponent } from './dataset/dataset.component'
+
+import { UploadDirective } from './upload.directive'
+
 
 PlotlyModule.plotlyjs = PlotlyJS
 
@@ -45,7 +49,9 @@ PlotlyModule.plotlyjs = PlotlyJS
     AppComponent,
     MainDashboardComponent,
     SideMenuComponent,
-    PlotComponent
+    PlotComponent,
+    DatasetComponent,
+    UploadDirective
   ],
   imports: [
     BrowserModule,

@@ -12,9 +12,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Injectable } from '@angular/core';
+import { Injectable, ComponentFactoryResolver, ViewContainerRef, ComponentRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { BehaviorSubject } from 'rxjs'
+import { DatasetComponent } from './dataset/dataset.component';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class UploadService {
   private message = new BehaviorSubject(null)
   sharedMessage = this.message.asObservable()
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private resolver: ComponentFactoryResolver) { }
 
   /**
    * Sends a POST request to the backend containing the files to be parsed.
@@ -59,16 +60,22 @@ export class UploadService {
         samples.push(JSON.parse(message[i]))
       }
 
-      // console.log("Upload Service msg: " , message.length)
-      // message = JSON.parse(message[0])
-      // console.log("Upload Service msg: " , message)
-
-      // for(var i in message){
-      //   console.log(i)
-      //   //samples.push(JSON.parse(this.message[i]))
-      // }
 
       this.message.next(samples)
     }
+  }
+
+  async loadDataset(ref: ViewContainerRef){
+    const { DatasetComponent } = await import('./dataset/dataset.component')
+
+    ref.clear()
+    let component: any = DatasetComponent
+
+    const compRef: ComponentRef<DatasetComponent> = ref.createComponent(this.resolver.resolveComponentFactory(component))
+    compRef.instance.message = "Succ"
+
+    //const instanceRef = ref.createComponent(this.resolver.resolveComponentFactory(component))
+
+    //return ref.createComponent(this.resolver.resolveComponentFactory(component))
   }
 }
