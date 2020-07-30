@@ -12,9 +12,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { UploadService } from '../upload.service'
-import { PlotlyModule } from 'angular-plotly.js';
 
 @Component({
   selector: 'app-plot',
@@ -26,6 +25,8 @@ import { PlotlyModule } from 'angular-plotly.js';
  * Handles the Plotly plot and the plots' data.
  */
 export class PlotComponent implements OnInit {
+
+  //@ViewChild(UploadDirective, { static: true }) uploadDirective: UploadDirective
 
   /**
    * plot_data is an array of maps that define what is plotted.
@@ -75,9 +76,30 @@ export class PlotComponent implements OnInit {
              mode: 'markers', id: 1, visible: 'true' }
           )
         }
+
+        // Create new dataset.
+        //const viewContainerRef = this.uploadDirective.viewContainerRef
+        //this.sharedService.loadDataset(viewContainerRef)
      }
     })
 
+  }
+
+  public hideTrace (id: number) {
+    console.log("hiding... ", id)
+    // this.plot_data.forEach(obj => {
+    //   if (obj.id === id){
+    //     obj.visible = 'false'
+    //   }
+    // })
+  }
+
+  public showTrace (id: number) {
+    this.plot_data.forEach(obj => {
+      if (obj.id == id) { 
+        obj.visible = 'true'
+      }
+    })
   }
 
 }

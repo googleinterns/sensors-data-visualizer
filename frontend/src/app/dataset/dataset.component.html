@@ -1,6 +1,27 @@
 
 
-<div>
+<!-- <div>
     <button>{{name}}</button>
-    <button>{{message}}</button>
-</div>
+    <button>{{sample.sensor_name}}</button>
+</div> -->
+<mat-accordion>
+<mat-expansion-panel (opened)="panelOpenState = true"
+                    (closed)="panelOpenState = false">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            {{sample.sensor_name}}
+        </mat-panel-title>
+        <mat-panel-description>
+        </mat-panel-description>
+    </mat-expansion-panel-header>
+        <mat-button-toggle-group multiple="true">
+            <mat-button-toggle (change)="toggle(0)">X</mat-button-toggle>
+            <mat-button-toggle (change)="toggle(1)">Y</mat-button-toggle>
+            <mat-button-toggle (change)="toggle(2)">Z</mat-button-toggle>
+        </mat-button-toggle-group>
+        <mat-button-toggle-group multiple="true">
+            <mat-button-toggle>Latency</mat-button-toggle>
+            <mat-button-toggle>Timestamp Difference</mat-button-toggle>
+        </mat-button-toggle-group>
+</mat-expansion-panel>
+</mat-accordion>

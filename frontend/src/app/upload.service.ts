@@ -65,17 +65,15 @@ export class UploadService {
     }
   }
 
-  async loadDataset(ref: ViewContainerRef){
+  async loadDataset(ref: ViewContainerRef, data){
     const { DatasetComponent } = await import('./dataset/dataset.component')
 
-    ref.clear()
     let component: any = DatasetComponent
 
     const compRef: ComponentRef<DatasetComponent> = ref.createComponent(this.resolver.resolveComponentFactory(component))
-    compRef.instance.message = "Succ"
+    console.log("Loading dataset: ", data)
+    const sample = JSON.parse(data[0])
 
-    //const instanceRef = ref.createComponent(this.resolver.resolveComponentFactory(component))
-
-    //return ref.createComponent(this.resolver.resolveComponentFactory(component))
+    compRef.instance.setSample(sample)
   }
 }

@@ -28,6 +28,8 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
 
 // Main app UI components.
 import { MainDashboardComponent } from './main-dashboard/main-dashboard.component';
@@ -64,6 +66,8 @@ PlotlyModule.plotlyjs = PlotlyJS
     LayoutModule,
     MatToolbarModule,
     MatSidenavModule,
+    MatExpansionModule,
+    MatButtonToggleModule,
     MatListModule,
     PlotlyModule,
     HttpClientModule

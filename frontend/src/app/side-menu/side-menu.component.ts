@@ -35,7 +35,6 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   @ViewChild(UploadDirective, { static: true }) uploadDirective: UploadDirective
   @ViewChild("fileUpload", {static: false}) fileUpload: ElementRef
 
-  //uploadDirective: UploadDirective
   private destroySubject = new Subject()
 
   files = []
@@ -68,6 +67,8 @@ export class SideMenuComponent implements OnInit, OnDestroy {
 
         if(event.body != undefined){
           this.sharedService.nextMessage(event.body)
+          const viewContainerRef = this.uploadDirective.viewContainerRef
+          this.sharedService.loadDataset(viewContainerRef, event.body)
         }
       }
     })
@@ -101,9 +102,9 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit () {
-    const viewContainerRef = this.uploadDirective.viewContainerRef
+    // const viewContainerRef = this.uploadDirective.viewContainerRef
 
-    this.sharedService.loadDataset(viewContainerRef)
+    // this.sharedService.loadDataset(viewContainerRef)
   }
 
   ngOnDestroy () {

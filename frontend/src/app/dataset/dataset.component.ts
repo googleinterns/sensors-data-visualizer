@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { UploadService } from '../upload.service'
+import { MatExpansionModule } from '@angular/material/expansion'
+import { PlotComponent } from '../plot/plot.component'
 
 @Component({
   selector: 'app-dataset',
@@ -8,21 +10,33 @@ import { UploadService } from '../upload.service'
 })
 export class DatasetComponent implements OnInit {
   
+  panelOpenState: boolean
   message: string
+  sample: any
+
   @Input()
   set _message(inputMessage: string){
     this.message = inputMessage
   }
 
   name = "test"
-  constructor () { }
+  constructor (private plot: PlotComponent) { }
 
   ngOnInit(): void {
-    console.log("Test")
+    console.log("Testyteststser")
 
   }
 
-  public setName (name: string){
-    this.name = name
+  public setSample(sample){
+    this.sample = sample
+
+    console.log("Sample attributes")
+    console.log(this.sample.sensor_name)
+    
+  }
+
+  toggle (channel: number) { 
+    console.log(channel)
+    this.plot.hideTrace(channel)
   }
 }
