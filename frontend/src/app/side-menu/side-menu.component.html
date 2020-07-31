@@ -26,7 +26,8 @@ limitations under the License. -->
 
     <mat-nav-list>
       <h2>Datasets</h2>
-      <!-- <a mat-list-item href="#">Link 1</a> -->
+  
+      <!-- New datasets are added inside this template -->
       <ng-template uploadDirective></ng-template>
     </mat-nav-list>
   </mat-sidenav>
@@ -43,8 +44,9 @@ limitations under the License. -->
       <span>Sensor Visualizer</span>
     </mat-toolbar>
     <!-- Add Content Here -->
-    
+
     <!-- Render the main dashboard. -->
-    <app-main-dashboard></app-main-dashboard>
+    <app-main-dashboard id="dashboard"></app-main-dashboard>
   </mat-sidenav-content>
 </mat-sidenav-container>
+

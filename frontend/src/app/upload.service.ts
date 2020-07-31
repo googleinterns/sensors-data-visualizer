@@ -14,7 +14,7 @@ limitations under the License. */
 
 import { Injectable, ComponentFactoryResolver, ViewContainerRef, ComponentRef, EventEmitter, ViewChild, QueryList } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
-import { BehaviorSubject, Subscription } from 'rxjs'
+import { BehaviorSubject } from 'rxjs'
 import { DatasetComponent } from './dataset/dataset.component';
 
 @Injectable({

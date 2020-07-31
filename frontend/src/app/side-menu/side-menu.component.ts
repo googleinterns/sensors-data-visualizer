@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Component, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable, Subject } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -32,13 +32,11 @@ import { MainDashboardComponent } from '../main-dashboard/main-dashboard.compone
  * The component also uses the UploadService to send files to the backend
  * when the upload file button is clicked. 
  */
-export class SideMenuComponent implements OnInit, OnDestroy {
+export class SideMenuComponent {
 
   @ViewChild(UploadDirective, { static: true }) uploadDirective: UploadDirective
   @ViewChild("fileUpload", { static: false} ) fileUpload: ElementRef
   @ViewChild(MainDashboardComponent, { static: true }) dashboard: MainDashboardComponent
-
-  private destroySubject = new Subject()
 
   files = []
   message: any
@@ -102,21 +100,8 @@ export class SideMenuComponent implements OnInit, OnDestroy {
       this.sendFiles()
     }
     fileUpload.click()
-  }
 
-  ngOnInit () {
-    // const viewContainerRef = this.uploadDirective.viewContainerRef
-
-    // this.sharedService.loadDataset(viewContainerRef)
-  }
-
-  ngAfterViewInit () { 
-    this.dashboard.plot.forEach((child) => child.hideTrace(-1))
-  }
-
-  ngOnDestroy () {
-    this.destroySubject.next()
-    this.destroySubject.complete()
+    this.files = []
   }
 
 }

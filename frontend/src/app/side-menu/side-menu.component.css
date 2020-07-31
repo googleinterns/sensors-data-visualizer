@@ -48,3 +48,7 @@ limitations under the License. */
 	background: linear-gradient(0deg, #CC360C, #DB3A0D);
 	border: 1px solid #B3320E;
 }
+
+#dashboard {
+  height: 100%;
+}
