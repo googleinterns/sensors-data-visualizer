@@ -71,7 +71,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
         if(event.body != undefined){
           this.sharedService.nextMessage(event.body)
           const viewContainerRef = this.uploadDirective.viewContainerRef
-          this.sharedService.loadDataset(viewContainerRef, event.body)
+          this.sharedService.loadDataset(this.dashboard.plot , viewContainerRef, event.body)
         }
       }
     })

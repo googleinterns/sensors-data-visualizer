@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { UploadService } from '../upload.service'
-import { PlotComponent } from '../plot/plot.component'
 
 @Component({
   selector: 'app-dataset',
@@ -13,6 +12,7 @@ export class DatasetComponent implements OnInit {
   panelOpenState: boolean
   message: string
   sample: any
+  plotRef: any
 
   @Input()
   set _message(inputMessage: string){
@@ -20,7 +20,7 @@ export class DatasetComponent implements OnInit {
   }
 
   name = "test"
-  constructor (private plot: PlotComponent, private sharedService: UploadService) { }
+  constructor (private sharedService: UploadService) { }
 
   ngOnInit(): void {
     console.log("Testyteststser")
@@ -35,4 +35,9 @@ export class DatasetComponent implements OnInit {
     
   }
 
+  public setPlotRef (ref) {
+    console.log("Ref received")
+    this.plotRef = ref
+    console.log(this.plotRef)
+  }
 }

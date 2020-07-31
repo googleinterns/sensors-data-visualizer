@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Injectable, ComponentFactoryResolver, ViewContainerRef, ComponentRef, EventEmitter, ViewChild } from '@angular/core';
+import { Injectable, ComponentFactoryResolver, ViewContainerRef, ComponentRef, EventEmitter, ViewChild, QueryList } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { BehaviorSubject, Subscription } from 'rxjs'
 import { DatasetComponent } from './dataset/dataset.component';
@@ -67,7 +67,7 @@ export class UploadService {
     }
   }
 
-  async loadDataset(ref: ViewContainerRef, data){
+  async loadDataset(plotRef: any, ref: ViewContainerRef, data){
     const { DatasetComponent } = await import('./dataset/dataset.component')
 
     let component: any = DatasetComponent
@@ -77,5 +77,6 @@ export class UploadService {
     const sample = JSON.parse(data[0])
 
     compRef.instance.setSample(sample)
+    compRef.instance.setPlotRef(plotRef)
   }
 }
