@@ -12,9 +12,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { PlotComponent } from '../plot/plot.component';
 
 @Component({
   selector: 'app-main-dashboard',
@@ -22,6 +23,9 @@ import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
   styleUrls: ['./main-dashboard.component.css']
 })
 export class MainDashboardComponent {
+
+  @ViewChildren(PlotComponent) plot: QueryList<PlotComponent>
+
   /** Based on the screen size, switch from standard to one column per row */
 
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(

@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { UploadService } from '../upload.service'
-import { MatExpansionModule } from '@angular/material/expansion'
 import { PlotComponent } from '../plot/plot.component'
 
 @Component({
@@ -8,6 +7,7 @@ import { PlotComponent } from '../plot/plot.component'
   templateUrl: './dataset.component.html',
   styleUrls: ['./dataset.component.css']
 })
+
 export class DatasetComponent implements OnInit {
   
   panelOpenState: boolean
@@ -20,7 +20,7 @@ export class DatasetComponent implements OnInit {
   }
 
   name = "test"
-  constructor (private plot: PlotComponent) { }
+  constructor (private plot: PlotComponent, private sharedService: UploadService) { }
 
   ngOnInit(): void {
     console.log("Testyteststser")
@@ -35,8 +35,4 @@ export class DatasetComponent implements OnInit {
     
   }
 
-  toggle (channel: number) { 
-    console.log(channel)
-    this.plot.hideTrace(channel)
-  }
 }

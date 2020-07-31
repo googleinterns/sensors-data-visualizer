@@ -19,12 +19,14 @@ import { map, shareReplay } from 'rxjs/operators';
 
 import { UploadService } from '../upload.service'
 import { UploadDirective } from '../upload.directive'
+import { MainDashboardComponent } from '../main-dashboard/main-dashboard.component';
 
 @Component({
   selector: 'app-side-menu',
   templateUrl: './side-menu.component.html',
   styleUrls: ['./side-menu.component.css']
 })
+
 /**
  * SideMenu defines the collapsible navigation menu on the left side.
  * The component also uses the UploadService to send files to the backend
@@ -33,7 +35,8 @@ import { UploadDirective } from '../upload.directive'
 export class SideMenuComponent implements OnInit, OnDestroy {
 
   @ViewChild(UploadDirective, { static: true }) uploadDirective: UploadDirective
-  @ViewChild("fileUpload", {static: false}) fileUpload: ElementRef
+  @ViewChild("fileUpload", { static: false} ) fileUpload: ElementRef
+  @ViewChild(MainDashboardComponent, { static: true }) dashboard: MainDashboardComponent
 
   private destroySubject = new Subject()
 
@@ -105,6 +108,10 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     // const viewContainerRef = this.uploadDirective.viewContainerRef
 
     // this.sharedService.loadDataset(viewContainerRef)
+  }
+
+  ngAfterViewInit () { 
+    this.dashboard.plot.forEach((child) => child.hideTrace(-1))
   }
 
   ngOnDestroy () {

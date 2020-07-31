@@ -85,7 +85,7 @@ export class PlotComponent implements OnInit {
 
   }
 
-  public hideTrace (id: number) {
+  hideTrace (id: number) {
     console.log("hiding... ", id)
     // this.plot_data.forEach(obj => {
     //   if (obj.id === id){
