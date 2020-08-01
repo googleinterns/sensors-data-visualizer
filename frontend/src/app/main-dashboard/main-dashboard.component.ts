@@ -21,19 +21,12 @@ import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
   templateUrl: './main-dashboard.component.html',
   styleUrls: ['./main-dashboard.component.css']
 })
+
 export class MainDashboardComponent {
   /** Based on the screen size, switch from standard to one column per row */
 
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map(({ matches }) => {
-      if (matches) {
-        // Phone version.
-        return [
-          { title: 'Card 1', cols: 1, rows: 1 },
-          { title: 'Card 2', cols: 1, rows: 1 },
-          { title: 'Card 3', cols: 1, rows: 1 }
-        ];
-      }
 
       // Displays the two cards with the given grid sizes.
       return [

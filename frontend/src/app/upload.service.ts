@@ -25,6 +25,10 @@ import { BehaviorSubject } from 'rxjs'
  * through a shared message system.
  */
 export class UploadService {
+  /**
+   * @param serverUrl The location of the backend parser server. Default when running
+   * locally is localhost:5000/upload since Flask runs on port 5000.
+   */
   serverUrl: string = "http://localhost:5000/upload"
 
   private message = new BehaviorSubject(null)

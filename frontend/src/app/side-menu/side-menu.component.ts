@@ -44,7 +44,7 @@ export class SideMenuComponent {
   constructor(private breakpointObserver: BreakpointObserver, private sharedService: UploadService) {}
 
   /**
-   * The upload button onClick function.
+   * sendFile(file) is called when the user presses the upload button.
    * Uses the UploadService to send the formData then
    * when a response arrives uses UploadService to 
    * share the response with other listening components.
@@ -58,9 +58,9 @@ export class SideMenuComponent {
     console.log(file)
 
     this.sharedService.sendFormData(formData).subscribe((event: any) => {
-      if(typeof (event) === 'object'){
+      if (typeof (event) === 'object')  {
 
-        if(event.body != undefined){
+        if (event.body != undefined){
           this.sharedService.nextMessage(event.body)
         }
       }
@@ -85,7 +85,7 @@ export class SideMenuComponent {
     const fileUpload = this.fileUpload.nativeElement
     console.log(fileUpload)
     fileUpload.onchange = () => {
-      for(let index = 0; index < fileUpload.files.length; index++){
+      for (let index = 0; index < fileUpload.files.length; index++) {
         const file = fileUpload.files[index]
         this.files.push({data: file, inProgress: false, progress: 0})
       }
