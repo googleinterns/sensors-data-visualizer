@@ -22,6 +22,7 @@ import { PlotComponent } from '../plot/plot.component';
   templateUrl: './main-dashboard.component.html',
   styleUrls: ['./main-dashboard.component.css']
 })
+
 export class MainDashboardComponent {
 
   @ViewChildren(PlotComponent) plot: QueryList<PlotComponent>
@@ -30,14 +31,6 @@ export class MainDashboardComponent {
 
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map(({ matches }) => {
-      if (matches) {
-        // Phone version.
-        return [
-          { title: 'Card 1', cols: 1, rows: 1 },
-          { title: 'Card 2', cols: 1, rows: 1 },
-          { title: 'Card 3', cols: 1, rows: 1 }
-        ];
-      }
 
       // Displays the two cards with the given grid sizes.
       return [
