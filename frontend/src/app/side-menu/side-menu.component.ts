@@ -54,6 +54,7 @@ export class SideMenuComponent {
    * Uses the UploadService to send the formData then
    * when a response arrives uses UploadService to 
    * share the response with other listening components.
+   * The message shared is an array of Sample objects.
    * @param file The file to send to the backend.
    */
   sendFile(file){
@@ -67,9 +68,15 @@ export class SideMenuComponent {
       if(typeof (event) === 'object'){
 
         if(event.body != undefined){
-          this.sharedService.nextMessage(event.body)
           const viewContainerRef = this.uploadDirective.viewContainerRef
-          this.sharedService.loadDataset(this.dashboard.plot , viewContainerRef, event.body)
+          var samples = []
+
+          for (var i in event.body){
+            const sample = JSON.parse(event.body[i])
+            samples.push(sample)
+            this.sharedService.loadDataset(this.dashboard.plot, viewContainerRef, sample)
+          }
+          this.sharedService.nextMessage(samples)
         }
       }
     })
