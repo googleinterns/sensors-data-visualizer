@@ -34,8 +34,11 @@ import { MainDashboardComponent } from '../main-dashboard/main-dashboard.compone
  */
 export class SideMenuComponent {
 
+  
   @ViewChild(UploadDirective, { static: true }) uploadDirective: UploadDirective
+  // Provides a reference to the file upload button.
   @ViewChild("fileUpload", { static: false} ) fileUpload: ElementRef
+  // Provides a reference to the MainDashboardComponent.
   @ViewChild(MainDashboardComponent, { static: true }) dashboard: MainDashboardComponent
 
   files = []

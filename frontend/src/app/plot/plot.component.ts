@@ -25,9 +25,6 @@ import { UploadService } from '../upload.service'
  * Handles the Plotly plot and the plots' data.
  */
 export class PlotComponent implements OnInit {
-
-  //@ViewChild(UploadDirective, { static: true }) uploadDirective: UploadDirective
-
   /**
    * plot_data is an array of maps that define what is plotted.
    * It is initialized with (0,0) point so that the plot appears when the page is opened.
@@ -50,7 +47,7 @@ export class PlotComponent implements OnInit {
   }]
 
   // Plot Configurations.
-  plot_layout = { title: 'Add a new dataset.', legend: 'false' }//, height:5000, width: 500  }
+  plot_layout = { title: 'Add a new dataset.', legend: 'false' }
   plot_config = { scrollZoom: true, displayModeBar: true}
   
   message: any
@@ -101,7 +98,4 @@ export class PlotComponent implements OnInit {
       }
     })
   }
-
-  
-
 }

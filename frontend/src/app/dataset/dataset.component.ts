@@ -12,7 +12,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Component, OnInit, Input } from '@angular/core';
+// Angular Imports.
+import { Component } from '@angular/core';
+
+// Project Imports.
 import { PlotComponent } from '../plot/plot.component'
 
 @Component({
@@ -21,22 +24,13 @@ import { PlotComponent } from '../plot/plot.component'
   styleUrls: ['./dataset.component.css']
 })
 
-export class DatasetComponent implements OnInit {
+export class DatasetComponent {
   
   panelOpenState: boolean
-  message: string
   sample: any
   plotRef: PlotComponent
 
-  @Input()
-  set _message(inputMessage: string){
-    this.message = inputMessage
-  }
-
   constructor () { }
-
-  ngOnInit(): void {
-  }
 
   /**
    * Setter method to initialize the dataset with appropriate sample data.

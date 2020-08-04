@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Injectable, ComponentFactoryResolver, ViewContainerRef, ComponentRef, EventEmitter, ViewChild, QueryList } from '@angular/core';
+import { Injectable, ComponentFactoryResolver, ViewContainerRef, ComponentRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { BehaviorSubject } from 'rxjs'
 import { DatasetComponent } from './dataset/dataset.component';
@@ -61,7 +61,7 @@ export class UploadService {
 
   /**
    * Called by side-menu.component inside sendFile(file) when a server response is received.
-   * Creates a dataset component.
+   * Creates a dataset component and inserts it into the page at ref.
    * @param plotRef A reference to the plot component so that the datase is eventually able to access it.
    * @param ref A reference to the side-menu component so that the new dataset can be added to it.
    * @param data The sample object this dataset will store.

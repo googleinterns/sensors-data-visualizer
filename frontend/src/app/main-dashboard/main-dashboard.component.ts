@@ -25,6 +25,8 @@ import { PlotComponent } from '../plot/plot.component';
 
 export class MainDashboardComponent {
 
+  // Selects the plot component present on the page. Allows the grandparent component (side-menu)
+  // to access the plot that is a child of this component.
   @ViewChildren(PlotComponent) plot: QueryList<PlotComponent>
 
   /** Based on the screen size, switch from standard to one column per row */
