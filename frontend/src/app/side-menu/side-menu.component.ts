@@ -12,11 +12,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Component, ViewChild, ElementRef } from '@angular/core';
+// Angular Imports.
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Observable, Subject } from 'rxjs';
+import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
+// Project Imports.
 import { UploadService } from '../upload.service'
 import { UploadDirective } from '../upload.directive'
 import { MainDashboardComponent } from '../main-dashboard/main-dashboard.component';

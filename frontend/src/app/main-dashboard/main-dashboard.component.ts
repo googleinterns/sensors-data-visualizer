@@ -12,9 +12,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
-import { map } from 'rxjs/operators';
+// Angular Imports.
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { Component, ViewChildren, QueryList } from '@angular/core';
+import { map } from 'rxjs/operators';
+
+// Project Imports.
 import { PlotComponent } from '../plot/plot.component';
 
 @Component({
