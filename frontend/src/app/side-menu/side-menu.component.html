@@ -17,15 +17,15 @@ limitations under the License. -->
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
       [opened]="(isHandset$ | async) === false">
-    <mat-toolbar>Menu</mat-toolbar>
+    <mat-toolbar></mat-toolbar>
 
-    <button (click)="uploadFiles()">
+    <button id="uploadButton" (click)="uploadFiles()">
       Upload Files
     </button>
     <input type="file" #fileUpload id="fileUpload" name="fileUpload" multiple="multiple"  style="display: none;"/>
 
     <mat-nav-list>
-      <h2>Datasets</h2>
+      <h2 id="title">Datasets</h2>
   
       <!-- New datasets are added inside this template -->
       <ng-template uploadDirective></ng-template>
@@ -47,4 +47,3 @@ limitations under the License. -->
     <app-main-dashboard id="dashboard"></app-main-dashboard>
   </mat-sidenav-content>
 </mat-sidenav-container>
-
