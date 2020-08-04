@@ -32,11 +32,10 @@ import { UploadService } from '../upload.service'
 /**
  * SideMenu defines the collapsible navigation menu on the left side.
  * The component also uses the UploadService to send files to the backend
- * when the upload file button is clicked. 
+ * when the upload file button is clicked.
  */
 export class SideMenuComponent {
 
-  
   @ViewChild(UploadDirective, { static: true }) uploadDirective: UploadDirective
   // Provides a reference to the file upload button.
   @ViewChild("fileUpload", { static: false} ) fileUpload: ElementRef
@@ -46,6 +45,7 @@ export class SideMenuComponent {
   files = []
   message: any
 
+  // TODO: Ensure it is safe to remove this block.
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),
@@ -62,7 +62,7 @@ export class SideMenuComponent {
    * The message shared is an array of Sample objects.
    * @param file The file to send to the backend.
    */
-  sendFile(file){
+  sendFile(file) {
     const formData = new FormData()
     formData.append('file', file.data)
     file.inProgress = true
@@ -70,7 +70,7 @@ export class SideMenuComponent {
     console.log(file)
 
     this.sharedService.sendFormData(formData).subscribe((event: any) => {
-      if (typeof (event) === 'object') {
+      if (typeof(event) === 'object') {
 
         if (event.body != undefined) {
           const viewContainerRef = this.uploadDirective.viewContainerRef
@@ -90,7 +90,7 @@ export class SideMenuComponent {
   /**
    * A helper method to send all files collected to the backend.
    */
-  private sendFiles(){
+  private sendFiles() {
     this.fileUpload.nativeElement.value = ''
     this.files.forEach(file => {
       this.sendFile(file)
@@ -101,7 +101,7 @@ export class SideMenuComponent {
    * Collects all files selected by the users and invokes sendFiles()
    * to send them to the backend.
    */
-  uploadFiles(){
+  uploadFiles() {
     const fileUpload = this.fileUpload.nativeElement
     console.log(fileUpload)
     fileUpload.onchange = () => {

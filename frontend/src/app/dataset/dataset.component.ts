@@ -36,7 +36,7 @@ export class DatasetComponent {
    * Setter method to initialize the dataset with appropriate sample data.
    * @param sample The sample object received by UploadService from the backend.
    */
-  public setSample(sample){
+  public setSample(sample) {
     this.sample = sample
   }
 
@@ -45,7 +45,7 @@ export class DatasetComponent {
    * @param ref A reference to the plot component that allows dataset to access the
    * methods and fields of the plot.
    */
-  public setPlotRef (ref) {
+  public setPlotRef(ref) {
     console.log("Ref received", ref)
     this.plotRef = ref.first
 
@@ -56,7 +56,7 @@ export class DatasetComponent {
    * Triggered when toggle on page is clicked. Calls the plot component toggleTrace method.
    * @param id The id of the trace to toggle on/off.
    */
-  toggleTrace (id: number) {
+  toggleTrace(id: number) {
     this.plotRef.toggleTrace(id)
   }
 }

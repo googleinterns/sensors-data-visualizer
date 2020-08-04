@@ -61,7 +61,7 @@ export class PlotComponent implements OnInit {
    * Angular separates ngOnInit from constructor, more expensive work is done in ngOnInit 
    * which frees up the constructor to render the component quickly.
    */
-  ngOnInit (): void {
+  ngOnInit(): void {
     /**
      * Subscribe to the shared service so when a new dataset is loaded
      * it can be added to the plot.
@@ -94,7 +94,7 @@ export class PlotComponent implements OnInit {
    * Called by dataset.component button to toggle a trace.
    * @param id The id of the trace to toggle on/off.
    */
-  toggleTrace (id: number) {
+  toggleTrace(id: number) {
     this.plot_data.forEach(obj => {
       if (obj.id === id) {
         obj.visible = (obj.visible === 'true') ? 'legendonly' : 'true'
