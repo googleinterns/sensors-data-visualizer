@@ -44,7 +44,7 @@ export class PlotComponent implements OnInit {
    *      for each datapoint. 'lines' displays a line through all datapoints. 'lines+markers'
    *      displays both.
    */
-  plot_data = [ {x: [0], y: [0], type: 'scattergl',
+  plot_data = [{x: [0], y: [0], type: 'scattergl',
    mode: 'markers', id: 0, visible: 'true',
    name: 'Placeholder Point'
   }]
@@ -76,33 +76,28 @@ export class PlotComponent implements OnInit {
           this.plot_layout.title = ""
         }
 
+        // Iterate through each sample.
         for (var i in message) {
-        
           // Plot each individual data channel.
           for (var j in message[i].data) {
-            this.plot_data.push(
-              {x: message[i].timestamps, y: message[i].data[j],
+            this.plot_data.push({
+              x: message[i].timestamps, y: message[i].data[j],
               type: 'scattergl', mode: 'markers', id: Number(j), 
-              visible: 'true', name: j + " " + message[i].sensor_name
-              }
-            ) 
+              visible: 'true', name: j + " " + message[i].sensor_name })
           }
-
         }
      }
     })
-
   }
 
   /**
    * Called by dataset.component button to toggle a trace.
    * @param id The id of the trace to toggle on/off.
    */
-  toggleTrace (id: number){
+  toggleTrace (id: number) {
     this.plot_data.forEach(obj => {
-      if(obj.id === id){
-        if(obj.visible === 'true'){ obj.visible = 'legendonly' }
-        else { obj.visible = 'true' }
+      if (obj.id === id) {
+        obj.visible = (obj.visible === 'true') ? 'legendonly' : 'true'
       }
     })
   }

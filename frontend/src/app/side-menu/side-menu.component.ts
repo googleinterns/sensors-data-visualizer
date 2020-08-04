@@ -70,13 +70,13 @@ export class SideMenuComponent {
     console.log(file)
 
     this.sharedService.sendFormData(formData).subscribe((event: any) => {
-      if (typeof (event) === 'object')  {
+      if (typeof (event) === 'object') {
 
-        if(event.body != undefined){
+        if (event.body != undefined) {
           const viewContainerRef = this.uploadDirective.viewContainerRef
           var samples = []
 
-          for (var i in event.body){
+          for (var i in event.body) {
             const sample = JSON.parse(event.body[i])
             samples.push(sample)
             this.sharedService.loadDataset(this.dashboard.plot, viewContainerRef, sample)
