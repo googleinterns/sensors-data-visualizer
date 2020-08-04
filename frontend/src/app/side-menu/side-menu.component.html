@@ -12,12 +12,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. -->
 
+
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #drawer class="sidenav" fixedInViewport
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
       [opened]="(isHandset$ | async) === false">
-    <mat-toolbar></mat-toolbar>
+    <mat-toolbar></mat-toolbar> 
 
     <button id="uploadButton" (click)="uploadFiles()">
       Upload Files
@@ -27,7 +28,7 @@ limitations under the License. -->
     <mat-nav-list>
       <h2 id="title">Datasets</h2>
   
-      <!-- New datasets are added inside this template -->
+      <!-- New datasets are added inside this template --> 
       <ng-template uploadDirective></ng-template>
     </mat-nav-list>
   </mat-sidenav>
