@@ -27,7 +27,6 @@ export class DatasetComponent {
   panelOpenState: boolean;
   sample: any;
   plotRef: PlotComponent;
-  // items = Array.from({length: 10000}).map((_, i) => `Item #${i}`);
   constructor() {}
 
   /**
