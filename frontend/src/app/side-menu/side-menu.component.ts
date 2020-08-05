@@ -19,9 +19,9 @@ import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
 
 // Project Imports.
-import {UploadService} from '../upload.service';
-import {UploadDirective} from '../upload.directive';
 import {MainDashboardComponent} from '../main-dashboard/main-dashboard.component';
+import {UploadDirective} from '../upload.directive';
+import {UploadService} from '../upload.service';
 
 @Component({
   selector: 'app-side-menu',

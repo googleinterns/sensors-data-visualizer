@@ -63,6 +63,11 @@ export class PlotComponent implements OnInit {
   message: any;
   constructor(private sharedService: UploadService) {}
 
+  /**
+   * ngOnInit is a secondary constructor than is triggered after the main constructor.
+   * Angular separates ngOnInit from constructor, more expensive work is done in ngOnInit
+   * which frees up the constructor to render the component quickly.
+   */
   ngOnInit(): void {
     /**
      * Subscribe to the shared service so when a new dataset is loaded
@@ -102,11 +107,7 @@ export class PlotComponent implements OnInit {
   toggleTrace(id: number) {
     this.plot_data.forEach(obj => {
       if (obj.id === id) {
-        if (obj.visible === 'true') {
-          obj.visible = 'legendonly';
-        } else {
-          obj.visible = 'true';
-        }
+        obj.visible = obj.visible === 'true' ? 'legendonly' : 'true';
       }
     });
   }
