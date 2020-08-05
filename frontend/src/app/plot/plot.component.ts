@@ -28,9 +28,9 @@ import { UploadService } from '../upload.service'
  * Handles the Plotly plot and the plots' data.
  */
 export class PlotComponent implements OnInit {
-
   /**
    * plot_data is an array of maps that define what is plotted.
+   * It is initialized with (0,0) point so that the plot appears when the page is opened.
    * Each map defines a single plotly trace with possible options.
    * Trace options:
    *    x: Takes an array of x-axis values that correspond to the y-axis.
@@ -44,35 +44,61 @@ export class PlotComponent implements OnInit {
    *      for each datapoint. 'lines' displays a line through all datapoints. 'lines+markers'
    *      displays both.
    */
-  plot_data = [ {x: [0], y: [0], type: 'scattergl', mode: 'markers'}]
+  plot_data = [{x: [0], y: [0], type: 'scattergl',
+   mode: 'markers', id: 0, visible: 'true',
+   name: 'Placeholder Point'
+  }]
+
+  // Plot Configurations.
+  plot_layout = { title: 'Add a new dataset.', legend: 'false' }
+  plot_config = { scrollZoom: true, displayModeBar: true}
+  
   message: any
-  constructor(private sharedService: UploadService) { }
+  constructor (private sharedService: UploadService) { }
 
+  /**
+   * ngOnInit is a secondary constructor than is triggered after the main constructor.
+   * Angular separates ngOnInit from constructor, more expensive work is done in ngOnInit 
+   * which frees up the constructor to render the component quickly.
+   */
   ngOnInit(): void {
-
     /**
      * Subscribe to the shared service so when a new dataset is loaded
      * it can be added to the plot.
      */
-    this.sharedService.sharedMessage.subscribe(message => {
+    this.sharedService.sharedMessage.subscribe (message => {
       if (message) {
-        this.message = message
-        console.log("New Message: ", this.message)
 
-        // Parse message for datasets.
-        var samples = []
-
-        for (var i in this.message) {
-          console.log(this.message[i])
-          samples.push(JSON.parse(this.message[i]))
+        // This will only be true when no data has been added yet.
+        // Removes the placeholder datapoint and title.
+        if (this.plot_data.length == 1 && this.plot_data[0].id == 0) {
+          this.plot_data.pop()
+          this.plot_layout.title = ""
         }
 
-        console.log(samples)
-        this.plot_data = [ {x: samples[0].timestamps, y: samples[0].data[0],
-           type: 'scattergl', mode: 'markers'} ]
-      }
+        // Iterate through each sample.
+        for (var i in message) {
+          // Plot each individual data channel.
+          for (var j in message[i].data) {
+            this.plot_data.push({
+              x: message[i].timestamps, y: message[i].data[j],
+              type: 'scattergl', mode: 'markers', id: Number(j), 
+              visible: 'true', name: j + " " + message[i].sensor_name })
+          }
+        }
+     }
     })
-
   }
 
+  /**
+   * Called by dataset.component button to toggle a trace.
+   * @param id The id of the trace to toggle on/off.
+   */
+  toggleTrace(id: number) {
+    this.plot_data.forEach(obj => {
+      if (obj.id === id) {
+        obj.visible = (obj.visible === 'true') ? 'legendonly' : 'true'
+      }
+    })
+  }
 }

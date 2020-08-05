@@ -14,8 +14,11 @@ limitations under the License. */
 
 // Angular Imports.
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
-import { Component } from '@angular/core';
+import { Component, ViewChildren, QueryList } from '@angular/core';
 import { map } from 'rxjs/operators';
+
+// Project Imports.
+import { PlotComponent } from '../plot/plot.component';
 
 @Component({
   selector: 'app-main-dashboard',
@@ -24,6 +27,11 @@ import { map } from 'rxjs/operators';
 })
 
 export class MainDashboardComponent {
+
+  // Selects the plot component present on the page. Allows the grandparent component (side-menu)
+  // to access the plot that is a child of this component.
+  @ViewChildren(PlotComponent) plot: QueryList<PlotComponent>
+
   /** Based on the screen size, switch from standard to one column per row */
 
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(

@@ -19,6 +19,8 @@ import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
 // Project Imports.
+import { MainDashboardComponent } from '../main-dashboard/main-dashboard.component';
+import { UploadDirective } from '../upload.directive'
 import { UploadService } from '../upload.service'
 
 @Component({
@@ -26,17 +28,24 @@ import { UploadService } from '../upload.service'
   templateUrl: './side-menu.component.html',
   styleUrls: ['./side-menu.component.css']
 })
+
 /**
  * SideMenu defines the collapsible navigation menu on the left side.
  * The component also uses the UploadService to send files to the backend
- * when the upload file button is clicked. 
+ * when the upload file button is clicked.
  */
 export class SideMenuComponent {
 
-  @ViewChild("fileUpload", {static: false}) fileUpload: ElementRef
+  @ViewChild(UploadDirective, { static: true }) uploadDirective: UploadDirective
+  // Provides a reference to the file upload button.
+  @ViewChild("fileUpload", { static: false} ) fileUpload: ElementRef
+  // Provides a reference to the MainDashboardComponent.
+  @ViewChild(MainDashboardComponent, { static: true }) dashboard: MainDashboardComponent
+
   files = []
   message: any
 
+  // TODO: Ensure it is safe to remove this block.
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),
@@ -50,9 +59,10 @@ export class SideMenuComponent {
    * Uses the UploadService to send the formData then
    * when a response arrives uses UploadService to 
    * share the response with other listening components.
+   * The message shared is an array of Sample objects.
    * @param file The file to send to the backend.
    */
-  sendFile(file){
+  sendFile(file) {
     const formData = new FormData()
     formData.append('file', file.data)
     file.inProgress = true
@@ -60,10 +70,18 @@ export class SideMenuComponent {
     console.log(file)
 
     this.sharedService.sendFormData(formData).subscribe((event: any) => {
-      if (typeof (event) === 'object')  {
+      if (typeof(event) === 'object') {
 
-        if (event.body != undefined){
-          this.sharedService.nextMessage(event.body)
+        if (event.body != undefined) {
+          const viewContainerRef = this.uploadDirective.viewContainerRef
+          var samples = []
+
+          for (var i in event.body) {
+            const sample = JSON.parse(event.body[i])
+            samples.push(sample)
+            this.sharedService.loadDataset(this.dashboard.plot, viewContainerRef, sample)
+          }
+          this.sharedService.nextMessage(samples)
         }
       }
     })
@@ -72,7 +90,7 @@ export class SideMenuComponent {
   /**
    * A helper method to send all files collected to the backend.
    */
-  private sendFiles(){
+  private sendFiles() {
     this.fileUpload.nativeElement.value = ''
     this.files.forEach(file => {
       this.sendFile(file)
@@ -83,7 +101,7 @@ export class SideMenuComponent {
    * Collects all files selected by the users and invokes sendFiles()
    * to send them to the backend.
    */
-  uploadFiles(){
+  uploadFiles() {
     const fileUpload = this.fileUpload.nativeElement
     console.log(fileUpload)
     fileUpload.onchange = () => {
@@ -94,6 +112,8 @@ export class SideMenuComponent {
       this.sendFiles()
     }
     fileUpload.click()
+
+    this.files = []
   }
 
 }

@@ -26,7 +26,9 @@ limitations under the License. -->
 
     <mat-nav-list>
       <h2>Datasets</h2>
-
+  
+      <!-- New datasets are added inside this template -->
+      <ng-template uploadDirective></ng-template>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -35,13 +37,14 @@ limitations under the License. -->
         type="button"
         aria-label="Toggle sidenav"
         mat-icon-button
-        (click)="drawer.toggle()" >]
+        (click)="drawer.toggle()" >
 
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span>Sensor Visualizer</span>
     </mat-toolbar>
     <!-- Render the main dashboard. -->
-    <app-main-dashboard></app-main-dashboard>
+    <app-main-dashboard id="dashboard"></app-main-dashboard>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
