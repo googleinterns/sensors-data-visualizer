@@ -13,15 +13,15 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 // Project Imports.
-import { UploadService } from '../upload.service'
+import {UploadService} from '../upload.service';
 
 @Component({
   selector: 'app-plot',
   templateUrl: './plot.component.html',
-  styleUrls: ['./plot.component.css']
+  styleUrls: ['./plot.component.css'],
 })
 
 /**
@@ -30,7 +30,7 @@ import { UploadService } from '../upload.service'
 export class PlotComponent implements OnInit {
   /**
    * plot_data is an array of maps that define what is plotted.
-   * It is initialized with (0,0) point so that the plot appears when the page is opened.
+   * It is initialized with a (0,0) point so that the plot appears when the page is opened.
    * Each map defines a single plotly trace with possible options.
    * Trace options:
    *    x: Takes an array of x-axis values that correspond to the y-axis.
@@ -38,67 +38,76 @@ export class PlotComponent implements OnInit {
    *    y: Takes an array of y-axis values.
    *    (Note: The lengths of x and y must be equal.)
    *    type: How the data is displayed to the user. 'scattergl' and 'historgram'
-   *      will most likely be the only types used. (Avoid 'scatter' type since is
-   *      has poorer performance on large datasets than 'scattergl'.) 
+   *      will most likely be the only types used. (Avoid 'scatter' type since it
+   *      has poorer performance on large datasets than 'scattergl'.)
    *    mode: Finer details for how to display the type. 'markers' displays only a dot
    *      for each datapoint. 'lines' displays a line through all datapoints. 'lines+markers'
    *      displays both.
    */
-  plot_data = [ {x: [0], y: [0], type: 'scattergl',
-   mode: 'markers', id: 0, visible: 'true',
-   name: 'Placeholder Point'
-  }]
+  plot_data = [
+    {
+      x: [0],
+      y: [0],
+      type: 'scattergl',
+      mode: 'markers',
+      id: 0,
+      visible: 'true',
+      name: 'Placeholder Point',
+    },
+  ];
 
   // Plot Configurations.
-  plot_layout = { title: 'Add a new dataset.', legend: 'false', height: 1000 }
-  plot_config = { scrollZoom: true, displayModeBar: true}
-  
-  message: any
-  constructor (private sharedService: UploadService) { }
+  plot_layout = {title: 'Add a new dataset.', legend: 'false', height: 1000};
+  plot_config = {scrollZoom: true, displayModeBar: true};
 
-  ngOnInit (): void {
+  message: any;
+  constructor(private sharedService: UploadService) {}
+
+  ngOnInit(): void {
     /**
      * Subscribe to the shared service so when a new dataset is loaded
      * it can be added to the plot.
      */
-    this.sharedService.sharedMessage.subscribe (message => {
+    this.sharedService.sharedMessage.subscribe(message => {
       if (message) {
-
         // This will only be true when no data has been added yet.
         // Removes the placeholder datapoint and title.
-        if (this.plot_data.length == 1 && this.plot_data[0].id == 0) {
-          this.plot_data.pop()
-          this.plot_layout.title = ""
+        if (this.plot_data.length === 1 && this.plot_data[0].id === 0) {
+          this.plot_data.pop();
+          this.plot_layout.title = '';
         }
 
-        for (var i in message) {
-        
+        for (const i in message) {
           // Plot each individual data channel.
-          for (var j in message[i].data) {
-            this.plot_data.push(
-              {x: message[i].timestamps, y: message[i].data[j],
-              type: 'scattergl', mode: 'markers', id: Number(j), 
-              visible: 'true', name: j + " " + message[i].sensor_name
-              }
-            ) 
+          for (const j in message[i].data) {
+            this.plot_data.push({
+              x: message[i].timestamps,
+              y: message[i].data[j],
+              type: 'scattergl',
+              mode: 'markers',
+              id: Number(j),
+              visible: 'true',
+              name: j + ' ' + message[i].sensor_name,
+            });
           }
-
         }
-     }
-    })
-
+      }
+    });
   }
 
   /**
    * Called by dataset.component button to toggle a trace.
    * @param id The id of the trace to toggle on/off.
    */
-  toggleTrace (id: number){
+  toggleTrace(id: number) {
     this.plot_data.forEach(obj => {
-      if(obj.id === id){
-        if(obj.visible === 'true'){ obj.visible = 'legendonly' }
-        else { obj.visible = 'true' }
+      if (obj.id === id) {
+        if (obj.visible === 'true') {
+          obj.visible = 'legendonly';
+        } else {
+          obj.visible = 'true';
+        }
       }
-    })
+    });
   }
 }
