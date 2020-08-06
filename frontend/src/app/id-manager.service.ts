@@ -4,7 +4,11 @@ import {Injectable} from '@angular/core';
   providedIn: 'root',
 })
 export class IdManagerService {
-  constructor() {
-    let nextID = 0;
+  nextID = 0;
+  constructor() {}
+
+  public getNextID() {
+    this.nextID++;
+    return this.nextID;
   }
 }
