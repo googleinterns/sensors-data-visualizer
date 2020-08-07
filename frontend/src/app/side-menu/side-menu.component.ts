@@ -84,8 +84,16 @@ export class SideMenuComponent {
           for (const i in event.body) {
             const sample = JSON.parse(event.body[i]);
             samples.push(sample);
+            let numTraces = 1;
+            for (const i in sample.data) {
+              numTraces++;
+            }
+            if ('latency' in sample) {
+              numTraces++;
+            }
+
             const id = this.idMan.getNextID();
-            console.log("ID RECIEVED: ", id);
+            console.log("ID RECIEVED: ", id, " For Sample: ", sample);
             this.sharedService.loadDataset(
               this.dashboard.plot,
               viewContainerRef,
