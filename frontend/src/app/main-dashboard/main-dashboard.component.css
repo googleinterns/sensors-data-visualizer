@@ -13,8 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 .grid-container {
-  margin: 10px;
-  height: 25%;
+  height: 20%;
 }
 
 .dashboard-card {
@@ -35,8 +34,12 @@ limitations under the License. */
   text-align: center;
 }
 
-#main-plot { 
+#plot-container {
   width: 100%;
-  height: 75%;
+  height: 80%;
+}
 
+#main-container {
+  width: 100%;
+  height: 100%;
 }

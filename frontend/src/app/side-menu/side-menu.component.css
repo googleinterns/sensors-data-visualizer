@@ -50,6 +50,7 @@ limitations under the License. */
 
 #dashboard {
   height: 100%;
+  overflow-y: hidden;
 }
 
 #uploadButton {
