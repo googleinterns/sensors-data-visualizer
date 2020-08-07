@@ -17,7 +17,7 @@ limitations under the License. */
 }
 
 .sidenav {
-  width: 200px;
+  width: 10%;
 }
 
 .sidenav .mat-toolbar {
@@ -31,7 +31,6 @@ limitations under the License. */
 }
 
 .button {
-  padding: 10px 30px;
   background: red;
   border: none;
   border-radius: 0 100px 100px 0;
@@ -51,4 +50,13 @@ limitations under the License. */
 
 #dashboard {
   height: 100%;
+  overflow-y: hidden;
+}
+
+#uploadButton {
+  margin-left: 5%;
+}
+
+#title {
+  margin-left: 5%;
 }
