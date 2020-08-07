@@ -18,7 +18,7 @@ limitations under the License. -->
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
       [opened]="(isHandset$ | async) === false">
-    <mat-toolbar></mat-toolbar> 
+    <mat-toolbar></mat-toolbar>
 
     <button id="uploadButton" (click)="uploadFiles()">
       Upload Files
@@ -45,6 +45,8 @@ limitations under the License. -->
       <span>Sensor Visualizer</span>
     </mat-toolbar>
     <!-- Render the main dashboard. -->
-    <app-main-dashboard id="dashboard"></app-main-dashboard>
+    <div id="dashboard">
+      <app-main-dashboard></app-main-dashboard>
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

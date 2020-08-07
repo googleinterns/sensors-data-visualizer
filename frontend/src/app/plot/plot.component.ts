@@ -57,11 +57,11 @@ export class PlotComponent implements OnInit {
   ];
 
   // Plot Configurations.
-  plot_layout = {title: 'Add a new dataset.', legend: 'false', height: 1000};
-  plot_config = {scrollZoom: true, displayModeBar: true};
-
-  message: any;
-  constructor(private sharedService: UploadService) {}
+  plot_layout = { title: 'Add a new dataset.', legend: 'false'}
+  plot_config = { scrollZoom: true, displayModeBar: true}
+  
+  message: any
+  constructor (private sharedService: UploadService) {}
 
   /**
    * ngOnInit is a secondary constructor than is triggered after the main constructor.
