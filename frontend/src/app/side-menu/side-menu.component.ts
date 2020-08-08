@@ -84,6 +84,8 @@ export class SideMenuComponent {
           for (const i in event.body) {
             const sample = JSON.parse(event.body[i]);
             samples.push(sample);
+            // Count number of traces manually since sample is of type
+            // Object and so doesn't contain a length field.
             let numTraces = 1;
             for (const i in sample.data) {
               numTraces++;
@@ -92,13 +94,13 @@ export class SideMenuComponent {
               numTraces++;
             }
 
-            const id = this.idMan.getNextID();
-            console.log("ID RECIEVED: ", id, " For Sample: ", sample);
+            const ids = this.idMan.getIDs(numTraces);
+            console.log("TS DIFF: ", {0: sample['timestamp_diffs']})
             this.sharedService.loadDataset(
               this.dashboard.plot,
               viewContainerRef,
               sample,
-              id
+              ids
             );
           }
           this.sharedService.nextMessage(samples);

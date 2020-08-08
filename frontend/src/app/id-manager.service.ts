@@ -11,4 +11,14 @@ export class IdManagerService {
     this.nextID++;
     return this.nextID;
   }
+
+  public getIDs(numTraces: number) {
+    const ids: number[] = [];
+    while (this.nextID < numTraces) {
+      ids.push(this.nextID);
+      this.nextID++;
+    }
+
+    return ids;
+  }
 }

@@ -27,7 +27,7 @@ export class DatasetComponent {
   panelOpenState: boolean;
   sample: any;
   plotRef: PlotComponent;
-  id: number;
+  ids: number[];
   constructor() {}
 
   /**
