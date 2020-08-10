@@ -23,9 +23,10 @@ limitations under the License. -->
     </mat-expansion-panel-header>
         <h4>Channels</h4>
         <mat-button-toggle-group multiple="true">
-            <mat-button-toggle (click)="toggleTrace('0')">X</mat-button-toggle>
+            <!-- <mat-button-toggle (click)="toggleTrace('0')">X</mat-button-toggle>
             <mat-button-toggle (click)="toggleTrace('1')">Y</mat-button-toggle>
-            <mat-button-toggle (click)="toggleTrace('2')">Z</mat-button-toggle>
+            <mat-button-toggle (click)="toggleTrace('2')">Z</mat-button-toggle> -->
+            <mat-button-toggle *ngFor="const i in sample.data">{{x}}</mat-button-toggle>
         </mat-button-toggle-group>
         <mat-button-toggle-group multiple="true">
             <mat-button-toggle>Latency</mat-button-toggle>

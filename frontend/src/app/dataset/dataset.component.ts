@@ -35,6 +35,7 @@ export class DatasetComponent {
    */
   public setSample(sample) {
     this.sample = sample;
+    console.log("SAMPLE", sample)
     for (const i in sample.data) {
       this.ids.set(i, sample.data[i][0]);
     }
