@@ -13,15 +13,20 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import { Injectable, ComponentFactoryResolver, ViewContainerRef, ComponentRef } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
-import { BehaviorSubject } from 'rxjs'
+import {
+  ComponentFactoryResolver,
+  ComponentRef,
+  Injectable,
+  ViewContainerRef,
+} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {BehaviorSubject} from 'rxjs';
 
 // Project Imports
-import { DatasetComponent } from './dataset/dataset.component';
+import {DatasetComponent} from './dataset/dataset.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 /**
  * UploadService handles communication with the backend.
@@ -33,14 +38,15 @@ export class UploadService {
    * @param serverUrl The location of the backend parser server. Default when running
    * locally is localhost:5000/upload since Flask runs on port 5000.
    */
-  serverUrl = 'http://localhost:5000/upload'
+  serverUrl = 'http://localhost:5000/upload';
 
-  
+  private message = new BehaviorSubject(null);
+  sharedMessage = this.message.asObservable();
 
-  private message = new BehaviorSubject(null)
-  sharedMessage = this.message.asObservable()
-
-  constructor(private httpClient: HttpClient, private resolver: ComponentFactoryResolver) { }
+  constructor(
+    private httpClient: HttpClient,
+    private resolver: ComponentFactoryResolver
+  ) {}
 
   /**
    * Sends a POST request to the backend containing the files to be parsed.
@@ -49,8 +55,8 @@ export class UploadService {
   public sendFormData(formData) {
     return this.httpClient.post<any>(this.serverUrl, formData, {
       reportProgress: true,
-      observe: 'events'
-    })
+      observe: 'events',
+    });
   }
 
   /**
@@ -59,7 +65,7 @@ export class UploadService {
    * @param samples The samples to be shared with any listening components.
    */
   public nextMessage(samples: any) {
-    this.message.next(samples)
+    this.message.next(samples);
   }
 
   /**
@@ -70,14 +76,15 @@ export class UploadService {
    * @param data The sample object this dataset will store.
    */
   async loadDataset(plotRef: any, ref: ViewContainerRef, data) {
-    const { DatasetComponent } = await import('./dataset/dataset.component')
+    const {DatasetComponent} = await import('./dataset/dataset.component');
 
-    let component: any = DatasetComponent
+    const component: any = DatasetComponent;
 
-    const compRef: ComponentRef<DatasetComponent> 
-      = ref.createComponent(this.resolver.resolveComponentFactory(component));
+    const compRef: ComponentRef<DatasetComponent> = ref.createComponent(
+      this.resolver.resolveComponentFactory(component)
+    );
 
-    compRef.instance.setSample(data)
-    compRef.instance.setPlotRef(plotRef)
+    compRef.instance.setSample(data);
+    compRef.instance.setPlotRef(plotRef);
   }
 }
