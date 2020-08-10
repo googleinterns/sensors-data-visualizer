@@ -13,31 +13,28 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 // Project Imports.
-import { PlotComponent } from '../plot/plot.component'
+import {PlotComponent} from '../plot/plot.component';
 
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.css']
+  styleUrls: ['./dataset.component.css'],
 })
-
 export class DatasetComponent {
-  
-  panelOpenState: boolean
-  sample: any
-  plotRef: PlotComponent
-
-  constructor () { }
+  panelOpenState: boolean;
+  sample: any;
+  plotRef: PlotComponent;
+  constructor() {}
 
   /**
    * Setter method to initialize the dataset with appropriate sample data.
    * @param sample The sample object received by UploadService from the backend.
    */
   public setSample(sample) {
-    this.sample = sample
+    this.sample = sample;
   }
 
   /**
@@ -46,10 +43,10 @@ export class DatasetComponent {
    * methods and fields of the plot.
    */
   public setPlotRef(ref) {
-    console.log("Ref received", ref)
-    this.plotRef = ref.first
+    console.log('Ref received', ref);
+    this.plotRef = ref.first;
 
-    console.log(this.plotRef)
+    console.log(this.plotRef);
   }
 
   /**
@@ -57,6 +54,6 @@ export class DatasetComponent {
    * @param id The id of the trace to toggle on/off.
    */
   toggleTrace(id: number) {
-    this.plotRef.toggleTrace(id)
+    this.plotRef.toggleTrace(id);
   }
 }

@@ -1,6 +1,6 @@
-import { Directive, ViewContainerRef } from '@angular/core'
+import {Directive, ViewContainerRef} from '@angular/core';
 
-@Directive({ selector: '[uploadDirective]' })
+@Directive({selector: '[uploadDirective]'})
 export class UploadDirective {
-    constructor (public viewContainerRef: ViewContainerRef) {}
+  constructor(public viewContainerRef: ViewContainerRef) {}
 }
