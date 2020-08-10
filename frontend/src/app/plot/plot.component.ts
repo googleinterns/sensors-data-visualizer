@@ -110,7 +110,7 @@ export class PlotComponent implements OnInit {
             name: 'TS Diff ' + message[i].sensor_name,
           });
           this.idMap.set(
-            message[i].timestamp_diffs[0],
+            message[i].timestamp_diffs[0], // TS Diff id.
             this.plot_data.length - 1
           );
         }
