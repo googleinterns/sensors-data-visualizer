@@ -24,10 +24,9 @@ import {PlotComponent} from '../plot/plot.component';
   styleUrls: ['./dataset.component.css'],
 })
 export class DatasetComponent {
-  //panelOpenState: boolean;
   sample: any;
   plotRef: PlotComponent;
-  ids: number[] = [0]; // Must be initialized to chage.
+  ids = new Map<string, number>();
   constructor() {}
 
   /**
@@ -37,8 +36,9 @@ export class DatasetComponent {
   public setSample(sample) {
     this.sample = sample;
     for (const i in sample.data) {
-      this.ids[i] = sample.data[i][0];
+      this.ids.set(i, sample.data[i][0]);
     }
+    this.ids.set('ts_diff', sample.timestamp_diffs[0]);
   }
 
   /**
@@ -54,10 +54,7 @@ export class DatasetComponent {
    * Triggered when toggle on page is clicked. Calls the plot component toggleTrace method.
    * @param channel The channel of the trace to toggle.
    */
-  toggleTrace(channel: number) {
-    console.log("IDS ", this.ids)
-    console.log("Channel ", channel)
-    //console.log("Sample ", this.sample)
-    this.plotRef.toggleTrace(this.ids[channel]);
+  toggleTrace(channel: string) {
+    this.plotRef.toggleTrace(this.ids.get(channel));
   }
 }

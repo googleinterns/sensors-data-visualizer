@@ -13,9 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License. -->
 
 <mat-accordion>
-<mat-expansion-panel> 
-    <!-- (opened)="panelOpenState = true" -->
-                    <!-- (closed)="panelOpenState = false"> -->
+<mat-expansion-panel>
     <mat-expansion-panel-header>
         <mat-panel-title>
             {{sample.sensor_name}}
@@ -25,13 +23,15 @@ limitations under the License. -->
     </mat-expansion-panel-header>
         <h4>Channels</h4>
         <mat-button-toggle-group multiple="true">
-            <mat-button-toggle (click)="toggleTrace(0)">X</mat-button-toggle>
-            <mat-button-toggle (click)="toggleTrace(1)">Y</mat-button-toggle>
-            <mat-button-toggle (click)="toggleTrace(2)">Z</mat-button-toggle>
+            <mat-button-toggle (click)="toggleTrace('0')">X</mat-button-toggle>
+            <mat-button-toggle (click)="toggleTrace('1')">Y</mat-button-toggle>
+            <mat-button-toggle (click)="toggleTrace('2')">Z</mat-button-toggle>
         </mat-button-toggle-group>
         <mat-button-toggle-group multiple="true">
             <mat-button-toggle>Latency</mat-button-toggle>
-            <mat-button-toggle>Timestamp Difference</mat-button-toggle>
+            <mat-button-toggle (click)="toggleTrace('ts_diff')">
+                Timestamp Difference
+            </mat-button-toggle>
         </mat-button-toggle-group>
 </mat-expansion-panel>
 </mat-accordion>

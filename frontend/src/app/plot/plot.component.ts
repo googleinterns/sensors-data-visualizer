@@ -51,17 +51,16 @@ export class PlotComponent implements OnInit {
       type: 'scattergl',
       mode: 'markers',
       id: 0,
-      visible: 'true',
+      visible: true,
       name: 'Placeholder Point',
     },
   ];
 
   // Plot Configurations.
-  plot_layout = { title: 'Add a new dataset.', legend: 'false'}
-  plot_config = { scrollZoom: true, displayModeBar: true}
-  
-  message: any
-  constructor (private sharedService: UploadService) {}
+  plot_layout = {title: 'Add a new dataset.', legend: 'false'};
+  plot_config = {scrollZoom: true, displayModeBar: true};
+  message: any;
+  constructor(private sharedService: UploadService) {}
 
   /**
    * ngOnInit is a secondary constructor than is triggered after the main constructor.
@@ -91,10 +90,21 @@ export class PlotComponent implements OnInit {
               type: 'scattergl',
               mode: 'markers',
               id: message[i].data[j][0],
-              visible: 'true',
+              visible: true,
               name: j + ' ' + message[i].sensor_name,
             });
           }
+          // Plot the timestamp difference, but don't show it until the user
+          // toggles it in the dataset menu.
+          this.plot_data.push({
+            x: message[i].timestamps,
+            y: message[i].timestamp_diffs[1],
+            type: 'scattergl',
+            mode: 'markers',
+            id: message[i].timestamp_diffs[0],
+            visible: false,
+            name: 'TS Diff ' + message[i].sensor_name,
+          });
         }
       }
     });
@@ -107,7 +117,7 @@ export class PlotComponent implements OnInit {
   toggleTrace(id: number) {
     this.plot_data.forEach(obj => {
       if (obj.id === id) {
-        obj.visible = obj.visible === 'true' ? 'legendonly' : 'true';
+        obj.visible = obj.visible === true ? false : true;
         return;
       }
     });

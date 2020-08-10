@@ -106,8 +106,6 @@ export class SideMenuComponent {
    */
   private assignIDs(sample) {
     const ids = this.idMan.getIDs(this.countTraces(sample));
-    console.log("SAmple", sample)
-    console.log("ids ", ids)
     sample.timestamp_diffs = [ids.pop(), sample.timestamp_diffs];
     if ('latencies' in sample) {
       sample.latencies = [ids.pop(), sample.timestamp_diffs];
