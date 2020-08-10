@@ -82,8 +82,8 @@ export class SideMenuComponent {
           const samples = [];
 
           for (const i in event.body) {
-            const sample = JSON.parse(event.body[i]);
-            this.assignIDs(sample);
+            let sample = JSON.parse(event.body[i]);
+            sample = this.idMan.assignIDs(sample);
             samples.push(sample);
 
             this.sharedService.loadDataset(
@@ -96,40 +96,6 @@ export class SideMenuComponent {
         }
       }
     });
-  }
-
-  /**
-   * Assign IDs to a sample using the idMan and countTraces helper function.
-   * The sample will have an ID prepended to the original trace.
-   * I.E. sample.data[i] -> [1, sample.data[i]] where 1 is the ID for that trace.
-   * @param sample The sample to assign IDs to.
-   */
-  private assignIDs(sample) {
-    const ids = this.idMan.getIDs(this.countTraces(sample));
-    sample.timestamp_diffs = [ids.pop(), sample.timestamp_diffs];
-    if ('latencies' in sample) {
-      sample.latencies = [ids.pop(), sample.timestamp_diffs];
-    }
-    for (const i in sample.data) {
-      sample.data[i] = [ids.pop(), sample.data[i]];
-    }
-  }
-
-  /**
-   * Count the number of traces in a sample. Since sample is
-   * of type Object, it does not have a length field.
-   * @param sample The sample object to count.
-   */
-  private countTraces(sample) {
-    let numTraces = 1;
-    for (const i in sample.data) {
-      numTraces++;
-    }
-    if ('latency' in sample) {
-      numTraces++;
-    }
-
-    return numTraces;
   }
 
   /**
