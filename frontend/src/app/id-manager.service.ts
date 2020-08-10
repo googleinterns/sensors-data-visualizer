@@ -7,6 +7,11 @@ export class IdManagerService {
   nextID = 0;
   constructor() {}
 
+  /**
+   * Given some sample, assignIDs will return that sample with an ID
+   * prepended to each individual trace.
+   * @param sample The sample that needs IDs assigned to it.
+   */
   public assignIDs(sample) {
     const ids = this.getIDs(this.countTraces(sample));
     sample.timestamp_diffs = [ids.pop(), sample.timestamp_diffs];
@@ -21,6 +26,7 @@ export class IdManagerService {
 
   /**
    * Returns a list of ids that can be assigned to new data traces.
+   * IDs will not be reused since they are simply unique identifiers.
    * @param numTraces The number of traces that need ids.
    */
   private getIDs(numTraces: number) {

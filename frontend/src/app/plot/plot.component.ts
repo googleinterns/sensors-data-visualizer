@@ -60,6 +60,9 @@ export class PlotComponent implements OnInit {
   plot_layout = {title: 'Add a new dataset.', legend: 'false'};
   plot_config = {scrollZoom: true, displayModeBar: true};
   message: any;
+
+  // A map from id number to array index that will speed up toggle operations.
+  idMap = new Map<number, number>(); // TODO Handle when datasets are removed.
   constructor(private sharedService: UploadService) {}
 
   /**
@@ -93,6 +96,7 @@ export class PlotComponent implements OnInit {
               visible: true,
               name: j + ' ' + message[i].sensor_name,
             });
+            this.idMap.set(message[i].data[j][0], this.plot_data.length - 1);
           }
           // Plot the timestamp difference, but don't show it until the user
           // toggles it in the dataset menu.
@@ -105,6 +109,10 @@ export class PlotComponent implements OnInit {
             visible: false,
             name: 'TS Diff ' + message[i].sensor_name,
           });
+          this.idMap.set(
+            message[i].timestamp_diffs[0],
+            this.plot_data.length - 1
+          );
         }
       }
     });
@@ -115,11 +123,8 @@ export class PlotComponent implements OnInit {
    * @param id The id of the trace to toggle on/off.
    */
   toggleTrace(id: number) {
-    this.plot_data.forEach(obj => {
-      if (obj.id === id) {
-        obj.visible = obj.visible === true ? false : true;
-        return;
-      }
-    });
+    const index = this.idMap.get(id);
+    this.plot_data[index].visible =
+      this.plot_data[index].visible === true ? false : true;
   }
 }
