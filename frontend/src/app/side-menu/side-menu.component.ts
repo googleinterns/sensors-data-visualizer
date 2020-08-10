@@ -83,30 +83,55 @@ export class SideMenuComponent {
 
           for (const i in event.body) {
             const sample = JSON.parse(event.body[i]);
+            this.assignIDs(sample);
             samples.push(sample);
-            // Count number of traces manually since sample is of type
-            // Object and so doesn't contain a length field.
-            let numTraces = 1;
-            for (const i in sample.data) {
-              numTraces++;
-            }
-            if ('latency' in sample) {
-              numTraces++;
-            }
 
-            const ids = this.idMan.getIDs(numTraces);
-            console.log("TS DIFF: ", {0: sample['timestamp_diffs']})
             this.sharedService.loadDataset(
               this.dashboard.plot,
               viewContainerRef,
-              sample,
-              ids
+              sample
             );
           }
           this.sharedService.nextMessage(samples);
         }
       }
     });
+  }
+
+  /**
+   * Assign IDs to a sample using the idMan and countTraces helper function.
+   * The sample will have an ID prepended to the original trace.
+   * I.E. sample.data[i] -> [1, sample.data[i]] where 1 is the ID for that trace.
+   * @param sample The sample to assign IDs to.
+   */
+  private assignIDs(sample) {
+    const ids = this.idMan.getIDs(this.countTraces(sample));
+    console.log("SAmple", sample)
+    console.log("ids ", ids)
+    sample.timestamp_diffs = [ids.pop(), sample.timestamp_diffs];
+    if ('latencies' in sample) {
+      sample.latencies = [ids.pop(), sample.timestamp_diffs];
+    }
+    for (const i in sample.data) {
+      sample.data[i] = [ids.pop(), sample.data[i]];
+    }
+  }
+
+  /**
+   * Count the number of traces in a sample. Since sample is
+   * of type Object, it does not have a length field.
+   * @param sample The sample object to count.
+   */
+  private countTraces(sample) {
+    let numTraces = 1;
+    for (const i in sample.data) {
+      numTraces++;
+    }
+    if ('latency' in sample) {
+      numTraces++;
+    }
+
+    return numTraces;
   }
 
   /**

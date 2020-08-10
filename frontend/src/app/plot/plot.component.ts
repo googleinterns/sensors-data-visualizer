@@ -87,10 +87,10 @@ export class PlotComponent implements OnInit {
           for (const j in message[i].data) {
             this.plot_data.push({
               x: message[i].timestamps,
-              y: message[i].data[j],
+              y: message[i].data[j][1],
               type: 'scattergl',
               mode: 'markers',
-              id: Number(j),
+              id: message[i].data[j][0],
               visible: 'true',
               name: j + ' ' + message[i].sensor_name,
             });
@@ -108,6 +108,7 @@ export class PlotComponent implements OnInit {
     this.plot_data.forEach(obj => {
       if (obj.id === id) {
         obj.visible = obj.visible === 'true' ? 'legendonly' : 'true';
+        return;
       }
     });
   }

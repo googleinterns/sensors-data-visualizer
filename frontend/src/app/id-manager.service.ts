@@ -14,11 +14,10 @@ export class IdManagerService {
 
   public getIDs(numTraces: number) {
     const ids: number[] = [];
-    while (this.nextID < numTraces) {
+    while (ids.length <= numTraces) {
       ids.push(this.nextID);
       this.nextID++;
     }
-
     return ids;
   }
 }

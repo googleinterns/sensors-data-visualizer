@@ -24,10 +24,10 @@ import {PlotComponent} from '../plot/plot.component';
   styleUrls: ['./dataset.component.css'],
 })
 export class DatasetComponent {
-  panelOpenState: boolean;
+  //panelOpenState: boolean;
   sample: any;
   plotRef: PlotComponent;
-  ids: number[];
+  ids: number[] = [0]; // Must be initialized to chage.
   constructor() {}
 
   /**
@@ -36,6 +36,9 @@ export class DatasetComponent {
    */
   public setSample(sample) {
     this.sample = sample;
+    for (const i in sample.data) {
+      this.ids[i] = sample.data[i][0];
+    }
   }
 
   /**
@@ -44,17 +47,17 @@ export class DatasetComponent {
    * methods and fields of the plot.
    */
   public setPlotRef(ref) {
-    console.log('Ref received', ref);
     this.plotRef = ref.first;
-
-    console.log(this.plotRef);
   }
 
   /**
    * Triggered when toggle on page is clicked. Calls the plot component toggleTrace method.
-   * @param id The id of the trace to toggle on/off.
+   * @param channel The channel of the trace to toggle.
    */
-  toggleTrace(id: number) {
-    this.plotRef.toggleTrace(id);
+  toggleTrace(channel: number) {
+    console.log("IDS ", this.ids)
+    console.log("Channel ", channel)
+    //console.log("Sample ", this.sample)
+    this.plotRef.toggleTrace(this.ids[channel]);
   }
 }
