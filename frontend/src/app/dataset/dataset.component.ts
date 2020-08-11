@@ -27,7 +27,10 @@ export class DatasetComponent {
   sample: any;
   plotRef: PlotComponent;
   ids = new Map<string, number>();
-  constructor() {}
+  test = [];
+  constructor() {
+    this.test = [1, 2, 3, 4];
+  }
 
   /**
    * Setter method to initialize the dataset with appropriate sample data.
