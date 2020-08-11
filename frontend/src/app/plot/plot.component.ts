@@ -124,7 +124,6 @@ export class PlotComponent implements OnInit {
    */
   toggleTrace(id: number) {
     const index = this.idMap.get(id);
-    this.plot_data[index].visible =
-      this.plot_data[index].visible === true ? false : true;
+    this.plot_data[index].visible = !this.plot_data[index].visible;
   }
 }

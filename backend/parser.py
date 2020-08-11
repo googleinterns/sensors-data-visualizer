@@ -270,12 +270,20 @@ class Parser:
         """
         ret_dict = {}
 
+        
         for i, sample in enumerate(samples):
+            # sample.data[key][0] is a placeholder for the unique id
+            # assigned to each trace in the frontend.
+            for key in sample.data.keys():
+                sample.data[key] = [-1, sample.data[key]]
+
+
             ret_dict[i] = json.dumps({
                 "sensor_name": sample.sensor_name,
                 "sensor_id": sample.sensor_id,
+                "num_traces": 1 + len(sample.data), #TS Diff + len(data)
                 "timestamps": sample.timestamps,
-                "timestamp_diffs": sample.timestamp_diffs,
+                "timestamp_diffs": [-1, sample.timestamp_diffs],
                 "data": sample.data
             })
 

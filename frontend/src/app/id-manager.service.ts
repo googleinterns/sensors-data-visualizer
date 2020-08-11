@@ -27,13 +27,13 @@ export class IdManagerService {
    * @param sample The sample that needs IDs assigned to it.
    */
   public assignIDs(sample) {
-    const ids = this.getIDs(this.countTraces(sample));
-    sample.timestamp_diffs = [ids.pop(), sample.timestamp_diffs];
+    const ids = this.allocateIDs(sample.num_traces);
+    sample.timestamp_diffs[0] = ids.pop();
     if ('latencies' in sample) {
-      sample.latencies = [ids.pop(), sample.timestamp_diffs];
+      sample.latencies[0] = ids.pop();
     }
     for (const i in sample.data) {
-      sample.data[i] = [ids.pop(), sample.data[i]];
+      sample.data[i][0] = ids.pop();
     }
     return sample;
   }
@@ -43,29 +43,12 @@ export class IdManagerService {
    * IDs will not be reused since they are simply unique identifiers.
    * @param numTraces The number of traces that need ids.
    */
-  private getIDs(numTraces: number) {
+  private allocateIDs(numTraces: number) {
     const ids: number[] = [];
     while (ids.length <= numTraces) {
       ids.push(this.nextID);
       this.nextID++;
     }
     return ids;
-  }
-
-  /**
-   * Count the number of traces in a sample. Since sample is
-   * of type Object, it does not have a length field.
-   * @param sample The sample object to count.
-   */
-  private countTraces(sample) {
-    let numTraces = 1;
-    for (const i in sample.data) {
-      numTraces++;
-    }
-    if ('latency' in sample) {
-      numTraces++;
-    }
-
-    return numTraces;
   }
 }
