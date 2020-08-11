@@ -22,33 +22,19 @@ export class IdManagerService {
   constructor() {}
 
   /**
-   * Given some sample, assignIDs will return that sample with an ID
-   * prepended to each individual trace.
+   * Given some sample, assignIDs will return that sample with an ID for
+   * each trace. I.E. trace = [id, [trace data]].
    * @param sample The sample that needs IDs assigned to it.
    */
   public assignIDs(sample) {
-    const ids = this.allocateIDs(sample.num_traces);
-    sample.timestamp_diffs[0] = ids.pop();
+    sample.timestamp_diffs[0] = this.nextID++;
     if ('latencies' in sample) {
-      sample.latencies[0] = ids.pop();
+      sample.latencies[0] = this.nextID++;
     }
     for (const i in sample.data) {
-      sample.data[i][0] = ids.pop();
+      sample.data[i][0] = this.nextID++;
     }
-    return sample;
-  }
 
-  /**
-   * Returns a list of ids that can be assigned to new data traces.
-   * IDs will not be reused since they are simply unique identifiers.
-   * @param numTraces The number of traces that need ids.
-   */
-  private allocateIDs(numTraces: number) {
-    const ids: number[] = [];
-    while (ids.length <= numTraces) {
-      ids.push(this.nextID);
-      this.nextID++;
-    }
-    return ids;
+    return sample;
   }
 }

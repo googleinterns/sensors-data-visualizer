@@ -277,15 +277,18 @@ class Parser:
             for key in sample.data.keys():
                 sample.data[key] = [-1, sample.data[key]]
 
-
-            ret_dict[i] = json.dumps({
+            temp_dict = {
                 "sensor_name": sample.sensor_name,
                 "sensor_id": sample.sensor_id,
-                "num_traces": 1 + len(sample.data), #TS Diff + len(data)
                 "timestamps": sample.timestamps,
                 "timestamp_diffs": [-1, sample.timestamp_diffs],
                 "data": sample.data
-            })
+            }
+
+            if sample.latencies:
+                temp_dict['latencies'] = [-1, sample.latencies]
+
+            ret_dict[i] = json.dumps(temp_dict)
 
         return json.dumps(ret_dict)
 
