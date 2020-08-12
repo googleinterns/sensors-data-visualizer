@@ -276,7 +276,8 @@ class Parser:
                 "sensor_id": sample.sensor_id,
                 "timestamps": sample.timestamps,
                 "timestamp_diffs": sample.timestamp_diffs,
-                "data": sample.data
+                "data": sample.data,
+                "data_len": len(sample.data)
             })
 
         return json.dumps(ret_dict)
