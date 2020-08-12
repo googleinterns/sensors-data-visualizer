@@ -24,9 +24,9 @@ import {PlotComponent} from '../plot/plot.component';
   styleUrls: ['./dataset.component.css'],
 })
 export class DatasetComponent {
-  panelOpenState: boolean;
   sample: any;
   plotRef: PlotComponent;
+  ids = new Map<string, number>();
   constructor() {}
 
   /**
@@ -35,6 +35,10 @@ export class DatasetComponent {
    */
   public setSample(sample) {
     this.sample = sample;
+    for (const i in sample.data) {
+      this.ids.set(i, sample.data[i][0]);
+    }
+    this.ids.set('ts_diff', sample.timestamp_diffs[0]);
   }
 
   /**
@@ -43,17 +47,14 @@ export class DatasetComponent {
    * methods and fields of the plot.
    */
   public setPlotRef(ref) {
-    console.log('Ref received', ref);
     this.plotRef = ref.first;
-
-    console.log(this.plotRef);
   }
 
   /**
    * Triggered when toggle on page is clicked. Calls the plot component toggleTrace method.
-   * @param id The id of the trace to toggle on/off.
+   * @param channel The channel of the trace to toggle.
    */
-  toggleTrace(id: number) {
-    this.plotRef.toggleTrace(id);
+  toggleTrace(channel: string) {
+    this.plotRef.toggleTrace(this.ids.get(channel));
   }
 }
