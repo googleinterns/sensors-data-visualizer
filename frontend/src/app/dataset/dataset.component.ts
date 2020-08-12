@@ -27,10 +27,7 @@ export class DatasetComponent {
   sample: any;
   plotRef: PlotComponent;
   ids = new Map<string, number>();
-  test = [];
-  constructor() {
-    this.test = [1, 2, 3, 4];
-  }
+  constructor() {}
 
   /**
    * Setter method to initialize the dataset with appropriate sample data.
@@ -38,7 +35,6 @@ export class DatasetComponent {
    */
   public setSample(sample) {
     this.sample = sample;
-    console.log("SAMPLE", sample)
     for (const i in sample.data) {
       this.ids.set(i, sample.data[i][0]);
     }

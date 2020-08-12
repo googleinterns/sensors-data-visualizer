@@ -26,7 +26,7 @@ limitations under the License. -->
             <!-- Angular requires an iterable array for ngFor loops, so the only way to
             make a for loop of some length is to loop over an array of that length. Hence the 
             empty array of length=sample.data_len -->
-            <mat-button-toggle *ngFor="let i of [].constructor(10), 
+            <mat-button-toggle *ngFor="let i of [].constructor(sample.data_len), 
                 let num=index" (click)="toggleTrace(num)">{{num}}</mat-button-toggle>
         </mat-button-toggle-group>
         <mat-button-toggle-group multiple="true">
