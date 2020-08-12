@@ -270,7 +270,6 @@ class Parser:
         """
         ret_dict = {}
 
-        
         for i, sample in enumerate(samples):
             # sample.data[key][0] is a placeholder for the unique id
             # assigned to each trace in the frontend.
