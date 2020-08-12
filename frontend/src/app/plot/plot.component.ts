@@ -113,6 +113,21 @@ export class PlotComponent implements OnInit {
             message[i].timestamp_diffs[0], // TS Diff id.
             this.plot_data.length - 1
           );
+
+          // Plot the latencies if they are present in the sample.
+          // Don't show until user toggles them on.
+          if ('latencies' in message[i]) {
+            this.plot_data.push({
+              x: message[i].timestamps,
+              y: message[i].latencies[1],
+              type: 'scattergl',
+              mode: 'markers',
+              id: message[i].latencies[0],
+              visible: false,
+              name: 'Latencies ' + message[i].sensor_name,
+            });
+            this.idMap.set(message[i].latencies[0], this.plot_data.length - 1);
+          }
         }
       }
     });
