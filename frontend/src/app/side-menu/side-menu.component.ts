@@ -23,8 +23,6 @@ import {MainDashboardComponent} from '../main-dashboard/main-dashboard.component
 import {UploadDirective} from '../upload.directive';
 import {UploadService} from '../upload.service';
 
-import {IdManagerService} from '../id-manager.service';
-
 @Component({
   selector: 'app-side-menu',
   templateUrl: './side-menu.component.html',
@@ -56,8 +54,7 @@ export class SideMenuComponent {
 
   constructor(
     private breakpointObserver: BreakpointObserver,
-    private sharedService: UploadService,
-    private idMan: IdManagerService
+    private sharedService: UploadService
   ) {}
 
   /**
@@ -82,10 +79,8 @@ export class SideMenuComponent {
           const samples = [];
 
           for (const i in event.body) {
-            let sample = JSON.parse(event.body[i]);
-            sample = this.idMan.assignIDs(sample);
+            const sample = JSON.parse(event.body[i]);
             samples.push(sample);
-
             this.sharedService.loadDataset(
               this.dashboard.plot,
               viewContainerRef,
