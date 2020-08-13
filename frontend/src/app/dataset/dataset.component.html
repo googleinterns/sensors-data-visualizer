@@ -38,5 +38,12 @@ limitations under the License. -->
                 Timestamp Difference
             </mat-button-toggle>
         </mat-button-toggle-group>
+    <button [matMenuTriggerFor]="menu" mat-mini-fab color="primary" aria-label="Example icon button with a delete icon">
+        <mat-icon>delete</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item>Cancel</button>
+        <button mat-menu-item style="color: red;">Delete</button>
+      </mat-menu>
 </mat-expansion-panel>
 </mat-accordion>
