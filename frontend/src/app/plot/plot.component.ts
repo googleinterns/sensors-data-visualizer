@@ -150,8 +150,7 @@ export class PlotComponent implements OnInit {
     let i = 0;
     while (i < this.plot_data.length) {
       if (ids.has(this.plot_data[i].id)) {
-        const deleted = this.plot_data.splice(i, 1);
-        console.log('deleted ', deleted, 'with id', deleted[0].id);
+        this.plot_data.splice(i, 1);
       } else {
         i++;
       }

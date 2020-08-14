@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {Component} from '@angular/core';
+import {Component, ComponentRef} from '@angular/core';
 
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
@@ -26,6 +26,7 @@ import {PlotComponent} from '../plot/plot.component';
 export class DatasetComponent {
   sample: any;
   plotRef: PlotComponent;
+  containerRef: ComponentRef<DatasetComponent>;
   ids = new Map<any, number>();
   hasLatencies: boolean;
 
@@ -61,6 +62,14 @@ export class DatasetComponent {
   }
 
   /**
+   * Setter method to initialize the dataset with a reference to itself. This enables
+   * the dataset to self-destruct when needed.
+   * @param ref A reference to this component.
+   */
+  public setContainerRef(ref: ComponentRef<DatasetComponent>) {
+    this.containerRef = ref;
+  }
+  /**
    * Triggered when toggle on page is clicked. Calls the plot component toggleTrace method.
    * @param channel The channel of the trace to toggle.
    */
@@ -73,7 +82,8 @@ export class DatasetComponent {
    * and removing self from datasets list.
    */
   deleteDataset() {
-    console.log('Deleting myself...', this.ids.values()); //Array.from(this.ids.values()));
-    this.plotRef.deleteDataset(new Set<number>(this.ids.values())); //Array.from(this.ids.values()));
+    console.log('Deleting myself...', this.ids.values());
+    this.plotRef.deleteDataset(new Set<number>(this.ids.values()));
+    this.containerRef.destroy();
   }
 }
