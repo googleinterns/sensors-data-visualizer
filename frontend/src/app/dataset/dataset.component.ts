@@ -62,7 +62,7 @@ export class DatasetComponent {
   }
 
   /**
-   * Setter method to initialize the dataset with a reference to itself. This enables
+   * Initializes the dataset with a reference to itself. This enables
    * the dataset to self-destruct when needed.
    * @param ref A reference to this component.
    */
@@ -78,8 +78,7 @@ export class DatasetComponent {
   }
 
   /**
-   * Responsible for removing all traces from plot
-   * and removing self from datasets list.
+   * Removes all traces from plot and removes self from dataset list.
    */
   deleteDataset() {
     console.log('Deleting myself...', this.ids.values());
