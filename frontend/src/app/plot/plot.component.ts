@@ -146,10 +146,11 @@ export class PlotComponent implements OnInit {
    * Removes an entire dataset from plot_data.
    * @param ids The individual traces to delete.
    */
-  deleteDataset(ids: Set<number>) {
+  async deleteDataset(ids: Set<number>) {
     let i = 0;
     while (i < this.plot_data.length) {
       if (ids.has(this.plot_data[i].id)) {
+        // At index i, remove 1 element.
         this.plot_data.splice(i, 1);
       } else {
         i++;
