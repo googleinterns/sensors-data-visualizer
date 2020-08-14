@@ -1,4 +1,5 @@
-/*Copyright 2020 Google LLC
+/*
+Copyright 2020 Google LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -34,7 +35,6 @@ export class IdManagerService {
     for (const i in sample.data) {
       sample.data[i][0] = this.nextID++;
     }
-
     return sample;
   }
 }
