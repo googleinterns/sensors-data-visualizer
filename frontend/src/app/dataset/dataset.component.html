@@ -22,11 +22,13 @@ limitations under the License. -->
         </mat-panel-description>
     </mat-expansion-panel-header>
         <h4>Channels</h4>
-        <mat-button-toggle-group multiple="true">
-            <mat-button-toggle (click)="toggleTrace('0')">X</mat-button-toggle>
-            <mat-button-toggle (click)="toggleTrace('1')">Y</mat-button-toggle>
-            <mat-button-toggle (click)="toggleTrace('2')">Z</mat-button-toggle>
-        </mat-button-toggle-group>
+        <mat-button-toggle-group id="channels" multiple="true">
+            <!-- Angular requires an iterable array for ngFor loops, so the only way to
+            make a for loop of some length is to loop over an array of that length. Hence the 
+            empty array of length=sample.data_len -->
+            <mat-button-toggle id="toggle" *ngFor="let i of [].constructor(sample.data_len), 
+                let num=index" (click)="toggleTrace(num)">{{num}}</mat-button-toggle>
+            </mat-button-toggle-group>
         <mat-button-toggle-group multiple="true">
             <mat-button-toggle>Latency</mat-button-toggle>
             <mat-button-toggle (click)="toggleTrace('ts_diff')">

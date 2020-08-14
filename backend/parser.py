@@ -281,7 +281,8 @@ class Parser:
                 "sensor_id": sample.sensor_id,
                 "timestamps": sample.timestamps,
                 "timestamp_diffs": [-1, sample.timestamp_diffs],
-                "data": sample.data
+                "data": sample.data,
+                "data_len": len(sample.data)
             }
 
             if sample.latencies:
