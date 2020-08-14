@@ -43,7 +43,8 @@ limitations under the License. -->
     </button>
     <mat-menu #menu="matMenu">
         <button mat-menu-item>Cancel</button>
-        <button mat-menu-item style="color: red;">Delete</button>
+        <button mat-menu-item style="color: red;" 
+            (click)="deleteDataset()">Delete</button>
       </mat-menu>
 </mat-expansion-panel>
 </mat-accordion>

@@ -67,4 +67,13 @@ export class DatasetComponent {
   toggleTrace(channel) {
     this.plotRef.toggleTrace(this.ids.get(channel));
   }
+
+  /**
+   * Responsible for removing all traces from plot
+   * and removing self from datasets list.
+   */
+  deleteDataset() {
+    console.log('Deleting myself...', this.ids.values()); //Array.from(this.ids.values()));
+    this.plotRef.deleteDataset(new Set<number>(this.ids.values())); //Array.from(this.ids.values()));
+  }
 }
