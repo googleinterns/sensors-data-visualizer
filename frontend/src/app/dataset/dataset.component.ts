@@ -27,18 +27,28 @@ export class DatasetComponent {
   sample: any;
   plotRef: PlotComponent;
   ids = new Map<any, number>();
-  constructor() {}
+  hasLatencies: boolean;
+
+  constructor() {
+    this.hasLatencies = false;
+  }
 
   /**
    * Setter method to initialize the dataset with appropriate sample data.
    * @param sample The sample object received by UploadService from the backend.
    */
   public setSample(sample) {
+    console.log('sample: ', sample);
     this.sample = sample;
     for (const i in sample.data) {
       this.ids.set(Number(i), sample.data[i][0]);
     }
     this.ids.set('ts_diff', sample.timestamp_diffs[0]);
+
+    if ('latencies' in sample) {
+      this.hasLatencies = true;
+      this.ids.set('latencies', sample.latencies[0]);
+    }
   }
 
   /**

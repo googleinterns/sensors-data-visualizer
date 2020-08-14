@@ -30,7 +30,10 @@ limitations under the License. -->
                 let num=index" (click)="toggleTrace(num)">{{num}}</mat-button-toggle>
             </mat-button-toggle-group>
         <mat-button-toggle-group multiple="true">
-            <mat-button-toggle>Latency</mat-button-toggle>
+            <mat-button-toggle (click)="toggleTrace('latencies')"
+            *ngIf="hasLatencies">
+                Latency
+            </mat-button-toggle>
             <mat-button-toggle (click)="toggleTrace('ts_diff')">
                 Timestamp Difference
             </mat-button-toggle>
