@@ -86,5 +86,6 @@ export class UploadService {
 
     compRef.instance.setSample(data);
     compRef.instance.setPlotRef(plotRef);
+    compRef.instance.setContainerRef(compRef);
   }
 }

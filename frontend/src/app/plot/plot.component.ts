@@ -62,7 +62,7 @@ export class PlotComponent implements OnInit {
   message: any;
 
   // A map from id number to array index that will speed up toggle operations.
-  idMap = new Map<number, number>(); // TODO Handle when datasets are removed.
+  idMap = new Map<number, number>();
   constructor(private sharedService: UploadService) {}
 
   /**
@@ -140,5 +140,26 @@ export class PlotComponent implements OnInit {
   toggleTrace(id: number) {
     const index = this.idMap.get(id);
     this.plot_data[index].visible = !this.plot_data[index].visible;
+  }
+
+  /**
+   * Removes an entire dataset from plot_data.
+   * @param ids The individual traces to delete.
+   */
+  async deleteDataset(ids: Set<number>) {
+    let i = 0;
+    while (i < this.plot_data.length) {
+      if (ids.has(this.plot_data[i].id)) {
+        // At index i, remove 1 element.
+        this.plot_data.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+    // Reorder idMap with remaining traces and delete removed traces.
+    for (const i in this.plot_data) {
+      this.idMap.set(this.plot_data[i].id, Number(i));
+    }
+    ids.forEach(id => this.idMap.delete(id));
   }
 }
