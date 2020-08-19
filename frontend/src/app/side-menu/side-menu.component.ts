@@ -43,6 +43,7 @@ export class SideMenuComponent {
   // Provides a reference to the MainDashboardComponent.
   @ViewChild(MainDashboardComponent, {static: true})
   dashboard: MainDashboardComponent;
+  @ViewChild('c') checkBox;
 
   files = [];
   message: any;
@@ -73,6 +74,7 @@ export class SideMenuComponent {
     formData.append('file', file.data);
     file.inProgress = true;
 
+    console.log('Checkbox!!!: ', this.checkBox.checked);
     console.log(file);
 
     this.sharedService.sendFormData(formData).subscribe((event: any) => {

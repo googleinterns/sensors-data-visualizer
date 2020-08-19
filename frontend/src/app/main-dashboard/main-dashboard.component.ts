@@ -45,7 +45,7 @@ export class MainDashboardComponent {
   constructor(private breakpointObserver: BreakpointObserver) {}
 
   public newTab() {
-    console.log('pushing')
+    console.log('pushing');
     this.tabs.push('Test');
   }
 }
