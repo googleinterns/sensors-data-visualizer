@@ -29,7 +29,7 @@ export class MainDashboardComponent {
   // Selects the plot component present on the page. Allows the grandparent component (side-menu)
   // to access the plot that is a child of this component.
   @ViewChildren(PlotComponent) plot: QueryList<PlotComponent>;
-
+  tabs = ['Add some data'];
   /** Based on the screen size, switch from standard to one column per row */
 
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
@@ -43,4 +43,9 @@ export class MainDashboardComponent {
   );
 
   constructor(private breakpointObserver: BreakpointObserver) {}
+
+  public newTab() {
+    console.log('pushing')
+    this.tabs.push('Test');
+  }
 }
