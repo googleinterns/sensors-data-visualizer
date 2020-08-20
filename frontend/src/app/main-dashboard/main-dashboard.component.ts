@@ -29,7 +29,6 @@ export class MainDashboardComponent {
   // Selects the plot component present on the page. Allows the grandparent component (side-menu)
   // to access the plot that is a child of this component.
   @ViewChildren(PlotComponent) plot: QueryList<PlotComponent>;
-  tabMap: Map<number, ViewContainerRef>;
   currentTab = 0;
   tabs = ['Tab0'];
   /** Based on the screen size, switch from standard to one column per row */

@@ -43,7 +43,7 @@ export class SideMenuComponent {
   // Provides a reference to the MainDashboardComponent.
   @ViewChild(MainDashboardComponent, {static: true})
   dashboard: MainDashboardComponent;
-  @ViewChild('c') checkBox;
+  @ViewChild('checkBox') checkBox;
 
   files = [];
   message: any;
@@ -78,10 +78,8 @@ export class SideMenuComponent {
       if (typeof event === 'object') {
         if (event.body !== undefined) {
           const tabNumber = this.dashboard.currentTab;
-
           const viewContainerRef = this.uploadDirective.viewContainerRef;
           const samples = [];
-
           const plotRef = this.dashboard.plot.toArray()[tabNumber];
 
           for (const i in event.body) {
@@ -97,7 +95,6 @@ export class SideMenuComponent {
             );
           }
           plotRef.addSamples(samples);
-          //this.sharedService.nextMessage(samples);
         }
       }
     });

@@ -81,12 +81,8 @@ export class UploadService {
     ref: ViewContainerRef,
     data
   ) {
-    console.log('DSload plotref', plotRef);
-    console.log('DSload ref', ref);
     const {DatasetComponent} = await import('./dataset/dataset.component');
-
     const component: any = DatasetComponent;
-
     const compRef: ComponentRef<DatasetComponent> = ref.createComponent(
       this.resolver.resolveComponentFactory(component)
     );

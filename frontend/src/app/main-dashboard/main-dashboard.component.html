@@ -13,10 +13,11 @@ See the License for the specific language governing permissions and
 limitations under the License. -->
 
 <div id="main-container">
-  <!-- Render plot. -->
-  <!-- <div id="plot-container">
-    <app-plot></app-plot>
-  </div> -->
+  <!-- The mat-tab-group is a container that holds each tab, and each tab
+  holds an individual plot. The inner *ngFor loop iterates over the tabs
+  array in main-dashboard.component.ts (initialized with a single tab) and
+  creates a tab for each element in that array. When a new element is added
+  to the array a new tab is also added. -->
   <mat-tab-group (selectedTabChange)="switchTab($event)" id="plot-container">
     <mat-tab *ngFor="let tab of tabs; let index = index" [label]="tab">
       <app-plot #{{index}}></app-plot>
