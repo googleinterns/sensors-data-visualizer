@@ -13,12 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 
 // Project Imports.
-import {UploadService} from '../upload.service';
-import { error } from '@angular/compiler/src/util';
-import { sample } from 'rxjs/operators';
+import {error} from '@angular/compiler/src/util';
 
 @Component({
   selector: 'app-plot',

@@ -46,16 +46,22 @@ export class MainDashboardComponent {
 
   constructor(private breakpointObserver: BreakpointObserver) {}
 
+  /**
+   * Creates a new tab by pushing the name of the tab to this.tabs.
+   * When a new item is added to this.tabs, the html will add a new tab.
+   * Also updates this.currentTab so that the new data is plotted in the new tab.
+   */
   public newTab() {
-    console.log('plots', this.plot);
-
-    console.log('pushing');
     this.tabs.push('Test');
-
     this.currentTab = this.tabs.length - 1;
     return this.currentTab;
   }
 
+  /**
+   * Changes the currentTab when the user selects a different tab.
+   * @param event The MatTabChangeEvent that is emitted when the user
+   * selects a new tab. The index field is the index of the tab selected.
+   */
   switchTab(event) {
     console.log('switching..', event);
     this.currentTab = event.index;
