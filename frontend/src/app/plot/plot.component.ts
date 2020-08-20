@@ -117,7 +117,7 @@ export class PlotComponent {
           samples[i].timestamps,
           samples[i].data[j][1],
           samples[i].data[j][0],
-          samples[i].sensor_name,
+          j + ' ' + samples[i].sensor_name,
           true
         );
       }
