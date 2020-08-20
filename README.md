@@ -4,17 +4,22 @@
 
 Debugging sensors using raw sensor data is not intuitive. Sensor data represents physical movements and so reading raw data does not allow a developer to understand where sensor issues may be present, especially when they are trying to compare multiple sensors. This project aims to provide a visual representation of sensor data so that a user can more easily diagnose issues. This visualization tool will allow users to input sensor data from multiple sources and will be easily extendible to new sources.  The tool will then parse the input data and plot the data on an easily readable graph, with additional features that allow for more insights into the data.
 
-# Frontend Build Instructions (Run commands from /sensors-data-visualizer/frontend)
-1. Ensure Node.js >= 12.0 is installed. https://nodejs.org/en/download/
-2. Install Angular CLI by running: npm install -g @angular/cli
-3. Install Angular devkit by running: npm install --save-dev @angular-devkit/build-angular
-4. While in sensors-data-visualizer/frontend: ng serve -o
-5. Should automatically open a browser to localhost:4200. Open server.py to enable backend.
+# Setup Instructions
+1. Install Node.js >= 12.0 from https://nodejs.org/en/download/
+2. Install Angular CLI: `npm install -g @angular/cli`
+3. Install Angular devkit: `npm install --save-dev @angular-devkit/build-angular`
+4. Run `git clone https://github.com/googleinterns/sensors-data-visualizer.git`
+5. `cd sensors-data-visualizer`
 
-# Backend Build Instructions (Run commands from /sensors-data-visualizer/backend)
-1. pip install flask
-2. pip install flask_cors
-3. python server.py
+# Frontend Build Instructions
+1. `cd frontend`
+2. Compile and run app (will automatically open browser to localhost:4200): `ng serve -o`
+
+# Backend Build Instructions
+1. `cd sensors-data-visualizer/backend`
+2. Install flask: `pip install flask`
+3. Install flask_cors: `pip install flask_cors`
+4. Run server: `python server.py`
 
 ## Source Code Headers
 
