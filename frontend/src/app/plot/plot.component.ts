@@ -17,6 +17,8 @@ import {Component, OnInit} from '@angular/core';
 
 // Project Imports.
 import {UploadService} from '../upload.service';
+import { error } from '@angular/compiler/src/util';
+import { sample } from 'rxjs/operators';
 
 @Component({
   selector: 'app-plot',
@@ -27,7 +29,7 @@ import {UploadService} from '../upload.service';
 /**
  * Handles the Plotly plot and the plots' data.
  */
-export class PlotComponent implements OnInit {
+export class PlotComponent {//implements OnInit {
   /**
    * plot_data is an array of maps that define what is plotted.
    * It is initialized with a (0,0) point so that the plot appears when the page is opened.
@@ -70,67 +72,125 @@ export class PlotComponent implements OnInit {
    * Angular separates ngOnInit from constructor, more expensive work is done in ngOnInit
    * which frees up the constructor to render the component quickly.
    */
-  ngOnInit(): void {
-    /**
-     * Subscribe to the shared service so when a new dataset is loaded
-     * it can be added to the plot.
-     */
-    this.sharedService.sharedMessage.subscribe(message => {
-      if (message) {
-        // This will only be true when no data has been added yet.
-        // Removes the placeholder datapoint and title.
-        if (this.plot_data.length === 1 && this.plot_data[0].id === 0) {
-          this.plot_data.pop();
-          this.plot_layout.title = '';
-        }
+  // ngOnInit(): void {
+  //   /**
+  //    * Subscribe to the shared service so when a new dataset is loaded
+  //    * it can be added to the plot.
+  //    */
+  //   this.sharedService.sharedMessage.subscribe(message => {
+  //     if (message) {
+  //       // This will only be true when no data has been added yet.
+  //       // Removes the placeholder datapoint and title.
+  //       if (this.plot_data.length === 1 && this.plot_data[0].id === 0) {
+  //         this.plot_data.pop();
+  //         this.plot_layout.title = '';
+  //       }
 
-        for (const i in message) {
-          // Plot each individual data channel.
-          for (const j in message[i].data) {
-            this.plot_data.push({
-              x: message[i].timestamps,
-              y: message[i].data[j][1],
-              type: 'scattergl',
-              mode: 'markers',
-              id: message[i].data[j][0],
-              visible: true,
-              name: j + ' ' + message[i].sensor_name,
-            });
-            this.idMap.set(message[i].data[j][0], this.plot_data.length - 1);
-          }
-          // Plot the timestamp difference, but don't show it until the user
-          // toggles it in the dataset menu.
-          this.plot_data.push({
-            x: message[i].timestamps,
-            y: message[i].timestamp_diffs[1],
-            type: 'scattergl',
-            mode: 'markers',
-            id: message[i].timestamp_diffs[0],
-            visible: false,
-            name: 'TS Diff ' + message[i].sensor_name,
-          });
-          this.idMap.set(
-            message[i].timestamp_diffs[0], // TS Diff id.
-            this.plot_data.length - 1
-          );
+  //       for (const i in message) {
+  //         // Plot each individual data channel.
+  //         for (const j in message[i].data) {
+  //           this.plot_data.push({
+  //             x: message[i].timestamps,
+  //             y: message[i].data[j][1],
+  //             type: 'scattergl',
+  //             mode: 'markers',
+  //             id: message[i].data[j][0],
+  //             visible: true,
+  //             name: j + ' ' + message[i].sensor_name,
+  //           });
+  //           this.idMap.set(message[i].data[j][0], this.plot_data.length - 1);
+  //         }
+  //         // Plot the timestamp difference, but don't show it until the user
+  //         // toggles it in the dataset menu.
+  //         this.plot_data.push({
+  //           x: message[i].timestamps,
+  //           y: message[i].timestamp_diffs[1],
+  //           type: 'scattergl',
+  //           mode: 'markers',
+  //           id: message[i].timestamp_diffs[0],
+  //           visible: false,
+  //           name: 'TS Diff ' + message[i].sensor_name,
+  //         });
+  //         this.idMap.set(
+  //           message[i].timestamp_diffs[0], // TS Diff id.
+  //           this.plot_data.length - 1
+  //         );
 
-          // Plot the latencies if they are present in the sample.
-          // Don't show until user toggles them on.
-          if ('latencies' in message[i]) {
-            this.plot_data.push({
-              x: message[i].timestamps,
-              y: message[i].latencies[1],
-              type: 'scattergl',
-              mode: 'markers',
-              id: message[i].latencies[0],
-              visible: false,
-              name: 'Latencies ' + message[i].sensor_name,
-            });
-            this.idMap.set(message[i].latencies[0], this.plot_data.length - 1);
-          }
-        }
+  //         // Plot the latencies if they are present in the sample.
+  //         // Don't show until user toggles them on.
+  //         if ('latencies' in message[i]) {
+  //           this.plot_data.push({
+  //             x: message[i].timestamps,
+  //             y: message[i].latencies[1],
+  //             type: 'scattergl',
+  //             mode: 'markers',
+  //             id: message[i].latencies[0],
+  //             visible: false,
+  //             name: 'Latencies ' + message[i].sensor_name,
+  //           });
+  //           this.idMap.set(message[i].latencies[0], this.plot_data.length - 1);
+  //         }
+  //       }
+  //     }
+  //   });
+  // }
+
+  /**
+   * Add a single trace to the plot.
+   * @param x The x data to plot.
+   * @param y The y data to plot.
+   * @param id
+   * @param name
+   * @param channel
+   */
+  public addTrace(
+    x: Array<number>,
+    y: Array<number>,
+    id: number,
+    name: string,
+    channel: string
+  ) {
+    if (x.length !== y.length) {
+      throw error('x and y arrays must match in length');
+    }
+
+    this.plot_data.push({
+      x: x,
+      y: y,
+      type: 'scattergl',
+      mode: 'markers',
+      id: id,
+      visible: true,
+      name: channel + ' ' + name,
+    })
+  }
+
+  /**
+   * Adds a set of samples to this plot.
+   * @param samples
+   */
+  public addSamples(samples) {
+    // This will only be true when no data has been added yet.
+    // Removes the placeholder datapoint and title.
+    console.log('plot addtrace: ', samples);
+    if (this.plot_data.length === 1 && this.plot_data[0].id === 0) {
+      this.plot_data.pop();
+      this.plot_layout.title = '';
+    }
+
+    for (const i in samples) {
+      // Plot each individual data channel.
+      for (const j in samples[i].data) {
+        this.addTrace(
+          samples[i].timestamps,
+          samples[i].data[j][1],
+          samples[i].data[j][0],
+          samples[i].sensor_name,
+          j
+        );
+        this.idMap.set(samples[i].data[j][0], this.plot_data.length - 1);
       }
-    });
+    }
   }
 
   /**

@@ -74,14 +74,15 @@ export class SideMenuComponent {
     formData.append('file', file.data);
     file.inProgress = true;
 
-    console.log('Checkbox!!!: ', this.checkBox.checked);
-    console.log(file);
-
     this.sharedService.sendFormData(formData).subscribe((event: any) => {
       if (typeof event === 'object') {
         if (event.body !== undefined) {
+          const tabNumber = this.dashboard.currentTab;
+
           const viewContainerRef = this.uploadDirective.viewContainerRef;
           const samples = [];
+
+          const plotRef = this.dashboard.plot.toArray()[tabNumber];
 
           for (const i in event.body) {
             let sample = JSON.parse(event.body[i]);
@@ -89,12 +90,14 @@ export class SideMenuComponent {
             samples.push(sample);
 
             this.sharedService.loadDataset(
-              this.dashboard.plot,
+              tabNumber,
+              plotRef,
               viewContainerRef,
               sample
             );
           }
-          this.sharedService.nextMessage(samples);
+          plotRef.addSamples(samples);
+          //this.sharedService.nextMessage(samples);
         }
       }
     });
@@ -116,6 +119,9 @@ export class SideMenuComponent {
    */
   uploadFiles() {
     const fileUpload = this.fileUpload.nativeElement;
+    if (this.checkBox.checked) {
+      this.dashboard.newTab();
+    }
 
     fileUpload.onchange = () => {
       for (let index = 0; index < fileUpload.files.length; index++) {

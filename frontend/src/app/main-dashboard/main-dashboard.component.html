@@ -19,7 +19,7 @@ limitations under the License. -->
   </div> -->
   <mat-tab-group id="plot-container">
     <mat-tab *ngFor="let tab of tabs; let index = index" [label]="tab">
-      <app-plot></app-plot>
+      <app-plot #{{index}}></app-plot>
     </mat-tab>
   </mat-tab-group>
   <button (click)="newTab()">+</button>

@@ -75,7 +75,14 @@ export class UploadService {
    * @param ref A reference to the side-menu component so that the new dataset can be added to it.
    * @param data The sample object this dataset will store.
    */
-  async loadDataset(plotRef: any, ref: ViewContainerRef, data) {
+  async loadDataset(
+    tabNumber: number,
+    plotRef: any,
+    ref: ViewContainerRef,
+    data
+  ) {
+    console.log('DSload plotref', plotRef);
+    console.log('DSload ref', ref);
     const {DatasetComponent} = await import('./dataset/dataset.component');
 
     const component: any = DatasetComponent;
@@ -84,6 +91,7 @@ export class UploadService {
       this.resolver.resolveComponentFactory(component)
     );
 
+    compRef.instance.tabNumber = tabNumber;
     compRef.instance.setSample(data);
     compRef.instance.setPlotRef(plotRef);
     compRef.instance.setContainerRef(compRef);
