@@ -55,4 +55,9 @@ export class MainDashboardComponent {
     this.currentTab = this.tabs.length - 1;
     return this.currentTab;
   }
+
+  switchTab(event) {
+    console.log('switching..', event);
+    this.currentTab = event.index;
+  }
 }

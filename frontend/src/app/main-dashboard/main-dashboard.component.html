@@ -17,7 +17,7 @@ limitations under the License. -->
   <!-- <div id="plot-container">
     <app-plot></app-plot>
   </div> -->
-  <mat-tab-group id="plot-container">
+  <mat-tab-group (selectedTabChange)="switchTab($event)" id="plot-container">
     <mat-tab *ngFor="let tab of tabs; let index = index" [label]="tab">
       <app-plot #{{index}}></app-plot>
     </mat-tab>
