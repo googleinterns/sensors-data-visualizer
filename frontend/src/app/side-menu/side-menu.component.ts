@@ -81,6 +81,9 @@ export class SideMenuComponent {
           const viewContainerRef = this.uploadDirective.viewContainerRef;
           const samples = [];
           const plotRef = this.dashboard.plot.toArray()[tabNumber];
+          console.log('tnum', tabNumber, this.dashboard);
+          console.log('Plots ', this.dashboard.plot.toArray());
+          console.log('smenu plot', plotRef);
 
           for (const i in event.body) {
             let sample = JSON.parse(event.body[i]);

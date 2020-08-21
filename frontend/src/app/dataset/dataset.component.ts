@@ -31,6 +31,11 @@ export class DatasetComponent {
   ids = new Map<any, number>();
   hasLatencies: boolean;
 
+  panelOpenState = false;
+  currentOptions: any = null;
+
+  currentShowing: Map<string, Map<string, boolean>> = new Map();
+  isChecked = true;
   constructor() {
     this.hasLatencies = false;
   }
@@ -44,12 +49,36 @@ export class DatasetComponent {
     this.sample = sample;
     for (const i in sample.data) {
       this.ids.set(Number(i), sample.data[i][0]);
+      this.currentShowing.set(
+        i, // The data channel key.
+        new Map([
+          ['show', true], // Always initially shows channel data.
+          ['stdev', false], // But a request is required to show stats, so these are false.
+          ['avg', false],
+        ])
+      );
     }
     this.ids.set('ts_diff', sample.timestamp_diffs[0]);
+    this.currentShowing.set(
+      'ts_diff',
+      new Map([
+        ['show', false],
+        ['stdev', false],
+        ['avg', false],
+      ])
+    );
 
     if ('latencies' in sample) {
       this.hasLatencies = true;
       this.ids.set('latencies', sample.latencies[0]);
+      this.currentShowing.set(
+        'latencies',
+        new Map([
+          ['show', false],
+          ['stdev', false],
+          ['avg', false],
+        ])
+      );
     }
   }
 
@@ -76,7 +105,40 @@ export class DatasetComponent {
    * @param channel The channel of the trace to toggle.
    */
   toggleTrace(channel) {
-    this.plotRef.toggleTrace(this.ids.get(channel));
+    console.log('ids', this.ids);
+    if (!(channel in this.ids.keys())) {
+      console.log('channel not detected', channel);
+    }
+
+    this.currentShowing
+      .get(String(this.currentOptions))
+      .set(channel, !this.currentOn(channel));
+    this.plotRef.toggleTrace(this.ids.get(this.currentOptions));
+  }
+
+  /**
+   * Toggles hiding and showing the expansion menu for each channel.
+   * @param channel The channel that was selected.
+   */
+  showOptions(channel) {
+    //If the selected channel is clicked again, toggle panel hide
+    if (channel === this.currentOptions) {
+      this.panelOpenState = !this.panelOpenState;
+      return;
+    }
+    if (this.currentOptions === null) {
+      this.panelOpenState = true;
+    }
+    this.currentOptions = channel;
+  }
+
+  /**
+   * Checks if a specific trace is currently on in the plot so that slide toggles are always
+   * correctly shown as on or off.
+   * @param channel The channel that is being checked. Either 'show', 'stdev', or 'avg'.
+   */
+  currentOn(channel) {
+    return this.currentShowing.get(String(this.currentOptions)).get(channel);
   }
 
   /**

@@ -14,7 +14,7 @@ limitations under the License. */
 
 // Angular Imports.
 import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
-import {Component, ViewChildren, QueryList, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ViewChildren, QueryList} from '@angular/core';
 import {map} from 'rxjs/operators';
 
 // Project Imports.
