@@ -40,7 +40,7 @@ export class UploadService {
    */
   serverUrl = 'http://localhost:5000/';
 
-  private message = new BehaviorSubject(null);
+  private message = new BehaviorSubject('Init');
   sharedMessage = this.message.asObservable();
 
   constructor(
@@ -68,6 +68,7 @@ export class UploadService {
    * @param samples The samples to be shared with any listening components.
    */
   public nextMessage(samples: any) {
+    console.log('New message: ', samples);
     this.message.next(samples);
   }
 
@@ -89,7 +90,7 @@ export class UploadService {
     const compRef: ComponentRef<DatasetComponent> = ref.createComponent(
       this.resolver.resolveComponentFactory(component)
     );
-
+    console.log('loading ds...');
     compRef.instance.tabNumber = tabNumber;
     compRef.instance.setSample(data);
     compRef.instance.setPlotRef(plotRef);

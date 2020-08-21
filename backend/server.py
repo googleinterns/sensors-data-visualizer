@@ -40,14 +40,15 @@ def upload_file():
         
         samples = GoogleSensorParser([f.filename]).parse_files()
 
-        return samples
+        return {'type': 'upload', 'data': samples}
 
 @app.route('/stats', methods = ['POST'])
 def compute_stats():
     if request.method == "POST":
         print("STATS RECEIVED: ...")
         print(request.data)
-
+        return {'type': 'stats', 'data': [1, 2, 3]}
+    return 'Test'
 
 if __name__ == '__main__':
     app.run(debug=True)

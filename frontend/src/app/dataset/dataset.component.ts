@@ -39,6 +39,9 @@ export class DatasetComponent {
   isChecked = true;
   constructor(private sharedService: UploadService) {
     this.hasLatencies = false;
+    this.sharedService.sharedMessage.subscribe((event: any) => {
+      console.log('ds message recieved: ', event);
+    });
   }
 
   /**
@@ -46,7 +49,6 @@ export class DatasetComponent {
    * @param sample The sample object received by UploadService from the backend.
    */
   public setSample(sample) {
-    console.log('sample: ', sample);
     this.sample = sample;
     for (const i in sample.data) {
       this.ids.set(Number(i), sample.data[i][0]);
@@ -99,21 +101,26 @@ export class DatasetComponent {
    */
   public setContainerRef(ref: ComponentRef<DatasetComponent>) {
     this.containerRef = ref;
-    console.log('DS Tab: ', this.tabNumber);
   }
   /**
    * Triggered when toggle on page is clicked. Calls the plot component toggleTrace method.
    * @param channel The channel of the trace to toggle.
    */
   toggleTrace(channel) {
-    console.log('ids', this.ids);
     if (!(channel in this.ids.keys())) {
       console.log('channel not detected', channel);
       const data = {
         x: this.sample.timestamps,
         y: this.sample.data[0],
       };
-      this.sharedService.sendFormData(data, 'stats');
+      this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
+        if (typeof event === 'object') {
+          if (event.body !== undefined && event.body.type === 'stats') {
+            console.log('DS received: ', event.body);
+            this.sharedService.nextMessage(event.body);
+          }
+        }
+      });
     }
 
     this.currentShowing
