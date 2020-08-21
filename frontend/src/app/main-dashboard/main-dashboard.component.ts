@@ -14,7 +14,7 @@ limitations under the License. */
 
 // Angular Imports.
 import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
-import {Component, ViewChildren, QueryList} from '@angular/core';
+import {Component, ViewChildren, QueryList, ViewChild, ViewContainerRef} from '@angular/core';
 import {map} from 'rxjs/operators';
 
 // Project Imports.
@@ -29,7 +29,8 @@ export class MainDashboardComponent {
   // Selects the plot component present on the page. Allows the grandparent component (side-menu)
   // to access the plot that is a child of this component.
   @ViewChildren(PlotComponent) plot: QueryList<PlotComponent>;
-
+  currentTab = 0;
+  tabs = ['Tab0'];
   /** Based on the screen size, switch from standard to one column per row */
 
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
@@ -43,4 +44,25 @@ export class MainDashboardComponent {
   );
 
   constructor(private breakpointObserver: BreakpointObserver) {}
+
+  /**
+   * Creates a new tab by pushing the name of the tab to this.tabs.
+   * When a new item is added to this.tabs, the html will add a new tab.
+   * Also updates this.currentTab so that the new data is plotted in the new tab.
+   */
+  public newTab() {
+    this.tabs.push('Test');
+    this.currentTab = this.tabs.length - 1;
+    return this.currentTab;
+  }
+
+  /**
+   * Changes the currentTab when the user selects a different tab.
+   * @param event The MatTabChangeEvent that is emitted when the user
+   * selects a new tab. The index field is the index of the tab selected.
+   */
+  switchTab(event) {
+    console.log('switching..', event);
+    this.currentTab = event.index;
+  }
 }

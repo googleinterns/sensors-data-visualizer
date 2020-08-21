@@ -24,6 +24,7 @@ import {PlotComponent} from '../plot/plot.component';
   styleUrls: ['./dataset.component.css'],
 })
 export class DatasetComponent {
+  tabNumber: number;
   sample: any;
   plotRef: PlotComponent;
   containerRef: ComponentRef<DatasetComponent>;
@@ -58,7 +59,7 @@ export class DatasetComponent {
    * methods and fields of the plot.
    */
   public setPlotRef(ref) {
-    this.plotRef = ref.first;
+    this.plotRef = ref;
   }
 
   /**
@@ -68,6 +69,7 @@ export class DatasetComponent {
    */
   public setContainerRef(ref: ComponentRef<DatasetComponent>) {
     this.containerRef = ref;
+    console.log('DS Tab: ', this.tabNumber);
   }
   /**
    * Triggered when toggle on page is clicked. Calls the plot component toggleTrace method.

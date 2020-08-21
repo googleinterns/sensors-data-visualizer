@@ -23,12 +23,14 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
 // Main app UI components.
@@ -62,12 +64,14 @@ PlotlyModule.plotlyjs = PlotlyJS;
     MatButtonToggleModule,
     MatButtonModule,
     MatCardModule,
+    MatCheckboxModule,
     MatExpansionModule,
     MatGridListModule,
     MatIconModule,
     MatListModule,
     MatMenuModule,
     MatSidenavModule,
+    MatTabsModule,
     MatToolbarModule,
     PlotlyModule,
   ],
