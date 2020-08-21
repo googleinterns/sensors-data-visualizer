@@ -38,7 +38,7 @@ export class UploadService {
    * @param serverUrl The location of the backend parser server. Default when running
    * locally is localhost:5000/upload since Flask runs on port 5000.
    */
-  serverUrl = 'http://localhost:5000/upload';
+  serverUrl = 'http://localhost:5000/';
 
   private message = new BehaviorSubject(null);
   sharedMessage = this.message.asObservable();
@@ -52,8 +52,8 @@ export class UploadService {
    * Sends a POST request to the backend containing the files to be parsed.
    * @param formData The files the user selected in file system to upload.
    */
-  public sendFormData(formData) {
-    return this.httpClient.post<any>(this.serverUrl, formData, {
+  public sendFormData(formData, route) {
+    return this.httpClient.post<any>(this.serverUrl + route, formData, {
       reportProgress: true,
       observe: 'events',
     });

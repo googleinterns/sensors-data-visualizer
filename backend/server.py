@@ -42,5 +42,12 @@ def upload_file():
 
         return samples
 
+@app.route('/stats', methods = ['POST'])
+def compute_stats():
+    if request.method == "POST":
+        print("STATS RECEIVED: ...")
+        print(request)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

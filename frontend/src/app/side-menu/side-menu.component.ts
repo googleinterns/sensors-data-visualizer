@@ -74,33 +74,35 @@ export class SideMenuComponent {
     formData.append('file', file.data);
     file.inProgress = true;
 
-    this.sharedService.sendFormData(formData).subscribe((event: any) => {
-      if (typeof event === 'object') {
-        if (event.body !== undefined) {
-          const tabNumber = this.dashboard.currentTab;
-          const viewContainerRef = this.uploadDirective.viewContainerRef;
-          const samples = [];
-          const plotRef = this.dashboard.plot.toArray()[tabNumber];
-          console.log('tnum', tabNumber, this.dashboard);
-          console.log('Plots ', this.dashboard.plot.toArray());
-          console.log('smenu plot', plotRef);
+    this.sharedService
+      .sendFormData(formData, '/upload')
+      .subscribe((event: any) => {
+        if (typeof event === 'object') {
+          if (event.body !== undefined) {
+            const tabNumber = this.dashboard.currentTab;
+            const viewContainerRef = this.uploadDirective.viewContainerRef;
+            const samples = [];
+            const plotRef = this.dashboard.plot.toArray()[tabNumber];
+            console.log('tnum', tabNumber, this.dashboard);
+            console.log('Plots ', this.dashboard.plot.toArray());
+            console.log('smenu plot', plotRef);
 
-          for (const i in event.body) {
-            let sample = JSON.parse(event.body[i]);
-            sample = this.idMan.assignIDs(sample);
-            samples.push(sample);
+            for (const i in event.body) {
+              let sample = JSON.parse(event.body[i]);
+              sample = this.idMan.assignIDs(sample);
+              samples.push(sample);
 
-            this.sharedService.loadDataset(
-              tabNumber,
-              plotRef,
-              viewContainerRef,
-              sample
-            );
+              this.sharedService.loadDataset(
+                tabNumber,
+                plotRef,
+                viewContainerRef,
+                sample
+              );
+            }
+            plotRef.addSamples(samples);
           }
-          plotRef.addSamples(samples);
         }
-      }
-    });
+      });
   }
 
   /**

@@ -17,6 +17,7 @@ import {Component, ComponentRef} from '@angular/core';
 
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
+import {UploadService} from '../upload.service';
 
 @Component({
   selector: 'app-dataset',
@@ -36,7 +37,7 @@ export class DatasetComponent {
 
   currentShowing: Map<string, Map<string, boolean>> = new Map();
   isChecked = true;
-  constructor() {
+  constructor(private sharedService: UploadService) {
     this.hasLatencies = false;
   }
 
@@ -108,6 +109,11 @@ export class DatasetComponent {
     console.log('ids', this.ids);
     if (!(channel in this.ids.keys())) {
       console.log('channel not detected', channel);
+      const data = {
+        x: this.sample.timestamps,
+        y: this.sample.data[0],
+      }
+      this.sharedService.sendFormData(data, '/stats');
     }
 
     this.currentShowing
