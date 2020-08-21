@@ -112,8 +112,8 @@ export class DatasetComponent {
       const data = {
         x: this.sample.timestamps,
         y: this.sample.data[0],
-      }
-      this.sharedService.sendFormData(data, '/stats');
+      };
+      this.sharedService.sendFormData(data, 'stats');
     }
 
     this.currentShowing

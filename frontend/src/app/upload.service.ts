@@ -51,8 +51,11 @@ export class UploadService {
   /**
    * Sends a POST request to the backend containing the files to be parsed.
    * @param formData The files the user selected in file system to upload.
+   * @param route The server route to send formData to. this.serverUrl + route
+   * will be sent a POST request. Omit '/' from the route.
    */
   public sendFormData(formData, route) {
+    console.log('POSTING to', this.serverUrl + route);
     return this.httpClient.post<any>(this.serverUrl + route, formData, {
       reportProgress: true,
       observe: 'events',

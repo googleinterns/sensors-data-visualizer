@@ -46,7 +46,7 @@ def upload_file():
 def compute_stats():
     if request.method == "POST":
         print("STATS RECEIVED: ...")
-        print(request)
+        print(request.data)
 
 
 if __name__ == '__main__':
