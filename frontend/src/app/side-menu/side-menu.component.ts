@@ -68,7 +68,14 @@ export class SideMenuComponent {
           case 'stats': {
             console.log('smenu Plotting stats...');
             // Plot the new stats in a new tab.
-            const tabNumber = this.dashboard.currentTab;
+            const tabNumber = this.dashboard.newTab();
+            const viewContainerRef = this.uploadDirective.viewContainerRef;
+            const plotRef = this.dashboard.plot.toArray()[tabNumber];
+            // console.log('event', event);
+            // console.log('avgs', event.avgs);
+            // console.log('tnum ', tabNumber);
+            // console.log('vcr', viewContainerRef);
+            // console.log('plotr', plotRef);
             break;
           }
           case 'upload': {
@@ -126,71 +133,6 @@ export class SideMenuComponent {
         ) {
           this.sharedService.nextMessage(event.body);
         }
-        // if (typeof event === 'object' && event.body !== undefined) {
-        //   console.log('smenu received body: ', event.body);
-        //   switch (event.body.type) {
-        //     case 'stats': {
-        //       console.log('smenu Plotting stats...');
-        //       // Plot the new stats in a new tab.
-        //       const tabNumber = this.dashboard.currentTab;
-        //       break;
-        //     }
-        //     case 'upload': {
-        //       console.log('smenu Plotting dataset...');
-        //       // Plot new datasets added by the upload button.
-        //       const tabNumber = this.dashboard.currentTab;
-        //       const viewContainerRef = this.uploadDirective.viewContainerRef;
-        //       const samples = [];
-        //       const plotRef = this.dashboard.plot.toArray()[tabNumber];
-        //       const parsed = JSON.parse(event.body.data);
-
-        //       for (const i in parsed) {
-        //         let sample = JSON.parse(parsed[i]);
-        //         sample = this.idMan.assignIDs(sample);
-        //         samples.push(sample);
-
-        //         this.sharedService.loadDataset(
-        //           tabNumber,
-        //           plotRef,
-        //           viewContainerRef,
-        //           sample
-        //         );
-        //       }
-        //       plotRef.addSamples(samples);
-
-        //       break;
-        //     }
-        //     // To add new possible features, add a route to backend/server.py
-        //     // and add a case statement here matching the name of that route.
-        //   }
-        // }
-
-        // if (typeof event === 'object') {
-        //   if (event.body !== undefined) {
-        //     if (event.body.type === 'stats') {
-        //       // Plot new statistical data.
-        //     }
-        //     console.log('Side menu recieved: ', event.body);
-        //     const tabNumber = this.dashboard.currentTab;
-        //     const viewContainerRef = this.uploadDirective.viewContainerRef;
-        //     const samples = [];
-        //     const plotRef = this.dashboard.plot.toArray()[tabNumber];
-
-        //     for (const i in event.body) {
-        //       let sample = JSON.parse(event.body[i]);
-        //       sample = this.idMan.assignIDs(sample);
-        //       samples.push(sample);
-
-        //       this.sharedService.loadDataset(
-        //         tabNumber,
-        //         plotRef,
-        //         viewContainerRef,
-        //         sample
-        //       );
-        //     }
-        //     plotRef.addSamples(samples);
-        //   }
-        // }
       });
   }
 

@@ -18,6 +18,7 @@ import {Component, ComponentRef} from '@angular/core';
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
 import {UploadService} from '../upload.service';
+import {IdManagerService} from '../id-manager.service';
 
 @Component({
   selector: 'app-dataset',
@@ -29,21 +30,32 @@ export class DatasetComponent {
   sample: any;
   plotRef: PlotComponent;
   containerRef: ComponentRef<DatasetComponent>;
+  /**
+   * A map from channel name/number to trace id.
+   * I.E. ids.get('latencies') holds the trace id for latency data.
+   */
   ids = new Map<any, number>();
   hasLatencies: boolean;
-
   panelOpenState = false;
+  /**
+   * Tracks which options menu is currently selected by the user.
+   */
   currentOptions: any = null;
-
+  /**
+   * A map from data channel to slider type to boolean that is used to correctly
+   * show the user which stats and channels are showing or not.
+   * I.E. If the user has switched on channel 1 standard deviation then
+   * currentShowing.get('1').get('stdev') is true.
+   */
   currentShowing: Map<string, Map<string, boolean>> = new Map();
   isChecked = true;
+
   constructor(private sharedService: UploadService) {
     this.hasLatencies = false;
     this.sharedService.sharedMessage.subscribe((event: any) => {
       console.log('ds message recieved: ', event);
     });
   }
-
   /**
    * Setter method to initialize the dataset with appropriate sample data.
    * @param sample The sample object received by UploadService from the backend.
@@ -110,18 +122,37 @@ export class DatasetComponent {
     if (!(channel in this.ids.keys())) {
       console.log('channel not detected', channel);
       const data = {
-        x: this.sample.timestamps,
-        y: this.sample.data[0],
+        timestamps: this.sample.timestamps,
+        channels: {
+          ts_diffs: this.sample.timestamp_diffs[1],
+        },
       };
+      for (const i in this.sample.data) {
+        data.channels[i] = this.sample.data[i][1];
+      }
+      if (this.hasLatencies) {
+        data.channels['latencies'] = this.sample.latencies[1];
+      }
+      console.log('sending to server....', data);
       this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
         if (typeof event === 'object') {
           if (event.body !== undefined && event.body.type === 'stats') {
             console.log('DS received: ', event.body);
-            this.sharedService.nextMessage(event.body);
+            console.log('avgs', event.body.avgs);
+            for (const i in event.body.avgs) {
+              this.plotRef.addTrace(
+                this.sample.timestamps,
+                event.body.avgs[i],
+                -1,
+                i + ' running avg',
+                true
+              );
+            }
+            // Plot Stdevs here.
           }
         }
       });
-    }
+    } // End if
 
     this.currentShowing
       .get(String(this.currentOptions))

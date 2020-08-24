@@ -37,4 +37,8 @@ export class IdManagerService {
     }
     return sample;
   }
+
+  public assignSingleID(trace) {
+    return [this.nextID++, trace];
+  }
 }
