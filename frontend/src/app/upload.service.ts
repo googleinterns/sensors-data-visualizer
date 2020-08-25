@@ -18,12 +18,15 @@ import {
   ComponentRef,
   Injectable,
   ViewContainerRef,
+  QueryList,
 } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject} from 'rxjs';
 
 // Project Imports
 import {DatasetComponent} from './dataset/dataset.component';
+import {PlotComponent} from './plot/plot.component';
+import { MainDashboardComponent } from './main-dashboard/main-dashboard.component';
 
 @Injectable({
   providedIn: 'root',
@@ -81,7 +84,7 @@ export class UploadService {
    */
   async loadDataset(
     tabNumber: number,
-    plotRef: any,
+    dashboard: MainDashboardComponent,
     ref: ViewContainerRef,
     data
   ) {
@@ -90,10 +93,9 @@ export class UploadService {
     const compRef: ComponentRef<DatasetComponent> = ref.createComponent(
       this.resolver.resolveComponentFactory(component)
     );
-    console.log('loading ds...');
     compRef.instance.tabNumber = tabNumber;
     compRef.instance.setSample(data);
-    compRef.instance.setPlotRef(plotRef);
+    compRef.instance.setDashboardRef(dashboard);
     compRef.instance.setContainerRef(compRef);
   }
 }

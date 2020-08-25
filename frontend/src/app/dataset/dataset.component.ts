@@ -13,12 +13,13 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {Component, ComponentRef} from '@angular/core';
+import {Component, ComponentRef, QueryList} from '@angular/core';
 
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
 import {UploadService} from '../upload.service';
 import {IdManagerService} from '../id-manager.service';
+import {MainDashboardComponent} from '../main-dashboard/main-dashboard.component';
 
 @Component({
   selector: 'app-dataset',
@@ -28,7 +29,13 @@ import {IdManagerService} from '../id-manager.service';
 export class DatasetComponent {
   tabNumber: number;
   sample: any;
-  plotRef: PlotComponent;
+  /**
+   * A reference to the main dashboard that allows this data set to
+   * access any plot and create new tabs on its own, without help from
+   * the side-menu component.
+   */
+  dashboard: MainDashboardComponent;
+  //plotRef: PlotComponent;
   containerRef: ComponentRef<DatasetComponent>;
   /**
    * A map from channel name/number to trace id.
@@ -94,15 +101,18 @@ export class DatasetComponent {
     }
   }
 
-  /**
-   * Allows UploadService to pass in a reference to the PlotComponent being displayed.
-   * @param ref A reference to the plot component that allows dataset to access the
-   * methods and fields of the plot.
-   */
-  public setPlotRef(ref) {
-    this.plotRef = ref;
-  }
+  // /**
+  //  * Allows UploadService to pass in a reference to the PlotComponent being displayed.
+  //  * @param ref A reference to the plot component that allows dataset to access the
+  //  * methods and fields of the plot.
+  //  */
+  // public setPlotRef(ref) {
+  //   this.plotRef = ref;
+  // }
 
+  public setDashboardRef(ref) {
+    this.dashboard = ref;
+  }
   /**
    * Initializes the dataset with a reference to itself. This enables
    * the dataset to self-destruct when needed.
@@ -117,7 +127,9 @@ export class DatasetComponent {
    */
   toggleTrace(channel) {
     if (!(channel in this.ids.keys())) {
-      console.log('channel not detected', channel);
+      this.dashboard.newTab();
+
+      // Package data to send to the backend.
       const data = {
         channels: {
           ts_diffs: this.sample.timestamp_diffs[1],
@@ -129,20 +141,25 @@ export class DatasetComponent {
       if (this.hasLatencies) {
         data.channels['latencies'] = this.sample.latencies[1];
       }
+
       console.log('sending to server....', data);
       this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
-        if (typeof event === 'object') {
-          if (event.body !== undefined && event.body.type === 'stats') {
-            for (const i in event.body.avgs) {
-              this.plotRef.addTrace(
+        if (
+          typeof event === 'object' &&
+          event.body !== undefined &&
+          event.body.type === 'stats'
+        ) {
+          console.log('QueryRef: ', this.dashboard.plot);
+          for (const i in event.body.avgs) {
+            this.dashboard.plot
+              .toArray()
+              [this.dashboard.currentTab].addTrace(
                 this.sample.timestamps,
                 event.body.avgs[i],
                 -1,
                 i + ' running avg',
                 true
               );
-            }
-            // Plot Stdevs here.
           }
         }
       });
@@ -150,7 +167,9 @@ export class DatasetComponent {
       this.currentShowing
         .get(String(this.currentOptions))
         .set(channel, !this.currentOn(channel));
-      this.plotRef.toggleTrace(this.ids.get(this.currentOptions));
+      this.dashboard.plot
+        .toArray()
+        [this.tabNumber].toggleTrace(this.ids.get(this.currentOptions));
     }
   }
 
@@ -184,7 +203,9 @@ export class DatasetComponent {
    */
   deleteDataset() {
     console.log('Deleting myself...', this.ids.values());
-    this.plotRef.deleteDataset(new Set<number>(this.ids.values()));
+    this.dashboard.plot
+      .toArray()
+      [this.tabNumber].deleteDataset(new Set<number>(this.ids.values()));
     this.containerRef.destroy();
   }
 }
