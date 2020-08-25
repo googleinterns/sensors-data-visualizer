@@ -52,9 +52,6 @@ export class DatasetComponent {
 
   constructor(private sharedService: UploadService) {
     this.hasLatencies = false;
-    this.sharedService.sharedMessage.subscribe((event: any) => {
-      console.log('ds message recieved: ', event);
-    });
   }
   /**
    * Setter method to initialize the dataset with appropriate sample data.
@@ -122,7 +119,6 @@ export class DatasetComponent {
     if (!(channel in this.ids.keys())) {
       console.log('channel not detected', channel);
       const data = {
-        timestamps: this.sample.timestamps,
         channels: {
           ts_diffs: this.sample.timestamp_diffs[1],
         },
@@ -137,8 +133,6 @@ export class DatasetComponent {
       this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
         if (typeof event === 'object') {
           if (event.body !== undefined && event.body.type === 'stats') {
-            console.log('DS received: ', event.body);
-            console.log('avgs', event.body.avgs);
             for (const i in event.body.avgs) {
               this.plotRef.addTrace(
                 this.sample.timestamps,
@@ -152,12 +146,12 @@ export class DatasetComponent {
           }
         }
       });
-    } // End if
-
-    this.currentShowing
-      .get(String(this.currentOptions))
-      .set(channel, !this.currentOn(channel));
-    this.plotRef.toggleTrace(this.ids.get(this.currentOptions));
+    } else {
+      this.currentShowing
+        .get(String(this.currentOptions))
+        .set(channel, !this.currentOn(channel));
+      this.plotRef.toggleTrace(this.ids.get(this.currentOptions));
+    }
   }
 
   /**

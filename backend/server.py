@@ -48,19 +48,14 @@ def upload_file():
 @app.route('/stats', methods = ['POST'])
 def compute_stats():
     if request.method == "POST":
-        print("STATS RECEIVED: ...")
         received = json.loads(request.data)
-        #avgs, stdevs = [], []
         avgs, stdevs = {}, {}
 
         for i, j in enumerate(received['channels']):
             avgs[j] = compute_running_avg(received['channels'][j])
             stdevs[j] = compute_stdev(received['channels'][j])
-        
-        print('Computed...')
-        print('stdevs: ', stdevs)
 
-        return {'type': 'stats', 'avgs': avgs, 'stdevs': stdevs, 'timestamps': received['timestamps']}
+        return {'type': 'stats', 'avgs': avgs, 'stdevs': stdevs}
 
 def compute_running_avg(trace):
     n = len(trace)
@@ -68,10 +63,6 @@ def compute_running_avg(trace):
     for i in range(len(avgs)):
         avgs[i] = avgs[i] / (i + 1)
 
-    print('avgs')
-    print('len', len(avgs))
-    print('trace: ', trace)
-    print('avgs', avgs)
     return avgs.tolist()
     
 

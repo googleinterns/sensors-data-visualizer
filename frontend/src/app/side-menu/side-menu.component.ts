@@ -66,16 +66,7 @@ export class SideMenuComponent {
         console.log('valid object');
         switch (event.type) {
           case 'stats': {
-            console.log('smenu Plotting stats...');
-            // Plot the new stats in a new tab.
-            const tabNumber = this.dashboard.newTab();
-            const viewContainerRef = this.uploadDirective.viewContainerRef;
-            const plotRef = this.dashboard.plot.toArray()[tabNumber];
-            // console.log('event', event);
-            // console.log('avgs', event.avgs);
-            // console.log('tnum ', tabNumber);
-            // console.log('vcr', viewContainerRef);
-            // console.log('plotr', plotRef);
+            //TODO handle assigning ids to the new stats data.
             break;
           }
           case 'upload': {

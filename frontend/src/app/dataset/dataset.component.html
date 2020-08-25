@@ -22,8 +22,6 @@ limitations under the License. -->
         </mat-panel-description>
     </mat-expansion-panel-header>
         <h4>Channels</h4>
-
-
         <mat-button-toggle-group id="channels">
             <!-- Angular requires an iterable array for ngFor loops, so the only way to
             make a for loop of some length is to loop over an array of that length. Hence the 
@@ -38,7 +36,7 @@ limitations under the License. -->
                 Timestamp Difference
             </mat-button-toggle>
         </mat-button-toggle-group>
-        <!-- The mat-expansion-panel is reused for every data trace contained in the dataset. To maintain a memory of which
+        <!-- This mat-expansion-panel is reused for every data trace contained in the dataset. To maintain a memory of which
         traces are toggled on/off the dataset.component.ts currentShowing map determines which channels are on the plot. -->
         <mat-expansion-panel *ngIf="panelOpenState" [expanded]="panelOpenState">
             <mat-expansion-panel-header>
@@ -50,8 +48,6 @@ limitations under the License. -->
             <mat-slide-toggle [checked]="currentOn('stdev')" (change)="toggleTrace('stdev')">Standard Deviation</mat-slide-toggle>
             <mat-slide-toggle [checked]="currentOn('avg')" (change)="toggleTrace('avg')">Running Average</mat-slide-toggle>
         </mat-expansion-panel>
-
-
     <button [matMenuTriggerFor]="menu" mat-mini-fab color="primary">
         <mat-icon>delete</mat-icon>
     </button>
