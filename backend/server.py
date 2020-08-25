@@ -31,10 +31,18 @@ app = Flask(__name__)
 #development only. https://flask-cors.readthedocs.io/en/latest/#resource-specific-cors
 CORS(app)
 
+"""The default route. Doesn't do anything.
+"""
 @app.route('/')
 def index():
     return ""
 
+"""Handles file uploads and responds with parsed sensor data.
+
+Attributes:
+    request: What was recieved by the POST request. request.files is
+        a list of the uploaded files.
+"""
 @app.route('/upload', methods = ['POST'])
 def upload_file():
     if request.method == "POST":
@@ -45,6 +53,14 @@ def upload_file():
 
         return {'type': 'upload', 'data': samples}
 
+"""Handles requests for stats data and responds with the requested
+    stats.
+
+Attributes:
+    request.data: The data sent from the frontend.
+        request.data.channels: Key value pairs of channels and arrays
+        to compute statistics for.
+"""
 @app.route('/stats', methods = ['POST'])
 def compute_stats():
     if request.method == "POST":
@@ -57,6 +73,12 @@ def compute_stats():
 
         return {'type': 'stats', 'avgs': avgs, 'stdevs': stdevs}
 
+"""Computes the running average of a single data trace.
+    Returns a Python list.
+
+Attributes:
+    trace: The Python list data trace to compute averages for.
+"""
 def compute_running_avg(trace):
     n = len(trace)
     avgs = np.cumsum(trace[:n+1], dtype=float)
@@ -65,7 +87,11 @@ def compute_running_avg(trace):
 
     return avgs.tolist()
     
+"""Computes the standard deviation of a single data trace.
 
+Attributes:
+    trace: The Python list data trace to compute stdev for.
+"""
 def compute_stdev(trace):
     return -1 #TODO
 
