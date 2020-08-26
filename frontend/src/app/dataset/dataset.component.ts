@@ -27,7 +27,12 @@ import {MainDashboardComponent} from '../main-dashboard/main-dashboard.component
   styleUrls: ['./dataset.component.css'],
 })
 export class DatasetComponent {
-  tabNumber: number;
+  /**
+   * Tracks the tabs where data for this dataset is located.
+   * tabNumbers[0] holds the tab where standard data is located.
+   * tabNumbers[1] holds the tab where statistics data is located.
+   */
+  tabNumbers: number[];
   sample: any;
   /**
    * A reference to the main dashboard that allows this data set to
@@ -35,7 +40,6 @@ export class DatasetComponent {
    * the side-menu component.
    */
   dashboard: MainDashboardComponent;
-  //plotRef: PlotComponent;
   containerRef: ComponentRef<DatasetComponent>;
   /**
    * A map from channel name/number to trace id.
@@ -57,7 +61,10 @@ export class DatasetComponent {
   currentShowing: Map<string, Map<string, boolean>> = new Map();
   isChecked = true;
 
-  constructor(private sharedService: UploadService) {
+  constructor(
+    private sharedService: UploadService,
+    private idMan: IdManagerService
+  ) {
     this.hasLatencies = false;
   }
   /**
@@ -121,13 +128,17 @@ export class DatasetComponent {
   public setContainerRef(ref: ComponentRef<DatasetComponent>) {
     this.containerRef = ref;
   }
+
   /**
    * Triggered when toggle on page is clicked. Calls the plot component toggleTrace method.
    * @param channel The channel of the trace to toggle.
    */
   toggleTrace(channel) {
-    if (!(channel in this.ids.keys())) {
-      this.dashboard.newTab();
+    console.log('Toggling: ', channel + this.currentOptions);
+    console.log('curr ids;', this.ids.keys());
+    //if (!(channel in this.ids.keys().toArray())) {
+    if (!this.ids.has(channel)) {
+      this.tabNumbers[1] = this.dashboard.newTab();
 
       // Package data to send to the backend.
       const data = {
@@ -141,36 +152,64 @@ export class DatasetComponent {
       if (this.hasLatencies) {
         data.channels['latencies'] = this.sample.latencies[1];
       }
-
-      console.log('sending to server....', data);
-      this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
-        if (
-          typeof event === 'object' &&
-          event.body !== undefined &&
-          event.body.type === 'stats'
-        ) {
-          console.log('QueryRef: ', this.dashboard.plot);
-          for (const i in event.body.avgs) {
-            this.dashboard.plot
-              .toArray()
-              [this.dashboard.currentTab].addTrace(
-                this.sample.timestamps,
-                event.body.avgs[i],
-                -1,
-                i + ' running avg',
-                true
-              );
-          }
-        }
-      });
+      this.requestStats(data, channel);
     } else {
+      console.log('else.......');
       this.currentShowing
         .get(String(this.currentOptions))
         .set(channel, !this.currentOn(channel));
       this.dashboard.plot
         .toArray()
-        [this.tabNumber].toggleTrace(this.ids.get(this.currentOptions));
+        [this.tabNumbers[0]].toggleTrace(this.ids.get(this.currentOptions));
     }
+  }
+
+  /**
+   * Handles all needed operations for requesting stats from the backend
+   * including sending a POST, and receiving and plotting the data.
+   * @param data The traces to send to the backend for which
+   *  stats will be computed.
+   * @param channel The data channel for which the stats were requested.
+   */
+  requestStats(data, channel) {
+    console.log('sending to server....', data);
+    this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
+      if (
+        typeof event === 'object' &&
+        event.body !== undefined &&
+        event.body.type === 'stats'
+      ) {
+        console.log('DS received: ', event.body);
+        const plot = this.dashboard.plot.toArray()[this.dashboard.currentTab];
+        for (const i in event.body.avgs) {
+          const avg_id = this.idMan.assignSingleID();
+          const stdev_id = this.idMan.assignSingleID();
+          this.ids.set('avg' + i, avg_id);
+          this.ids.set('stdev' + i, stdev_id);
+          console.log('ids', this.ids);
+
+          plot.addTrace(
+            this.sample.timestamps,
+            event.body.avgs[i],
+            avg_id,
+            i + ' running avg',
+            false
+          );
+          plot.addTrace(
+            this.sample.timestamps,
+            event.body.stdevs[i],
+            stdev_id,
+            i + ' stdev',
+            false
+          );
+          this.currentShowing
+            .get(String(this.currentOptions))
+            .set(channel, true);
+        }
+        // Turn on the plot that the user requested.
+        plot.toggleTrace(this.ids.get(channel + this.currentOptions));
+      }
+    });
   }
 
   /**
@@ -205,7 +244,7 @@ export class DatasetComponent {
     console.log('Deleting myself...', this.ids.values());
     this.dashboard.plot
       .toArray()
-      [this.tabNumber].deleteDataset(new Set<number>(this.ids.values()));
+      [this.tabNumbers[0]].deleteDataset(new Set<number>(this.ids.values()));
     this.containerRef.destroy();
   }
 }

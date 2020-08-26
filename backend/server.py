@@ -93,7 +93,7 @@ Attributes:
     trace: The Python list data trace to compute stdev for.
 """
 def compute_stdev(trace):
-    return -1 #TODO
+    return [-1 for i in range(len(trace))] #TODO
 
 if __name__ == '__main__':
     app.run(debug=True)
