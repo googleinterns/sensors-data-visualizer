@@ -91,7 +91,6 @@ export class SideMenuComponent {
               );
             }
             plotRef.addSamples(samples);
-
             break;
           }
           // To add new possible features, add a route to backend/server.py
