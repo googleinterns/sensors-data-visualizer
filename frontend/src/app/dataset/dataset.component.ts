@@ -45,7 +45,7 @@ export class DatasetComponent {
    * A map from channel name/number to trace id.
    * I.E. ids.get('latencies') holds the trace id for latency data.
    */
-  ids = new Map<any, number>();
+  ids = new Map<string, number>();
   hasLatencies: boolean;
   panelOpenState = false;
   /**
@@ -74,7 +74,7 @@ export class DatasetComponent {
   public setSample(sample) {
     this.sample = sample;
     for (const i in sample.data) {
-      this.ids.set(Number(i), sample.data[i][0]);
+      this.ids.set(i, sample.data[i][0]);
       this.currentShowing.set(
         i, // The data channel key.
         new Map([
@@ -84,9 +84,9 @@ export class DatasetComponent {
         ])
       );
     }
-    this.ids.set('ts_diff', sample.timestamp_diffs[0]);
+    this.ids.set('ts_diffs', sample.timestamp_diffs[0]);
     this.currentShowing.set(
-      'ts_diff',
+      'ts_diffs',
       new Map([
         ['show', false],
         ['stdev', false],
@@ -134,12 +134,11 @@ export class DatasetComponent {
    * @param channel The channel of the trace to toggle.
    */
   toggleTrace(channel) {
-    console.log('Toggling: ', channel + this.currentOptions);
-    console.log('curr ids;', this.ids.keys());
-    //if (!(channel in this.ids.keys().toArray())) {
-    if (!this.ids.has(channel)) {
+    console.log('channel ', channel);
+    const toggleStats = channel === 'avg' || channel === 'stdev';
+    // If toggling stats data that hasn't been requested yet.
+    if (toggleStats && this.tabNumbers[1] === -1) {
       this.tabNumbers[1] = this.dashboard.newTab();
-
       // Package data to send to the backend.
       const data = {
         channels: {
@@ -154,13 +153,16 @@ export class DatasetComponent {
       }
       this.requestStats(data, channel);
     } else {
-      console.log('else.......');
+      const tab = toggleStats ? this.tabNumbers[1] : this.tabNumbers[0];
+      const id = toggleStats
+        ? channel + this.currentOptions
+        : this.currentOptions;
+      console.log('tab ', tab, ' id ', id);
+      this.dashboard.plot.toArray()[tab].toggleTrace(this.ids.get(id));
+
       this.currentShowing
         .get(String(this.currentOptions))
         .set(channel, !this.currentOn(channel));
-      this.dashboard.plot
-        .toArray()
-        [this.tabNumbers[0]].toggleTrace(this.ids.get(this.currentOptions));
     }
   }
 
@@ -186,7 +188,6 @@ export class DatasetComponent {
           const stdev_id = this.idMan.assignSingleID();
           this.ids.set('avg' + i, avg_id);
           this.ids.set('stdev' + i, stdev_id);
-          console.log('ids', this.ids);
 
           plot.addTrace(
             this.sample.timestamps,
@@ -207,11 +208,16 @@ export class DatasetComponent {
             .set(channel, true);
         }
         // Turn on the plot that the user requested.
+        console.log('ids', this.ids);
+        this.ids.forEach(this.logMapElements);
+        console.log('toggling...', channel + this.currentOptions);
         plot.toggleTrace(this.ids.get(channel + this.currentOptions));
       }
     });
   }
-
+  logMapElements(value, key, map) {
+    console.log(`map.get('${key}') = ${value}`);
+  }
   /**
    * Toggles hiding and showing the expansion menu for each channel.
    * @param channel The channel that was selected.
@@ -225,6 +231,7 @@ export class DatasetComponent {
     if (this.currentOptions === null) {
       this.panelOpenState = true;
     }
+    console.log('curr options', channel);
     this.currentOptions = channel;
   }
 
