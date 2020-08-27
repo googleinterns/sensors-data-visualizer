@@ -31,20 +31,27 @@ app = Flask(__name__)
 #development only. https://flask-cors.readthedocs.io/en/latest/#resource-specific-cors
 CORS(app)
 
-"""The default route. Doesn't do anything.
-"""
+
 @app.route('/')
 def index():
+    """The default route. Doesn't do anything.
+    """
     return ""
 
-"""Handles file uploads and responds with parsed sensor data.
 
-Attributes:
-    request: What was recieved by the POST request. request.files is
-        a list of the uploaded files.
-"""
 @app.route('/upload', methods = ['POST'])
 def upload_file():
+    """Handles file uploads and responds with parsed sensor data.
+
+    Attributes:
+        request: What was recieved by the POST request. 
+        request.files: A list of the uploaded files.
+
+    Returns: Dictionary object for the fronend to consume.
+        type: The type of data being returned. Set to 'upload'
+            so the fronent knows the source of the data being returned.
+        data: The data being returned from the sensor parser.
+    """
     if request.method == "POST":
         f = request.files['file']
         f.save(secure_filename(f.filename))
@@ -53,16 +60,22 @@ def upload_file():
 
         return {'type': 'upload', 'data': samples}
 
-"""Handles requests for stats data and responds with the requested
-    stats.
-
-Attributes:
-    request.data: The data sent from the frontend.
-        request.data.channels: Key value pairs of channels and arrays
-        to compute statistics for.
-"""
 @app.route('/stats', methods = ['POST'])
 def compute_stats():
+    """Handles requests for stats data and responds with the requested
+    stats.
+
+    Attributes:
+        request.data: The data sent from the frontend.
+        request.data.channels: Key value pairs of channels and arrays
+            to compute statistics for.
+        
+    Returns: Dictionary object for the frontend to consume.
+        type: The type of data being returned. Set to 'upload'
+            so the fronent knows the source of the data being returned.
+        avgs: Object mapping channel type to a list of computed averages.
+        stdevs: Object mapping channel type to a list of computed standard deviations.
+    """
     if request.method == "POST":
         received = json.loads(request.data)
         avgs, stdevs = {}, {}
@@ -73,16 +86,18 @@ def compute_stats():
 
         return {'type': 'stats', 'avgs': avgs, 'stdevs': stdevs}
 
-"""Computes the running average of a single data trace.
-    Returns a Python list.
 
-Attributes:
-    trace: The Python list data trace to compute averages for.
-    k: The size of the window of previous data points that are
-        used in the moving average computation. 
-        TODO Make user defined.
-"""
 def compute_running_avg(trace, k=100):
+    """Computes the running average of a single data trace.
+
+    Attributes:
+        trace: The Python list data trace to compute averages for.
+        k: The size of the window of previous data points that are
+            used in the moving average computation. 
+            TODO Make user defined.
+    
+    Returns: Python list containing the running average at each point.
+    """
     n = len(trace)
     if k > n:
         k = n
@@ -97,12 +112,15 @@ def compute_running_avg(trace, k=100):
             avgs[i] = cumsum / float(k)
     return avgs
     
-"""Computes the standard deviation of a single data trace.
 
-Attributes:
-    trace: The Python list data trace to compute stdev for.
-"""
 def compute_stdev(trace):
+    """Computes the standard deviation of a single data trace.
+
+    Attributes:
+        trace: The Python list data trace to compute stdev for.
+
+    Returns: Python list containing the standard deviation at each point.
+    """
     return -1 #TODO
 
 if __name__ == '__main__':
