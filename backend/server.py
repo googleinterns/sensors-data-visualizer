@@ -113,7 +113,7 @@ def compute_running_avg(trace, k=100):
     return avgs
     
 
-def compute_stdev(trace):
+def compute_stdev(trace, k=100):
     """Computes the standard deviation of a single data trace.
 
     Attributes:
@@ -121,7 +121,18 @@ def compute_stdev(trace):
 
     Returns: Python list containing the standard deviation at each point.
     """
-    return -1 #TODO
+    n = len(trace)
+    if k > n:
+        k = n
+
+    stdevs = [0 for i in range(n)]
+    for i in range(n):
+        if i < k:
+            stdevs[i] = np.std(trace[: i + 1])
+        else:
+            stdevs[i] = np.std(trace[(i + 1) - k : i + 1])
+
+    return stdevs
 
 if __name__ == '__main__':
     app.run(debug=True)
