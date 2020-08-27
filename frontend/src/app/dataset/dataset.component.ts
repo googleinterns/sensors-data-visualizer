@@ -13,7 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {Component, ComponentRef, QueryList} from '@angular/core';
+import {Component, ComponentRef, QueryList, Inject} from '@angular/core';
+import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
@@ -63,7 +64,8 @@ export class DatasetComponent {
 
   constructor(
     private sharedService: UploadService,
-    private idMan: IdManagerService
+    private idMan: IdManagerService,
+    public dialog: MatDialog
   ) {
     this.hasLatencies = false;
   }
@@ -138,6 +140,7 @@ export class DatasetComponent {
     const toggleStats = channel === 'avg' || channel === 'stdev';
     // If toggling stats data that hasn't been requested yet.
     if (toggleStats && this.tabNumbers[1] === -1) {
+      this.openInitDialog();
       this.tabNumbers[1] = this.dashboard.newTab();
       // Package data to send to the backend.
       const data = {
@@ -157,15 +160,21 @@ export class DatasetComponent {
       const id = toggleStats
         ? channel + this.currentOptions
         : String(this.currentOptions);
-      
-      console.log('ids', this.ids)
-      console.log('tab ', tab, ' id ', id);
+
       this.dashboard.plot.toArray()[tab].toggleTrace(this.ids.get(id));
 
       this.currentShowing
         .get(String(this.currentOptions))
         .set(channel, !this.currentOn(channel));
     }
+  }
+  
+  /**
+   * Open a statistics intialization dialog that gives the user
+   * a choice for period size for both stdev and moving average.
+   */
+  openInitDialog() {
+    this.dialog.open(InitDialog);
   }
 
   /**
@@ -256,4 +265,16 @@ export class DatasetComponent {
       [this.tabNumbers[0]].deleteDataset(new Set<number>(this.ids.values()));
     this.containerRef.destroy();
   }
+}
+
+@Component({
+  selector: 'init-dialog',
+  template: `
+    <h2>Stats Settings</h2>
+    <p>Standard Deviation period:</p>
+    <p>Running Average period:</p>
+  `,
+})
+export class InitDialog {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData) {}
 }
