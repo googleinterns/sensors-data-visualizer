@@ -14,7 +14,6 @@ limitations under the License. */
 
 // Angular Imports.
 import {Component, ComponentRef, QueryList, Inject} from '@angular/core';
-import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
@@ -64,8 +63,7 @@ export class DatasetComponent {
 
   constructor(
     private sharedService: UploadService,
-    private idMan: IdManagerService,
-    public dialog: MatDialog
+    private idMan: IdManagerService
   ) {
     this.hasLatencies = false;
   }
@@ -110,15 +108,6 @@ export class DatasetComponent {
     }
   }
 
-  // /**
-  //  * Allows UploadService to pass in a reference to the PlotComponent being displayed.
-  //  * @param ref A reference to the plot component that allows dataset to access the
-  //  * methods and fields of the plot.
-  //  */
-  // public setPlotRef(ref) {
-  //   this.plotRef = ref;
-  // }
-
   public setDashboardRef(ref) {
     this.dashboard = ref;
   }
@@ -140,7 +129,6 @@ export class DatasetComponent {
     const toggleStats = channel === 'avg' || channel === 'stdev';
     // If toggling stats data that hasn't been requested yet.
     if (toggleStats && this.tabNumbers[1] === -1) {
-      this.openInitDialog();
       this.tabNumbers[1] = this.dashboard.newTab();
       // Package data to send to the backend.
       const data = {
@@ -156,7 +144,7 @@ export class DatasetComponent {
       }
       this.requestStats(data, channel);
     } else {
-      const tab = toggleStats ? this.tabNumbers[1] : this.tabNumbers[0];
+      const tab = channel === 'stdev' ? this.tabNumbers[1] : this.tabNumbers[0];
       const id = toggleStats
         ? channel + this.currentOptions
         : String(this.currentOptions);
@@ -167,14 +155,6 @@ export class DatasetComponent {
         .get(String(this.currentOptions))
         .set(channel, !this.currentOn(channel));
     }
-  }
-  
-  /**
-   * Open a statistics intialization dialog that gives the user
-   * a choice for period size for both stdev and moving average.
-   */
-  openInitDialog() {
-    this.dialog.open(InitDialog);
   }
 
   /**
@@ -193,21 +173,25 @@ export class DatasetComponent {
         event.body.type === 'stats'
       ) {
         console.log('DS received: ', event.body);
-        const plot = this.dashboard.plot.toArray()[this.dashboard.currentTab];
+        const plots = [
+          this.dashboard.plot.toArray()[this.dashboard.currentTab - 1], // Tab for avgs
+          this.dashboard.plot.toArray()[this.dashboard.currentTab], // Tab for stdevs.
+        ];
+
         for (const i in event.body.avgs) {
           const avg_id = this.idMan.assignSingleID();
           const stdev_id = this.idMan.assignSingleID();
           this.ids.set('avg' + i, avg_id);
           this.ids.set('stdev' + i, stdev_id);
 
-          plot.addTrace(
+          plots[0].addTrace(
             this.sample.timestamps,
             event.body.avgs[i],
             avg_id,
             i + ' running avg',
             false
           );
-          plot.addTrace(
+          plots[1].addTrace(
             this.sample.timestamps,
             event.body.stdevs[i],
             stdev_id,
@@ -222,7 +206,9 @@ export class DatasetComponent {
         console.log('ids', this.ids);
         this.ids.forEach(this.logMapElements);
         console.log('toggling...', channel + this.currentOptions);
-        plot.toggleTrace(this.ids.get(channel + this.currentOptions));
+        plots[channel === 'avg' ? 0 : 1].toggleTrace(
+          this.ids.get(channel + this.currentOptions)
+        );
       }
     });
   }
@@ -265,16 +251,4 @@ export class DatasetComponent {
       [this.tabNumbers[0]].deleteDataset(new Set<number>(this.ids.values()));
     this.containerRef.destroy();
   }
-}
-
-@Component({
-  selector: 'init-dialog',
-  template: `
-    <h2>Stats Settings</h2>
-    <p>Standard Deviation period:</p>
-    <p>Running Average period:</p>
-  `,
-})
-export class InitDialog {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData) {}
 }
