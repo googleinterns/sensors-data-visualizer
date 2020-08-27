@@ -156,7 +156,9 @@ export class DatasetComponent {
       const tab = toggleStats ? this.tabNumbers[1] : this.tabNumbers[0];
       const id = toggleStats
         ? channel + this.currentOptions
-        : this.currentOptions;
+        : String(this.currentOptions);
+      
+      console.log('ids', this.ids)
       console.log('tab ', tab, ' id ', id);
       this.dashboard.plot.toArray()[tab].toggleTrace(this.ids.get(id));
 
