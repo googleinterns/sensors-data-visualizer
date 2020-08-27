@@ -59,7 +59,46 @@ export class SideMenuComponent {
     private breakpointObserver: BreakpointObserver,
     private sharedService: UploadService,
     private idMan: IdManagerService
-  ) {}
+  ) {
+    this.sharedService.sharedMessage.subscribe((event: any) => {
+      console.log('smenu message recieved: ', event);
+      if (typeof event === 'object' && event !== null) {
+        console.log('valid object');
+        switch (event.type) {
+          case 'stats': {
+            //TODO handle assigning ids to the new stats data.
+            break;
+          }
+          case 'upload': {
+            console.log('smenu Plotting dataset...');
+            // Plot new datasets added by the upload button.
+            const tabNumber = this.dashboard.currentTab;
+            const viewContainerRef = this.uploadDirective.viewContainerRef;
+            const samples = [];
+            const plotRef = this.dashboard.plot.toArray()[tabNumber];
+            const parsed = JSON.parse(event.data);
+
+            for (const i in parsed) {
+              let sample = JSON.parse(parsed[i]);
+              sample = this.idMan.assignIDs(sample);
+              samples.push(sample);
+
+              this.sharedService.loadDataset(
+                tabNumber,
+                plotRef,
+                viewContainerRef,
+                sample
+              );
+            }
+            plotRef.addSamples(samples);
+            break;
+          }
+          // To add new possible features, add a route to backend/server.py
+          // and add a case statement here matching the name of that route.
+        }
+      }
+    });
+  }
 
   /**
    * sendFile(file) is called when the user presses the upload button.
@@ -74,30 +113,17 @@ export class SideMenuComponent {
     formData.append('file', file.data);
     file.inProgress = true;
 
-    this.sharedService.sendFormData(formData).subscribe((event: any) => {
-      if (typeof event === 'object') {
-        if (event.body !== undefined) {
-          const tabNumber = this.dashboard.currentTab;
-          const viewContainerRef = this.uploadDirective.viewContainerRef;
-          const samples = [];
-          const plotRef = this.dashboard.plot.toArray()[tabNumber];
-
-          for (const i in event.body) {
-            let sample = JSON.parse(event.body[i]);
-            sample = this.idMan.assignIDs(sample);
-            samples.push(sample);
-
-            this.sharedService.loadDataset(
-              tabNumber,
-              plotRef,
-              viewContainerRef,
-              sample
-            );
-          }
-          plotRef.addSamples(samples);
+    this.sharedService
+      .sendFormData(formData, '/upload')
+      .subscribe((event: any) => {
+        if (
+          typeof event === 'object' &&
+          event.body !== undefined &&
+          event.body.type === 'upload'
+        ) {
+          this.sharedService.nextMessage(event.body);
         }
-      }
-    });
+      });
   }
 
   /**
