@@ -36,17 +36,24 @@ limitations under the License. -->
                 Timestamp Difference
             </mat-button-toggle>
         </mat-button-toggle-group>
-        <!-- This mat-expansion-panel is reused for every data trace contained in the dataset. To maintain a memory of which
-        traces are toggled on/off the dataset.component.ts currentShowing map determines which channels are on the plot. -->
+        <!-- This mat-expansion-panel is reused for every data trace contained in the dataset.
+        To maintain a memory of which traces are toggled on/off the dataset.component.ts
+        currentShowing map determines which channels are on in the plot. -->
         <mat-expansion-panel *ngIf="panelOpenState" [expanded]="panelOpenState">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Options and Statistics {{currentOptions}}
                 </mat-panel-title>
             </mat-expansion-panel-header>
-            <mat-slide-toggle [checked]="currentOn('show')" (change)="toggleTrace('show')">Show Channel</mat-slide-toggle>
-            <mat-slide-toggle [checked]="currentOn('stdev')" (change)="toggleTrace('stdev')">Standard Deviation</mat-slide-toggle>
-            <mat-slide-toggle [checked]="currentOn('avg')" (change)="toggleTrace('avg')">Running Average</mat-slide-toggle>
+            <mat-slide-toggle [checked]="currentOn('show')" (change)="toggleTrace('show')">
+                Show Channel
+            </mat-slide-toggle>
+            <mat-slide-toggle [checked]="currentOn('stdev')" (change)="toggleTrace('stdev')">
+                Standard Deviation
+            </mat-slide-toggle>
+            <mat-slide-toggle [checked]="currentOn('avg')" (change)="toggleTrace('avg')">
+                Running Average
+            </mat-slide-toggle>
         </mat-expansion-panel>
     <button [matMenuTriggerFor]="menu" mat-mini-fab color="primary">
         <mat-icon>delete</mat-icon>
