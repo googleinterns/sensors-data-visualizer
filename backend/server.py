@@ -78,14 +78,24 @@ def compute_stats():
 
 Attributes:
     trace: The Python list data trace to compute averages for.
+    k: The size of the window of previous data points that are
+        used in the moving average computation. 
+        TODO Make user defined.
 """
-def compute_running_avg(trace):
+def compute_running_avg(trace, k=100):
     n = len(trace)
-    avgs = np.cumsum(trace[:n+1], dtype=float)
-    for i in range(len(avgs)):
-        avgs[i] = avgs[i] / (i + 1)
+    if k > n:
+        k = n
 
-    return avgs.tolist()
+    avgs = [0 for i in range(n)]
+    for i in range(n):
+        if i < k: #simple cummulative avg up to trace[i]
+            cumsum = sum(trace[:i + 1])
+            avgs[i] = cumsum / (i + 1)
+        else: #consider only previous k points and trace[i]
+            cumsum = sum(trace[i + 1 -k: i + 1])
+            avgs[i] = cumsum / float(k)
+    return avgs
     
 """Computes the standard deviation of a single data trace.
 
