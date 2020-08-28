@@ -13,10 +13,9 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {Component, ComponentRef, QueryList, Inject} from '@angular/core';
+import {Component, ComponentRef} from '@angular/core';
 
 // Project Imports.
-import {PlotComponent} from '../plot/plot.component';
 import {UploadService} from '../upload.service';
 import {IdManagerService} from '../id-manager.service';
 import {MainDashboardComponent} from '../main-dashboard/main-dashboard.component';
@@ -144,12 +143,18 @@ export class DatasetComponent {
    * @param channel The channel of the trace to toggle.
    */
   async toggleTrace(channel) {
-    console.log('channel ', channel);
     const toggleStats = channel === 'avg' || channel === 'stdev';
     // If toggling stats data that hasn't been requested yet.
     if (toggleStats && this.tabNumbers[1] === -1) {
       const periods: any = await this.openDialog(this.sample.timestamps.length);
-      console.log('toggle got', periods);
+      // If the user cancels.
+      if (periods === false) {
+        console.log(this.currentOptions, channel);
+        this.currentShowing
+          .get(String(this.currentOptions))
+          .set(channel, false);
+        return;
+      }
       this.tabNumbers[1] = this.dashboard.newTab();
       // Package data to send to the backend.
       const data = {
@@ -226,18 +231,13 @@ export class DatasetComponent {
             .set(channel, true);
         }
         // Turn on the plot that the user requested.
-        console.log('ids', this.ids);
-        this.ids.forEach(this.logMapElements);
-        console.log('toggling...', channel + this.currentOptions);
         plots[channel === 'avg' ? 0 : 1].toggleTrace(
           this.ids.get(channel + this.currentOptions)
         );
       }
     });
   }
-  logMapElements(value, key, map) {
-    console.log(`map.get('${key}') = ${value}`);
-  }
+
   /**
    * Toggles hiding and showing the expansion menu for each channel.
    * @param channel The channel that was selected.
