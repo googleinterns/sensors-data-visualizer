@@ -203,11 +203,11 @@ export class DatasetComponent {
   requestStats(data, channel) {
     console.log('sending to server....', data);
     this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
-      if (
-        typeof event === 'object' &&
-        event.body !== undefined &&
-        event.body.type === 'stats'
-      ) {
+      if (/*eslint-disable*/
+          typeof event === 'object' &&
+          event.body !== undefined &&
+          event.body.type === 'stats'
+      ) { /*eslint-enable */
         console.log('DS received: ', event.body);
         const plots = [
           this.dashboard.plot.toArray()[this.dashboard.currentTab - 1], // Tab for avgs
