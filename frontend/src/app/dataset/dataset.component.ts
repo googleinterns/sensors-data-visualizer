@@ -110,9 +110,15 @@ export class DatasetComponent {
     }
   }
 
+  /**
+   * Initializes the dataset with a reference to the main dashboard.
+   * This enables the dataset to create new tabs and access any plots.
+   * @param ref A reference to the main dashboard.
+   */
   public setDashboardRef(ref) {
     this.dashboard = ref;
   }
+
   /**
    * Initializes the dataset with a reference to itself. This enables
    * the dataset to self-destruct when needed.
@@ -122,13 +128,14 @@ export class DatasetComponent {
     this.containerRef = ref;
   }
 
+  /**
+   * Opens the dialog and waits for a user response.
+   * Returns periods, which is false if the user clicked cancel,
+   * or {stdev: number, avg: number} if the user input valid values.
+   * @param maxSize The length of the dataset. User cannot define a period
+   *  larger than this.
+   */
   openDialog(maxSize: number) {
-    // const dialogRef = this.dialog.open(InitDialogComponent);
-    // dialogRef.componentInstance.maxSize = maxSize;
-    // dialogRef.afterClosed().subscribe((periods: any) => {
-    //   console.log('data=', periods);
-    //   return periods;
-    // });
     return new Promise(resolve => {
       const dialogRef = this.dialog.open(InitDialogComponent);
       dialogRef.componentInstance.maxSize = maxSize;
@@ -138,6 +145,7 @@ export class DatasetComponent {
       });
     });
   }
+
   /**
    * Triggered when toggle on page is clicked. Calls the plot component toggleTrace method.
    * @param channel The channel of the trace to toggle.
@@ -251,7 +259,6 @@ export class DatasetComponent {
     if (this.currentOptions === null) {
       this.panelOpenState = true;
     }
-    console.log('curr options', channel);
     this.currentOptions = channel;
   }
 
