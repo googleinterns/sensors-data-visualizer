@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {Component} from '@angular/core';
+import {Component, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 
 // Project Imports.
 import {error} from '@angular/compiler/src/util';
@@ -153,6 +153,19 @@ export class PlotComponent {
     this.plot_data[index].visible = !this.plot_data[index].visible;
   }
 
+  changeMode(id: number, mode: string) {
+    const index = this.idMap.get(id);
+    this.plot_data[index].mode = mode;
+  }
+
+  styleOptions(event) {
+    console.log('Plot clicked', event);
+    const newStyle = await this.showOptionsMenu();
+  }
+
+  async showOptionsMenu(){
+
+  }
   /**
    * Removes an entire dataset from plot_data.
    * @param ids The individual traces to delete.
