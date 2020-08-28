@@ -20,6 +20,8 @@ import {PlotComponent} from '../plot/plot.component';
 import {UploadService} from '../upload.service';
 import {IdManagerService} from '../id-manager.service';
 import {MainDashboardComponent} from '../main-dashboard/main-dashboard.component';
+import {InitDialogComponent} from '../init-dialog/init-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-dataset',
@@ -63,7 +65,8 @@ export class DatasetComponent {
 
   constructor(
     private sharedService: UploadService,
-    private idMan: IdManagerService
+    private idMan: IdManagerService,
+    private dialog: MatDialog
   ) {
     this.hasLatencies = false;
   }
@@ -120,18 +123,38 @@ export class DatasetComponent {
     this.containerRef = ref;
   }
 
+  openDialog(maxSize: number) {
+    // const dialogRef = this.dialog.open(InitDialogComponent);
+    // dialogRef.componentInstance.maxSize = maxSize;
+    // dialogRef.afterClosed().subscribe((periods: any) => {
+    //   console.log('data=', periods);
+    //   return periods;
+    // });
+    return new Promise(resolve => {
+      const dialogRef = this.dialog.open(InitDialogComponent);
+      dialogRef.componentInstance.maxSize = maxSize;
+      dialogRef.afterClosed().subscribe((periods: any) => {
+        console.log('data', periods);
+        resolve(periods);
+      });
+    });
+  }
   /**
    * Triggered when toggle on page is clicked. Calls the plot component toggleTrace method.
    * @param channel The channel of the trace to toggle.
    */
-  toggleTrace(channel) {
+  async toggleTrace(channel) {
     console.log('channel ', channel);
     const toggleStats = channel === 'avg' || channel === 'stdev';
     // If toggling stats data that hasn't been requested yet.
     if (toggleStats && this.tabNumbers[1] === -1) {
+      const periods: any = await this.openDialog(this.sample.timestamps.length);
+      console.log('toggle got', periods);
       this.tabNumbers[1] = this.dashboard.newTab();
       // Package data to send to the backend.
       const data = {
+        avg_period: periods.avg,
+        stdev_period: periods.stdev,
         channels: {
           ts_diffs: this.sample.timestamp_diffs[1],
         },

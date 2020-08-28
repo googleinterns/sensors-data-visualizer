@@ -80,9 +80,11 @@ def compute_stats():
         received = json.loads(request.data)
         avgs, stdevs = {}, {}
 
+        stdev_period = received['stdev_period']
+        avg_period = received['avg_period']
         for i, j in enumerate(received['channels']):
-            avgs[j] = compute_running_avg(received['channels'][j])
-            stdevs[j] = compute_stdev(received['channels'][j])
+            avgs[j] = compute_running_avg(received['channels'][j], avg_period)
+            stdevs[j] = compute_stdev(received['channels'][j], stdev_period)
 
         return {'type': 'stats', 'avgs': avgs, 'stdevs': stdevs}
 
