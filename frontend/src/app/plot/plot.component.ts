@@ -17,6 +17,8 @@ import {Component, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 
 // Project Imports.
 import {error} from '@angular/compiler/src/util';
+import {StyleDialogComponent} from '../style-dialog/style-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-plot',
@@ -63,7 +65,7 @@ export class PlotComponent {
 
   // A map from id number to array index that will speed up toggle operations.
   idMap = new Map<number, number>();
-  constructor() {}
+  constructor(private dialog: MatDialog) {}
 
   /**
    * Add a single trace to the plot and set its id in idMap.
@@ -158,13 +160,19 @@ export class PlotComponent {
     this.plot_data[index].mode = mode;
   }
 
-  styleOptions(event) {
+  async styleOptions(event) {
     console.log('Plot clicked', event);
     const newStyle = await this.showOptionsMenu();
   }
 
-  async showOptionsMenu(){
-
+  showOptionsMenu() {
+    return new Promise(resolve => {
+      const optionsRef = this.dialog.open(StyleDialogComponent);
+      optionsRef.afterClosed().subscribe(options => {
+        console.log('options', options);
+        resolve(options);
+      });
+    });
   }
   /**
    * Removes an entire dataset from plot_data.

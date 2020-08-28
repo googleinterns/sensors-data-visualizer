@@ -24,6 +24,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCardModule} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatDialogModule} from '@angular/material/dialog';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatIconModule} from '@angular/material/icon';
@@ -45,6 +46,7 @@ import {UploadDirective} from './upload.directive';
 // Imports for Plotly.
 import {PlotlyModule} from 'angular-plotly.js';
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import {StyleDialogComponent} from './style-dialog/style-dialog.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -56,6 +58,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     PlotComponent,
     SideMenuComponent,
     UploadDirective,
+    StyleDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,6 +69,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
+    MatDialogModule,
     MatExpansionModule,
     MatGridListModule,
     MatIconModule,
