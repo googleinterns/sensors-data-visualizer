@@ -89,50 +89,51 @@ def compute_stats():
         return {'type': 'stats', 'avgs': avgs, 'stdevs': stdevs}
 
 
-def compute_running_avg(trace, k=100):
+def compute_running_avg(trace, period=100):
     """Computes the running average of a single data trace.
 
     Attributes:
         trace: The Python list data trace to compute averages for.
-        k: The size of the window of previous data points that are
-            used in the moving average computation. 
-            TODO Make user defined.
-    
+        period: The size of the window of previous data points that are
+            used in the moving average computation.
+
     Returns: Python list containing the running average at each point.
     """
     n = len(trace)
-    if k > n:
-        k = n
+    if period > n:
+        period = n
 
     avgs = [0 for i in range(n)]
     for i in range(n):
-        if i < k: #simple cummulative avg up to trace[i]
+        if i < period: #simple cummulative avg up to trace[i]
             cumsum = sum(trace[:i + 1])
             avgs[i] = cumsum / (i + 1)
         else: #consider only previous k points and trace[i]
-            cumsum = sum(trace[i + 1 -k: i + 1])
-            avgs[i] = cumsum / float(k)
+            cumsum = sum(trace[i + 1 - period: i + 1])
+            avgs[i] = cumsum / float(period)
     return avgs
     
 
-def compute_stdev(trace, k=100):
+def compute_stdev(trace, period=100):
     """Computes the standard deviation of a single data trace.
 
     Attributes:
         trace: The Python list data trace to compute stdev for.
+        period: The size of the window of previous data points that are
+            used in the standard deviation computation.
 
     Returns: Python list containing the standard deviation at each point.
     """
     n = len(trace)
-    if k > n:
-        k = n
+    if period > n:
+        period = n
 
     stdevs = [0 for i in range(n)]
     for i in range(n):
-        if i < k:
+        if i < period:
             stdevs[i] = np.std(trace[: i + 1])
         else:
-            stdevs[i] = np.std(trace[(i + 1) - k : i + 1])
+            stdevs[i] = np.std(trace[(i + 1) - period : i + 1])
 
     return stdevs
 
