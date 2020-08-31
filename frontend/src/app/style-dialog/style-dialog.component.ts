@@ -14,6 +14,15 @@ export class StyleDialogComponent {
   currentChecked;
 
   constructor() {}
+
+  /**
+   * Initialized the dialog component with the traceID and plot
+   * information needed. Also determines which styles are already
+   * applied and displays that to the user.
+   * @param traceID The ID of the trace to change.
+   * @param ref A reference to the plot where the trace lives
+   *  so that its options can be changed.
+   */
   init(traceID: number, ref) {
     this.traceID = traceID;
     this.plotRef = ref;
@@ -35,11 +44,21 @@ export class StyleDialogComponent {
       this.currentOptions = 'histogram';
       this.currentChecked = ['histogram', null];
     }
+    this.traceName = trace.name;
   }
 
+  /**
+   * Click event for a user to change the shape of markers in the plot.
+   * @param mode What to switch the marker style to.
+   */
   toggleShapes(mode: string) {
     this.plotRef.toggleMarkerStyle(this.traceID, mode);
   }
+
+  /**
+   * Handles switching the plot from scatter, line, histogram.
+   * @param mode What to switch the plot mode to.
+   */
   showOptions(mode: string) {
     this.currentOptions = mode;
 
@@ -51,6 +70,11 @@ export class StyleDialogComponent {
       this.plotRef.toggleHistogram(this.traceID);
     }
   }
+
+  /**
+   * Displays the correct options menu in the UI.
+   * @param mode Which options to display.
+   */
   currentOn(mode: string) {
     switch (mode) {
       case 'toggle_buttons':
@@ -65,6 +89,13 @@ export class StyleDialogComponent {
     }
   }
 
+  /**
+   * Determines which toggle buttons on the frontend are already on.
+   * @param index The level of options. If 0, a top level option
+   *  such as 'markers', 'lines', or 'histograms'. If 1, a sub option
+   *  such as 'circles'
+   * @param mode The option.
+   */
   checked(index: number, mode: string) {
     return this.currentChecked[index] === mode;
   }
