@@ -190,8 +190,7 @@ export class PlotComponent {
     console.log('toggling traceId', traceID);
     return new Promise(resolve => {
       const optionsRef = this.dialog.open(StyleDialogComponent);
-      optionsRef.componentInstance.traceID = traceID;
-      optionsRef.componentInstance.plotRef = this.selfRef;
+      optionsRef.componentInstance.init(traceID, this.selfRef);
       optionsRef.afterClosed().subscribe(options => {
         console.log('options', options);
         resolve(options);
@@ -233,7 +232,11 @@ export class PlotComponent {
   }
   toggleMarkerStyle(traceID: number, mode: string) {
     const trace = this.plot_data[this.idMap.get(traceID)];
-    trace.marker.symbol = mode;
+    if (mode === 'none') {
+      trace.mode = 'lines';
+    } else {
+      trace.marker.symbol = mode;
+    }
   }
   toggleHistogram(traceID: number) {
     this.plot_data[this.idMap.get(traceID)].type = 'histogram';
