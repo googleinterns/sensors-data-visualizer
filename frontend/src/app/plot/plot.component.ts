@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {Component, ElementRef} from '@angular/core';
+import {Component} from '@angular/core';
 
 // Project Imports.
 import {error} from '@angular/compiler/src/util';
@@ -40,11 +40,19 @@ export class PlotComponent {
    *    y: Takes an array of y-axis values.
    *    (Note: The lengths of x and y must be equal.)
    *    type: How the data is displayed to the user. 'scattergl' and 'historgram'
-   *      will most likely be the only types used. (Avoid 'scatter' type since it
+   *      are the only currently used types. (Avoid 'scatter' type since it
    *      has poorer performance on large datasets than 'scattergl'.)
    *    mode: Finer details for how to display the type. 'markers' displays only a dot
    *      for each datapoint. 'lines' displays a line through all datapoints. 'lines+markers'
    *      displays both.
+   *    marker: A map that allows custom changes to markers.
+   *      marker.symbol: The shape markers take. Options used: 'circle', 'diamond', 'star'.
+   *      https://plotly.com/python/marker-style/#custom-marker-symbols
+   *    id: The id used by Sensor Visualizer to uniquely identify traces so they can be
+   *      removed, altered, or referenced in some way.
+   *    visible: If true, the trace will show up. If false, the trace is invisible.
+   *    name: The trace name displayed to the user.
+   *    xbins: The size of the buckets in the histogram if type === 'histogram' TODO
    */
   plot_data = [
     {
@@ -78,7 +86,7 @@ export class PlotComponent {
   // A map from id number to array index that will speed up toggle operations.
   idMap = new Map<number, number>();
   selfRef;
-  constructor(private dialog: MatDialog, private element: ElementRef) {}
+  constructor(private dialog: MatDialog) {}
 
   /**
    * Save a reference to self when created. This self reference is used when

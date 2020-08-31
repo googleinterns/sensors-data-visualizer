@@ -178,11 +178,6 @@ export class DatasetComponent {
     return this.currentShowing.get(String(this.currentOptions)).get(channel);
   }
 
-  openStyleOptions(){
-    console.log('styling...');
-    //Test change to line plot
-
-  }
   /**
    * Removes all traces from plot and removes self from dataset list.
    */
