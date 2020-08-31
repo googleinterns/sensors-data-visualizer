@@ -24,6 +24,9 @@ export class StyleDialogComponent {
       if (trace.mode === 'lines+markers') {
         this.currentOptions = 'lines';
         this.currentChecked = ['lines', trace.marker.symbol];
+      } else if (trace.mode === 'lines') {
+        this.currentOptions = 'lines';
+        this.currentChecked = ['lines', 'none'];
       } else {
         this.currentOptions = 'markers';
         this.currentChecked = ['markers', trace.marker.symbol];
@@ -32,15 +35,12 @@ export class StyleDialogComponent {
       this.currentOptions = 'histogram';
       this.currentChecked = ['histogram', null];
     }
-    console.log('init current on', this.currentChecked, this.currentOptions);
   }
 
   toggleShapes(mode: string) {
     this.plotRef.toggleMarkerStyle(this.traceID, mode);
   }
   showOptions(mode: string) {
-    console.log('mode: ', mode);
-    //this.panelOpenState = true;
     this.currentOptions = mode;
 
     if (mode === 'lines') {
@@ -63,5 +63,9 @@ export class StyleDialogComponent {
       case 'histogram':
         return this.currentOptions === 'histogram';
     }
+  }
+
+  checked(index: number, mode: string) {
+    return this.currentChecked[index] === mode;
   }
 }

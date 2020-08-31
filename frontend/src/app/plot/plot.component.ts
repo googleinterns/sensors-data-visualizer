@@ -182,17 +182,14 @@ export class PlotComponent {
   }
 
   async styleOptions(event) {
-    console.log('Plot clicked', event);
-    const newStyle = await this.showOptionsMenu(event.points[0].data.id);
+    await this.showOptionsMenu(event.points[0].data.id);
   }
 
   showOptionsMenu(traceID: number) {
-    console.log('toggling traceId', traceID);
     return new Promise(resolve => {
       const optionsRef = this.dialog.open(StyleDialogComponent);
       optionsRef.componentInstance.init(traceID, this.selfRef);
       optionsRef.afterClosed().subscribe(options => {
-        console.log('options', options);
         resolve(options);
       });
     });
@@ -235,6 +232,7 @@ export class PlotComponent {
     if (mode === 'none') {
       trace.mode = 'lines';
     } else {
+      trace.mode = 'lines+markers';
       trace.marker.symbol = mode;
     }
   }
