@@ -233,8 +233,9 @@ export class PlotComponent {
     const trace = this.plot_data[this.idMap.get(traceID)];
     if (trace.type === 'histogram') {
       trace.type = 'scattergl';
+    } else {
+      trace.mode = mode;
     }
-    trace.mode = mode;
   }
 
   /**
@@ -248,7 +249,6 @@ export class PlotComponent {
     if (mode === 'none') {
       trace.mode = 'lines';
     } else {
-      trace.mode = 'lines+markers';
       trace.marker.symbol = mode;
     }
   }

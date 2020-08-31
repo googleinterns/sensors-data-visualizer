@@ -36,10 +36,7 @@ export class MainDashboardComponent implements AfterViewInit {
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map(({matches}) => {
       // Displays the two cards with the given grid sizes.
-      return [
-        {title: 'Legend', cols: 7, rows: 1},
-        {title: 'Options', cols: 3, rows: 1},
-      ];
+      return [{title: 'Legend', cols: 7, rows: 1}];
     })
   );
 
