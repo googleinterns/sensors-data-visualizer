@@ -3,8 +3,8 @@
 
 <!-- Toggle: Scatter , Line, Histogram -->
 <mat-button-toggle-group>
-    <mat-button-toggle (click)="showOptions('scatter')">Scatter</mat-button-toggle>
-    <mat-button-toggle (click)="showOptions('line')">Line</mat-button-toggle>
+    <mat-button-toggle (click)="showOptions('markers')">Scatter</mat-button-toggle>
+    <mat-button-toggle (click)="showOptions('lines')">Line</mat-button-toggle>
     <mat-button-toggle (click)="showOptions('histogram')">Histogram</mat-button-toggle>
 </mat-button-toggle-group>
 <mat-expansion-panel *ngIf="panelOpenState" [expanded]="panelOpenState">
@@ -12,10 +12,10 @@
     <div #scatter *ngIf="currentOn('toggle_buttons')">
         <p>Marker Type:</p>
         <mat-button-toggle-group>
-            <mat-button-toggle *ngIf="currentOn('line')">None</mat-button-toggle>
-            <mat-button-toggle [checked]="true">Circles</mat-button-toggle>
-            <mat-button-toggle>Stars</mat-button-toggle>
-            <mat-button-toggle>Triangles</mat-button-toggle>
+            <mat-button-toggle *ngIf="currentOn('lines')">None</mat-button-toggle>
+            <mat-button-toggle [checked]="true" (click)="toggleShapes('circle')">Circles</mat-button-toggle>
+            <mat-button-toggle (click)="toggleShapes('star')">Stars</mat-button-toggle>
+            <mat-button-toggle (click)="toggleShapes('diamond')">Diamonds</mat-button-toggle>
         </mat-button-toggle-group>
     </div>
     <div #histogram *ngIf="currentOn('histogram')">

@@ -18,7 +18,6 @@ import {Component, ComponentRef} from '@angular/core';
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
 import {UploadService} from '../upload.service';
-import {IdManagerService} from '../id-manager.service';
 
 @Component({
   selector: 'app-dataset',
@@ -182,7 +181,7 @@ export class DatasetComponent {
   openStyleOptions(){
     console.log('styling...');
     //Test change to line plot
-    
+
   }
   /**
    * Removes all traces from plot and removes self from dataset list.

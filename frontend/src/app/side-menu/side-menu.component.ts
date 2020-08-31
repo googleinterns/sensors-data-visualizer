@@ -61,16 +61,13 @@ export class SideMenuComponent {
     private idMan: IdManagerService
   ) {
     this.sharedService.sharedMessage.subscribe((event: any) => {
-      console.log('smenu message recieved: ', event);
       if (typeof event === 'object' && event !== null) {
-        console.log('valid object');
         switch (event.type) {
           case 'stats': {
             //TODO handle assigning ids to the new stats data.
             break;
           }
           case 'upload': {
-            console.log('smenu Plotting dataset...');
             // Plot new datasets added by the upload button.
             const tabNumber = this.dashboard.currentTab;
             const viewContainerRef = this.uploadDirective.viewContainerRef;

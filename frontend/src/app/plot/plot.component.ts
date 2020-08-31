@@ -52,20 +52,37 @@ export class PlotComponent {
       y: [0],
       type: 'scattergl',
       mode: 'markers',
+      marker: {symbol: 'diamond'},
       id: 0,
       visible: true,
       name: 'Placeholder Point',
+      xbins: null,
     },
   ];
 
-  // Plot Configurations.
-  plot_layout = {title: 'Add a new dataset.', legend: 'false'};
+  /**
+   * Plot configurations.
+   * hovermode must be set to closest. When it is set to closest, only
+   * a single trace will be selected on hover, rather than every trace in
+   * a dataset. Selecting a single trace allows for the options menu to know
+   * which trace is being changed.
+   */
+  plot_layout = {
+    title: 'Add a new dataset.',
+    legend: 'false',
+    hovermode: 'closest',
+  };
   plot_config = {scrollZoom: true, displayModeBar: true};
   message: any;
 
   // A map from id number to array index that will speed up toggle operations.
   idMap = new Map<number, number>();
-  constructor(private dialog: MatDialog) {}
+  selfRef;
+  constructor(private dialog: MatDialog, private element: ElementRef) {}
+
+  public setSelfRef(ref) {
+    this.selfRef = ref;
+  }
 
   /**
    * Add a single trace to the plot and set its id in idMap.
@@ -91,9 +108,11 @@ export class PlotComponent {
       y: y,
       type: 'scattergl',
       mode: 'markers',
+      marker: {symbol: 'circle'},
       id: id,
       visible: show,
       name: name,
+      xbins: null,
     });
 
     this.idMap.set(id, this.plot_data.length - 1);
@@ -144,6 +163,8 @@ export class PlotComponent {
         );
       }
     }
+    console.log('plot ids: ', this.idMap);
+    console.log('data ', this.plot_data);
   }
 
   /**
@@ -162,12 +183,15 @@ export class PlotComponent {
 
   async styleOptions(event) {
     console.log('Plot clicked', event);
-    const newStyle = await this.showOptionsMenu();
+    const newStyle = await this.showOptionsMenu(event.points[0].data.id);
   }
 
-  showOptionsMenu() {
+  showOptionsMenu(traceID: number) {
+    console.log('toggling traceId', traceID);
     return new Promise(resolve => {
       const optionsRef = this.dialog.open(StyleDialogComponent);
+      optionsRef.componentInstance.traceID = traceID;
+      optionsRef.componentInstance.plotRef = this.selfRef;
       optionsRef.afterClosed().subscribe(options => {
         console.log('options', options);
         resolve(options);
@@ -193,5 +217,26 @@ export class PlotComponent {
       this.idMap.set(this.plot_data[i].id, Number(i));
     }
     ids.forEach(id => this.idMap.delete(id));
+  }
+
+  /**
+   * Changes a scattergl plot to either lines or markers mode.
+   * @param traceID The ID of the trace to change.
+   * @param mode Either 'lines' or 'markers'
+   */
+  toggleLineStyle(traceID: number, mode: string) {
+    const trace = this.plot_data[this.idMap.get(traceID)];
+    if (trace.type === 'histogram') {
+      trace.type = 'scattergl';
+    }
+    trace.mode = mode;
+  }
+  toggleMarkerStyle(traceID: number, mode: string) {
+    const trace = this.plot_data[this.idMap.get(traceID)];
+    trace.marker.symbol = mode;
+  }
+  toggleHistogram(traceID: number) {
+    this.plot_data[this.idMap.get(traceID)].type = 'histogram';
+    //this.plot_data[this.idMap.get(traceID)].xbins = {size: 11}; //TODO bin sizes
   }
 }
