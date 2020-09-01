@@ -19,7 +19,7 @@ limitations under the License. -->
       [opened]="(isHandset$ | async) === false">
     <mat-toolbar></mat-toolbar>
 
-    <button id="uploadButton" (click)="uploadFiles()">
+    <button mat-raised-button color="primary" id="uploadButton" (click)="uploadFiles()">
       Upload Files
     </button>
     <mat-checkbox #checkBox>New Tab</mat-checkbox>
@@ -27,7 +27,7 @@ limitations under the License. -->
 
     <mat-nav-list>
       <h2 id="title">Datasets</h2>
-  
+      <button mat-raised-button *ngIf="dataAdded()" (click)="normalizeX()">Normalization Options</button>
       <!-- New datasets are added inside this template -->
       <ng-template uploadDirective></ng-template>
     </mat-nav-list>

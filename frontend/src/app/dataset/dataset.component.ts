@@ -18,7 +18,6 @@ import {Component, ComponentRef} from '@angular/core';
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
 import {UploadService} from '../upload.service';
-import {IdManagerService} from '../id-manager.service';
 
 @Component({
   selector: 'app-dataset',
@@ -50,9 +49,16 @@ export class DatasetComponent {
   currentShowing: Map<string, Map<string, boolean>> = new Map();
   isChecked = true;
 
+  /**
+   * normalization[0] = If this dataset is currently normalized.
+   * normalization[1] = The original Timestamp 0 for the array so
+   *  that it can be converted back and forth.
+   */
+  normalization = [false, -1];
   constructor(private sharedService: UploadService) {
     this.hasLatencies = false;
   }
+
   /**
    * Setter method to initialize the dataset with appropriate sample data.
    * @param sample The sample object received by UploadService from the backend.
@@ -186,5 +192,19 @@ export class DatasetComponent {
     console.log('Deleting myself...', this.ids.values());
     this.plotRef.deleteDataset(new Set<number>(this.ids.values()));
     this.containerRef.destroy();
+  }
+
+  normalizeX() {
+    console.log('sample', this.sample);
+    this.normalization = [true, Number(this.sample.timestamps[0])];
+    console.log('normalize: ', this.normalization);
+
+    for (const i in this.sample.timestamps) {
+      this.sample.timestamps[i] -= Number(this.normalization[1]);
+    }
+    for (const i in this.sample.data) {
+      this.plotRef.normalizeX(this.sample.data[i][0], this.sample.timestamps);
+    }
+    console.log('normalized', this.sample.timestamps);
   }
 }

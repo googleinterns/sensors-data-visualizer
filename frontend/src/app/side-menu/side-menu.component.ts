@@ -14,7 +14,7 @@ limitations under the License. */
 
 // Angular Imports.
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
-import {Component, ViewChild, ElementRef} from '@angular/core';
+import {Component, ViewChild, ViewChildren, ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
 
@@ -24,6 +24,8 @@ import {UploadDirective} from '../upload.directive';
 import {UploadService} from '../upload.service';
 
 import {IdManagerService} from '../id-manager.service';
+import {DatasetComponent} from '../dataset/dataset.component';
+import { Template } from '@angular/compiler/src/render3/r3_ast';
 
 @Component({
   selector: 'app-side-menu',
@@ -47,7 +49,7 @@ export class SideMenuComponent {
 
   files = [];
   message: any;
-
+  datasets = [];
   isHandset$: Observable<boolean> = this.breakpointObserver
     .observe(Breakpoints.Handset)
     .pipe(
@@ -83,12 +85,12 @@ export class SideMenuComponent {
               sample = this.idMan.assignIDs(sample);
               samples.push(sample);
 
-              this.sharedService.loadDataset(
-                tabNumber,
-                plotRef,
-                viewContainerRef,
-                sample
-              );
+              this.sharedService
+                .loadDataset(tabNumber, plotRef, viewContainerRef, sample)
+                .then(ref => {
+                  this.datasets.push(ref);
+                  console.log('new dataset', this.datasets);
+                });
             }
             plotRef.addSamples(samples);
             break;
@@ -156,5 +158,21 @@ export class SideMenuComponent {
     fileUpload.click();
 
     this.files = [];
+  }
+
+  normalizeX() {
+    this.datasets.forEach(dataset => dataset.normalizeX());
+  }
+
+  normalizeY() {
+    this.datasets.forEach(dataset => dataset.normalizeY());
+  }
+
+  /**
+   * Used by html to determine if the 'normalize options'
+   * button should be shown.
+   */
+  dataAdded() {
+    return this.datasets.length > 0;
   }
 }
