@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import time
 from flask import Flask
 from flask import request
 
@@ -88,7 +88,6 @@ def compute_stats():
 
         return {'type': 'stats', 'avgs': avgs, 'stdevs': stdevs}
 
-
 def compute_running_avg(trace, period=100):
     """Computes the running average of a single data trace.
 
@@ -99,20 +98,27 @@ def compute_running_avg(trace, period=100):
 
     Returns: Python list containing the running average at each point.
     """
+    start = time.time()
     n = len(trace)
     if period > n:
         period = n
 
-    avgs = [0 for i in range(n)]
-    for i in range(n):
-        if i < period: #simple cummulative avg up to trace[i]
-            cumsum = sum(trace[:i + 1])
-            avgs[i] = cumsum / (i + 1)
-        else: #consider only previous k points and trace[i]
-            cumsum = sum(trace[i + 1 - period: i + 1])
-            avgs[i] = cumsum / float(period)
+    avgs = np.zeros(n, dtype=float)
+    avgs[0] = trace[0]
+    window = 0, period
+
+    for i in range(1, n):
+        if i < period:
+            avgs[i] = avgs[i-1] + (trace[i] - avgs[i-1]) / (i + 1)
+        else:
+            window = i - period, i
+            avgs[i] = avgs[i-1] + (trace[window[1]] / period) - (trace[window[0]] / period)
+
+    end = time.time()
+    print("computed avgs size: ", n, " period: ", period)
+    print("new time: ", end-start)
     return avgs
-    
+
 
 def compute_stdev(trace, period=100):
     """Computes the standard deviation of a single data trace.
@@ -124,18 +130,34 @@ def compute_stdev(trace, period=100):
 
     Returns: Python list containing the standard deviation at each point.
     """
+    start = time.time()
     n = len(trace)
     if period > n:
         period = n
 
-    stdevs = [0 for i in range(n)]
-    for i in range(n):
-        if i < period:
-            stdevs[i] = np.std(trace[: i + 1])
-        else:
-            stdevs[i] = np.std(trace[(i + 1) - period : i + 1])
+    # stdevs = [0 for i in range(n)]
+    # for i in range(n):
+    #     if i < period:
+    #         stdevs[i] = np.std(trace[: i + 1])
+    #     else:
+    #         stdevs[i] = np.std(trace[(i + 1) - period : i + 1])
 
-    return stdevs
+    # return stdevs
+    variances = np.zeros(n, dtype=float)
+    window = [trace[0]]
+    for i in range(1, n):
+        if i < period:
+            window.append(trace[i])
+            variances[i] = np.var(window, ddof=1)
+        else:
+            window.pop(0)
+            window.append(trace[i])
+            variances[i] = np.var(window, ddof=1)
+    
+    end = time.time()
+    print("computed stdevs size: ", n, " period: ", period)
+    print("new time: ", end-start)
+    return np.square(variances)
 
 if __name__ == '__main__':
     app.run(debug=True)
