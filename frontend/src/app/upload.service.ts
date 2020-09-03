@@ -55,7 +55,6 @@ export class UploadService {
    * will be sent a POST request. Omit '/' from the route.
    */
   public sendFormData(formData, route) {
-    console.log('POSTING to', this.serverUrl + route);
     return this.httpClient.post<any>(this.serverUrl + route, formData, {
       reportProgress: true,
       observe: 'events',
@@ -68,7 +67,6 @@ export class UploadService {
    * @param samples The samples to be shared with any listening components.
    */
   public nextMessage(samples: any) {
-    console.log('New message: ', samples);
     this.message.next(samples);
   }
 
@@ -90,7 +88,6 @@ export class UploadService {
     const compRef: ComponentRef<DatasetComponent> = ref.createComponent(
       this.resolver.resolveComponentFactory(component)
     );
-    console.log('loading ds...');
     compRef.instance.tabNumber = tabNumber;
     compRef.instance.setSample(data);
     compRef.instance.setPlotRef(plotRef);

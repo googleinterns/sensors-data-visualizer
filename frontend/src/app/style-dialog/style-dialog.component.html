@@ -1,0 +1,42 @@
+<!-- Copyright 2020 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+
+<h1>Style Options</h1>
+<h3>Trace: {{traceName}}</h3>
+
+<!-- Toggle: Scatter , Line, Histogram -->
+<mat-button-toggle-group>
+    <mat-button-toggle [checked]="checked(0, 'markers')" (click)="showOptions('markers')">Scatter</mat-button-toggle>
+    <mat-button-toggle [checked]="checked(0, 'lines')" (click)="showOptions('lines')">Line</mat-button-toggle>
+    <mat-button-toggle [checked]="checked(0, 'histogram')" (click)="showOptions('histogram')">Histogram</mat-button-toggle>
+</mat-button-toggle-group>
+<mat-expansion-panel *ngIf="panelOpenState" [expanded]="panelOpenState">
+    <mat-expansion-panel-header>More Options {{currentOptions}}</mat-expansion-panel-header>
+    <div #scatter *ngIf="currentOn('toggle_buttons')">
+        <p>Marker Type:</p>
+        <mat-button-toggle-group>
+            <mat-button-toggle [checked]="checked(1, 'none')" (click)="toggleShapes('none')" *ngIf="currentOn('lines')">None</mat-button-toggle>
+            <mat-button-toggle [checked]="checked(1, 'circle')" (click)="toggleShapes('circle')">Circles</mat-button-toggle>
+            <mat-button-toggle [checked]="checked(1, 'star')" (click)="toggleShapes('star')">Stars</mat-button-toggle>
+            <mat-button-toggle [checked]="checked(1, 'diamond')" (click)="toggleShapes('diamond')">Diamonds</mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    <div #histogram *ngIf="currentOn('histogram')">
+        <p>BucketSize</p>
+    </div>
+</mat-expansion-panel>
+
+<!-- Change colors -->
+<h3>Color Options:</h3>
+<p>TODO</p>
