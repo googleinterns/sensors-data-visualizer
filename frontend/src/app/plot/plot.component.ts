@@ -92,7 +92,10 @@ export class PlotComponent {
   ) {
     if (x.length !== y.length) {
       console.log('x: ', x, ' y: ', y);
-      throw error('x and y arrays must match in length');
+      throw error(
+        'x and y arrays must match in length' +
+        ' len x: ' + x.length +
+        ' len y: ' + y.length);
     }
     this.checkDataAdded();
 

@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import time
+import pandas as pd
+
 from flask import Flask
 from flask import request
 
@@ -84,7 +86,7 @@ def compute_stats():
         avg_period = received['avg_period']
         for i, j in enumerate(received['channels']):
             avgs[j] = compute_running_avg(received['channels'][j], avg_period)
-            stdevs[j] = compute_stdev(received['channels'][j], stdev_period)
+            stdevs[j] = compute_stdev(received['channels'][j], avgs[j], stdev_period)
 
         return {'type': 'stats', 'avgs': avgs, 'stdevs': stdevs}
 
@@ -103,28 +105,24 @@ def compute_running_avg(trace, period=100):
     if period > n:
         period = n
 
-    avgs = np.zeros(n, dtype=float)
-    avgs[0] = trace[0]
-    window = 0, period
+    avgs = pd.Series(trace).rolling(period).mean()
 
-    for i in range(1, n):
-        if i < period:
-            avgs[i] = avgs[i-1] + (trace[i] - avgs[i-1]) / (i + 1)
-        else:
-            window = i - period, i
-            avgs[i] = avgs[i-1] + (trace[window[1]] / period) - (trace[window[0]] / period)
+    avgs[0] = trace[0]
+    for i in range(1, period - 1):
+        avgs[i] = avgs[i - 1] + (trace[i] - avgs[i - 1]) / (i + 1)
 
     end = time.time()
     print("computed avgs size: ", n, " period: ", period)
     print("new time: ", end-start)
-    return avgs
+    return avgs.to_list()
 
-
-def compute_stdev(trace, period=100):
+def compute_stdev(trace, avgs, period=100):
     """Computes the standard deviation of a single data trace.
 
     Attributes:
         trace: The Python list data trace to compute stdev for.
+        avgs: The previously computed averages for the same trace, used
+            in the computation of the first period-1 standard deviations.
         period: The size of the window of previous data points that are
             used in the standard deviation computation.
 
@@ -135,29 +133,19 @@ def compute_stdev(trace, period=100):
     if period > n:
         period = n
 
-    # stdevs = [0 for i in range(n)]
-    # for i in range(n):
-    #     if i < period:
-    #         stdevs[i] = np.std(trace[: i + 1])
-    #     else:
-    #         stdevs[i] = np.std(trace[(i + 1) - period : i + 1])
+    stdevs = pd.Series(trace).rolling(period).var()
+    stdevs[0] = 0
 
-    # return stdevs
-    variances = np.zeros(n, dtype=float)
-    window = [trace[0]]
-    for i in range(1, n):
-        if i < period:
-            window.append(trace[i])
-            variances[i] = np.var(window, ddof=1)
-        else:
-            window.pop(0)
-            window.append(trace[i])
-            variances[i] = np.var(window, ddof=1)
-    
+    M = np.square(np.subtract(trace[0], avgs[0]))
+    for i in range(1, period - 1):
+        #M += (trace[i] - avgs[i - 1]) * (trace[i] - avgs[i])
+        np.add(M, np.multiply(np.subtract(trace[i], avgs[i - 1]), np.subtract(trace[i], avgs[i])))
+        stdevs[i] = M / i
+
     end = time.time()
     print("computed stdevs size: ", n, " period: ", period)
     print("new time: ", end-start)
-    return np.square(variances)
+    return np.sqrt(stdevs).tolist()
 
 if __name__ == '__main__':
     app.run(debug=True)
