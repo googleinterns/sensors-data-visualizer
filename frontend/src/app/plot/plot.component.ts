@@ -269,4 +269,9 @@ export class PlotComponent {
     this.plot_data[this.idMap.get(traceID)].type = 'histogram';
     //TODO bin sizes
   }
+
+  changeColor(traceID: number, r: number, g: number, b: number) {
+    this.plot_data[this.idMap.get(traceID)].marker['color'] =
+      'rgb(' + r + ', ' + g + ', ' + b + ')';
+  }
 }

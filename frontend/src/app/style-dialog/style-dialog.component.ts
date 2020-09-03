@@ -22,6 +22,7 @@ import {Component} from '@angular/core';
 export class StyleDialogComponent {
   traceName: string;
   panelOpenState = false;
+  colorOpenState = false;
   currentOptions: any = null;
   traceID: number;
   plotRef;
@@ -112,5 +113,9 @@ export class StyleDialogComponent {
    */
   checked(index: number, mode: string) {
     return this.currentChecked[index] === mode;
+  }
+
+  changeColor(r: number, g: number, b: number) {
+    this.plotRef.changeColor(this.traceID, r, g, b);
   }
 }
