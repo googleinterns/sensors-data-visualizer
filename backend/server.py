@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import time
-import pandas as pd
 
 from flask import Flask
 from flask import request
@@ -23,6 +22,8 @@ from flask_cors import CORS
 
 import json
 import numpy as np
+
+import pandas as pd
 
 from parser import GoogleSensorParser
 from parser import Parser
@@ -100,20 +101,11 @@ def compute_running_avg(trace, period=100):
 
     Returns: Python list containing the running average at each point.
     """
-    start = time.time()
     n = len(trace)
     if period > n:
         period = n
 
-    avgs = pd.Series(trace).rolling(period).mean()
-
-    avgs[0] = trace[0]
-    for i in range(1, period - 1):
-        avgs[i] = avgs[i - 1] + (trace[i] - avgs[i - 1]) / (i + 1)
-
-    end = time.time()
-    print("computed avgs size: ", n, " period: ", period)
-    print("new time: ", end-start)
+    avgs = pd.Series(trace).rolling(period, min_periods=1).mean()
     return avgs.to_list()
 
 def compute_stdev(trace, avgs, period=100):
@@ -128,24 +120,13 @@ def compute_stdev(trace, avgs, period=100):
 
     Returns: Python list containing the standard deviation at each point.
     """
-    start = time.time()
     n = len(trace)
     if period > n:
         period = n
 
-    stdevs = pd.Series(trace).rolling(period).var()
+    stdevs = pd.Series(trace).rolling(period, min_periods=1).std()
     stdevs[0] = 0
-
-    M = np.square(np.subtract(trace[0], avgs[0]))
-    for i in range(1, period - 1):
-        #M += (trace[i] - avgs[i - 1]) * (trace[i] - avgs[i])
-        np.add(M, np.multiply(np.subtract(trace[i], avgs[i - 1]), np.subtract(trace[i], avgs[i])))
-        stdevs[i] = M / i
-
-    end = time.time()
-    print("computed stdevs size: ", n, " period: ", period)
-    print("new time: ", end-start)
-    return np.sqrt(stdevs).tolist()
+    return stdevs.to_list()
 
 if __name__ == '__main__':
     app.run(debug=True)
