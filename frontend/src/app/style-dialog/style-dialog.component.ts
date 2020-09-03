@@ -30,7 +30,7 @@ export class StyleDialogComponent {
   constructor() {}
 
   /**
-   * Initialized the dialog component with the traceID and plot
+   * Initializes the dialog component with the traceID and plot
    * information needed. Also determines which styles are already
    * applied and displays that to the user.
    * @param traceID The ID of the trace to change.
@@ -62,7 +62,7 @@ export class StyleDialogComponent {
   }
 
   /**
-   * Click event for a user to change the shape of markers in the plot.
+   * Handles click event by the user to change the shape of markers in the plot.
    * @param mode What to switch the marker style to.
    */
   toggleShapes(mode: string) {
@@ -70,7 +70,7 @@ export class StyleDialogComponent {
   }
 
   /**
-   * Handles switching the plot from scatter, line, histogram.
+   * Handles line style options for the plot.
    * @param mode What to switch the plot mode to.
    */
   showOptions(mode: string) {
