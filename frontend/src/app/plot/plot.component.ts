@@ -60,6 +60,7 @@ export class PlotComponent {
       y: [0],
       type: 'scattergl',
       mode: 'markers',
+      id: -1,
       marker: {symbol: 'diamond'},
       id: 0,
       visible: true,
@@ -99,6 +100,16 @@ export class PlotComponent {
   }
 
   /**
+   * If placeholder data is still present in the plot, remove it.
+   * Helper method for addTrace and addSamples methods.
+   */
+  checkDataAdded() {
+    if (this.plot_data.length === 1 && this.plot_data[0].id === -1) {
+      this.plot_data.pop();
+      this.plot_layout.title = '';
+    }
+  }
+  /**
    * Add a single trace to the plot and set its id in idMap.
    * @param x The x data to plot.
    * @param y The y data to plot.
@@ -114,8 +125,13 @@ export class PlotComponent {
     show: boolean
   ) {
     if (x.length !== y.length) {
-      throw error('x and y arrays must match in length');
+      console.log('x: ', x, ' y: ', y);
+      throw error(
+        'x and y arrays must match in length' +
+        ' len x: ' + x.length +
+        ' len y: ' + y.length);
     }
+    this.checkDataAdded();
 
     this.plot_data.push({
       x: x,
@@ -137,13 +153,7 @@ export class PlotComponent {
    * @param samples
    */
   public addSamples(samples) {
-    // This will only be true when no data has been added yet.
-    // Removes the placeholder datapoint and title.
-    console.log('plot addtrace: ', samples);
-    if (this.plot_data.length === 1 && this.plot_data[0].id === 0) {
-      this.plot_data.pop();
-      this.plot_layout.title = '';
-    }
+    this.checkDataAdded();
 
     for (const i in samples) {
       // Plot each individual data channel.

@@ -22,6 +22,8 @@ from flask_cors import CORS
 import json
 import numpy as np
 
+import pandas as pd
+
 from parser import GoogleSensorParser
 from parser import Parser
 
@@ -80,48 +82,50 @@ def compute_stats():
         received = json.loads(request.data)
         avgs, stdevs = {}, {}
 
+        stdev_period = received['stdev_period']
+        avg_period = received['avg_period']
         for i, j in enumerate(received['channels']):
-            avgs[j] = compute_running_avg(received['channels'][j])
-            stdevs[j] = compute_stdev(received['channels'][j])
+            avgs[j] = compute_running_avg(received['channels'][j], avg_period)
+            stdevs[j] = compute_stdev(received['channels'][j], avgs[j], stdev_period)
 
         return {'type': 'stats', 'avgs': avgs, 'stdevs': stdevs}
 
-
-def compute_running_avg(trace, k=100):
+def compute_running_avg(trace, period=100):
     """Computes the running average of a single data trace.
 
     Attributes:
         trace: The Python list data trace to compute averages for.
-        k: The size of the window of previous data points that are
-            used in the moving average computation. 
-            TODO Make user defined.
-    
+        period: The size of the window of previous data points that are
+            used in the moving average computation.
+
     Returns: Python list containing the running average at each point.
     """
     n = len(trace)
-    if k > n:
-        k = n
+    if period > n:
+        period = n
 
-    avgs = [0 for i in range(n)]
-    for i in range(n):
-        if i < k: #simple cummulative avg up to trace[i]
-            cumsum = sum(trace[:i + 1])
-            avgs[i] = cumsum / (i + 1)
-        else: #consider only previous k points and trace[i]
-            cumsum = sum(trace[i + 1 -k: i + 1])
-            avgs[i] = cumsum / float(k)
-    return avgs
-    
+    avgs = pd.Series(trace).rolling(period, min_periods=1).mean()
+    return avgs.to_list()
 
-def compute_stdev(trace):
+def compute_stdev(trace, avgs, period=100):
     """Computes the standard deviation of a single data trace.
 
     Attributes:
         trace: The Python list data trace to compute stdev for.
+        avgs: The previously computed averages for the same trace, used
+            in the computation of the first period-1 standard deviations.
+        period: The size of the window of previous data points that are
+            used in the standard deviation computation.
 
     Returns: Python list containing the standard deviation at each point.
     """
-    return -1 #TODO
+    n = len(trace)
+    if period > n:
+        period = n
+
+    stdevs = pd.Series(trace).rolling(period, min_periods=1).std()
+    stdevs[0] = 0
+    return stdevs.to_list()
 
 if __name__ == '__main__':
     app.run(debug=True)

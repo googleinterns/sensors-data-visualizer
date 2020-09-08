@@ -82,7 +82,7 @@ export class SideMenuComponent {
 
               this.sharedService.loadDataset(
                 tabNumber,
-                plotRef,
+                this.dashboard,
                 viewContainerRef,
                 sample
               );
