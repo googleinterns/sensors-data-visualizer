@@ -174,8 +174,9 @@ export class PlotComponent {
     ids.forEach(id => this.idMap.delete(id));
   }
 
-  normalizeX(traceID: number, timestamps) {
-    this.plot_data[this.idMap.get(traceID)].x = timestamps;
-    console.log('new plot', this.plot_data);
+  normalizeX(traces: Array<number>, timestamps: Array<number>) {
+    traces.forEach(traceID => {
+      this.plot_data[this.idMap.get(traceID)].x = timestamps;
+    });
   }
 }

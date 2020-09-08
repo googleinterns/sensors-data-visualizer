@@ -27,7 +27,11 @@ limitations under the License. -->
 
     <mat-nav-list>
       <h2 id="title">Datasets</h2>
-      <button mat-raised-button *ngIf="dataAdded()" (click)="normalizeX()">Normalization Options</button>
+      <button mat-raised-button *ngIf="dataAdded()" (click)="toggleOptions()">Normalization Options  ></button>
+      <div *ngIf="showNormalize">
+        <mat-slide-toggle (click)="normalizeX()">Normalize X-axis</mat-slide-toggle>
+        <mat-slide-toggle (click)="normalizeY()">Normalize Y-axis</mat-slide-toggle>
+      </div>
       <!-- New datasets are added inside this template -->
       <ng-template uploadDirective></ng-template>
     </mat-nav-list>

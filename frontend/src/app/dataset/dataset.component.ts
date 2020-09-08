@@ -195,16 +195,26 @@ export class DatasetComponent {
   }
 
   normalizeX() {
-    console.log('sample', this.sample);
-    this.normalization = [true, Number(this.sample.timestamps[0])];
-    console.log('normalize: ', this.normalization);
+    // If currently normalized, de-normalize.
+    if (this.normalization[0]) {
+      this.normalization[0] = false;
+      this.plotRef.normalizeX(
+        Array.from(this.ids.values()),
+        this.sample.timestamps
+      );
+    } else {
+      this.normalization = [true, Number(this.sample.timestamps[0])];
+      const new_timestamps = new Array<number>(this.sample.timestamps.length);
+      for (let i = 0; i < this.sample.timestamps.length; i++) {
+        new_timestamps[i] =
+          this.sample.timestamps[i] - Number(this.normalization[1]);
+      }
+      console.log('ts', new_timestamps);
+      this.plotRef.normalizeX(Array.from(this.ids.values()), new_timestamps);
+    }
+  }
 
-    for (const i in this.sample.timestamps) {
-      this.sample.timestamps[i] -= Number(this.normalization[1]);
-    }
-    for (const i in this.sample.data) {
-      this.plotRef.normalizeX(this.sample.data[i][0], this.sample.timestamps);
-    }
-    console.log('normalized', this.sample.timestamps);
+  normalizeY() {
+    console.log('sample', this.sample);
   }
 }

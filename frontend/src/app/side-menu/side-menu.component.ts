@@ -48,6 +48,7 @@ export class SideMenuComponent {
   @ViewChild('checkBox') checkBox;
 
   files = [];
+  showNormalize = false;
   message: any;
   datasets = [];
   isHandset$: Observable<boolean> = this.breakpointObserver
@@ -161,11 +162,17 @@ export class SideMenuComponent {
   }
 
   normalizeX() {
+    console.log('normalizing x');
     this.datasets.forEach(dataset => dataset.normalizeX());
   }
 
   normalizeY() {
+    console.log('normalizing y');
     this.datasets.forEach(dataset => dataset.normalizeY());
+  }
+
+  toggleOptions() {
+    this.showNormalize = !this.showNormalize;
   }
 
   /**
