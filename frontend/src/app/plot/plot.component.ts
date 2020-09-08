@@ -158,7 +158,6 @@ export class PlotComponent {
    * @param id The id of the trace to toggle on/off.
    */
   toggleTrace(id: number) {
-    console.log('plot ids', this.idMap, ' id ', id);
     const index = this.idMap.get(id);
     this.plot_data[index].visible = !this.plot_data[index].visible;
   }
