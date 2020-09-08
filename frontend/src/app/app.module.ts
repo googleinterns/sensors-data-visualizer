@@ -51,6 +51,7 @@ import {UploadDirective} from './upload.directive';
 // Imports for Plotly.
 import {PlotlyModule} from 'angular-plotly.js';
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import {StyleDialogComponent} from './style-dialog/style-dialog.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -63,6 +64,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     SideMenuComponent,
     UploadDirective,
     InitDialogComponent,
+    StyleDialogComponent,
   ],
   imports: [
     BrowserModule,
