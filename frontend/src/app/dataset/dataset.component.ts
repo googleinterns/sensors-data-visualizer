@@ -50,11 +50,13 @@ export class DatasetComponent {
   isChecked = true;
 
   /**
-   * normalization[0] = If this dataset is currently normalized.
-   * normalization[1] = The original Timestamp 0 for the array so
+   * normalizationX[0] = If this dataset is currently normalized on x-axis.
+   * normalizationX[1] = The original Timestamp 0 for the array so
    *  that it can be converted back and forth.
    */
-  normalization = [false, -1];
+  normalizationX = [false, -1];
+  normalizationY = false;
+
   constructor(private sharedService: UploadService) {
     this.hasLatencies = false;
   }
@@ -66,7 +68,7 @@ export class DatasetComponent {
   public setSample(sample) {
     this.sample = sample;
     for (const i in sample.data) {
-      this.ids.set(Number(i), sample.data[i][0]);
+      this.ids.set(Number(i), sample.data[i]['id']);
       this.currentShowing.set(
         i, // The data channel key.
         new Map([
@@ -76,7 +78,7 @@ export class DatasetComponent {
         ])
       );
     }
-    this.ids.set('ts_diff', sample.timestamp_diffs[0]);
+    this.ids.set('ts_diff', sample.timestamp_diffs['id']);
     this.currentShowing.set(
       'ts_diff',
       new Map([
@@ -88,7 +90,7 @@ export class DatasetComponent {
 
     if ('latencies' in sample) {
       this.hasLatencies = true;
-      this.ids.set('latencies', sample.latencies[0]);
+      this.ids.set('latencies', sample.latencies['id']);
       this.currentShowing.set(
         'latencies',
         new Map([
@@ -199,14 +201,14 @@ export class DatasetComponent {
    */
   normalizeX() {
     // If currently normalized, de-normalize.
-    if (this.normalization[0]) {
-      this.normalization[0] = false;
+    if (this.normalizationX[0]) {
+      this.normalizationX[0] = false;
       this.plotRef.normalizeX(
         Array.from(this.ids.values()),
         this.normalizeXHelper(1)
       );
     } else {
-      this.normalization = [true, Number(this.sample.timestamps[0])];
+      this.normalizationX = [true, Number(this.sample.timestamps['arr'][0])];
       this.plotRef.normalizeX(
         Array.from(this.ids.values()),
         this.normalizeXHelper(-1)
@@ -221,31 +223,53 @@ export class DatasetComponent {
    *  the timestamps, if toggle == 1, it will de-normalize.
    */
   normalizeXHelper(toggle: number) {
-    const new_timestamps = new Array<number>(this.sample.timestamps.length);
+    const new_timestamps = new Array<number>(
+      this.sample.timestamps['arr'].length
+    );
     for (let i = 0; i < new_timestamps.length; i++) {
       new_timestamps[i] =
-        this.sample.timestamps[i] + Number(this.normalization[1]) * toggle;
+        this.sample.timestamps['arr'][i] +
+        Number(this.normalizationX[1]) * toggle;
     }
     return new_timestamps;
   }
 
+  /**
+   * https://stats.stackexchange.com/questions/178626/how-to-normalize-data-between-1-and-1
+   */
   normalizeY() {
-    console.log('sample', this.sample);
-    for (const i in this.sample.data) {
-      const [min, max] = this.minAndMax(this.sample.data[i][1]);
-      const new_data = new Array<number>(this.sample.data[0][1].length);
-      this.sample.data[i][1].forEach((value, index) => {
-        console.log('t', value, index);
-        if (value === 0) {
-          new_data[index] = 0;
-        } else {
-          new_data[index] = 2 * ((value - min) / (max - min)) - 1;
-        }
-      });
-      this.sample.data[i][1] = new_data;
-      this.plotRef.normalizeY(this.sample.data[i][0], new_data);
+    //If currently normalized, de-normalize.
+    if (this.normalizationY) {
+      this.normalizationY = false;
+      for (const i in this.sample.data) {
+        const new_data = new Array<number>(this.sample.data[0]['arr'].length);
+        const [min, max] = this.sample.data[i]['minmax'];
+        this.sample.data[i]['arr'].forEach((value, index) => {
+          if (value === 0) {
+            new_data[index] = 0;
+          } else {
+            new_data[index] = (max - min) * ((value + 1) / 2) + min;
+          }
+        });
+        this.sample.data[i]['arr'] = new_data;
+        this.plotRef.normalizeY(this.sample.data[i]['id'], new_data);
+      }
+    } else {
+      this.normalizationY = true;
+      for (const i in this.sample.data) {
+        const new_data = new Array<number>(this.sample.data[0]['arr'].length);
+        const [min, max] = this.sample.data[i]['minmax'];
+        this.sample.data[i]['arr'].forEach((value, index) => {
+          if (value === 0) {
+            new_data[index] = 0;
+          } else {
+            new_data[index] = 2 * ((value - min) / (max - min)) - 1;
+          }
+        });
+        this.sample.data[i]['arr'] = new_data;
+        this.plotRef.normalizeY(this.sample.data[i]['id'], new_data);
+      }
     }
-    console.log('y norm sample', this.sample);
   }
 
   /**

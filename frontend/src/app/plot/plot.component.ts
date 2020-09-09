@@ -102,6 +102,7 @@ export class PlotComponent {
    * @param samples
    */
   public addSamples(samples) {
+    console.log('samples', samples);
     // This will only be true when no data has been added yet.
     // Removes the placeholder datapoint and title.
     console.log('plot addtrace: ', samples);
@@ -115,8 +116,8 @@ export class PlotComponent {
       for (const j in samples[i].data) {
         this.addTrace(
           samples[i].timestamps,
-          samples[i].data[j][1],
-          samples[i].data[j][0],
+          samples[i].data[j]['arr'],
+          samples[i].data[j]['id'],
           j + ' ' + samples[i].sensor_name,
           true
         );
@@ -125,8 +126,8 @@ export class PlotComponent {
       // toggles it in the dataset menu.
       this.addTrace(
         samples[i].timestamps,
-        samples[i].timestamp_diffs[1],
-        samples[i].timestamp_diffs[0],
+        samples[i].timestamp_diffs['arr'],
+        samples[i].timestamp_diffs['id'],
         'TS Diff ' + samples[i].sensor_name,
         false
       );
@@ -135,8 +136,8 @@ export class PlotComponent {
       if ('latencies' in samples[i]) {
         this.addTrace(
           samples[i].timestamps,
-          samples[i].latencies[1],
-          samples[i].latencies[0],
+          samples[i].latencies['arr'],
+          samples[i].latencies['id'],
           'Latencies ' + samples[i].sensor_name,
           false
         );
@@ -187,7 +188,6 @@ export class PlotComponent {
   }
 
   normalizeY(traceID: number, data: Array<number>) {
-    console.log('plot y norm', traceID, data);
     this.plot_data[this.idMap.get(traceID)].y = data;
   }
 }

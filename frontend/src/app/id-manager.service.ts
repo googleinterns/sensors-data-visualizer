@@ -28,12 +28,13 @@ export class IdManagerService {
    * @param sample The sample that needs IDs assigned to it.
    */
   public assignIDs(sample) {
-    sample.timestamp_diffs[0] = this.nextID++;
+    console.log('id man sample', sample);
+    sample.timestamp_diffs['id'] = this.nextID++;
     if ('latencies' in sample) {
-      sample.latencies[0] = this.nextID++;
+      sample.latencies['id'] = this.nextID++;
     }
     for (const i in sample.data) {
-      sample.data[i][0] = this.nextID++;
+      sample.data[i]['id'] = this.nextID++;
     }
     return sample;
   }
@@ -43,6 +44,6 @@ export class IdManagerService {
    * @param trace The data trace to be assigned an ID
    */
   public assignSingleID(trace) {
-    return [this.nextID++, trace];
+    return (trace['id'] = this.nextID++);
   }
 }

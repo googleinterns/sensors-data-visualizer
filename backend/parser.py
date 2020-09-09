@@ -271,23 +271,34 @@ class Parser:
         ret_dict = {}
 
         for i, sample in enumerate(samples):
-            # sample.data[key][0] is a placeholder for the unique id
+            # sample.data[key]['id'] is a placeholder for the unique id
             # assigned to each trace in the frontend.
             for key in sample.data.keys():
-                sample.data[key] = [-1, sample.data[key]]
+                sample.data[key] = {
+                    'id': -1,
+                    'minmax': [min(sample.data[key]), max(sample.data[key])],
+                    'arr': sample.data[key]
+                }
 
             temp_dict = {
                 "sensor_name": sample.sensor_name,
                 "sensor_id": sample.sensor_id,
                 "timestamps": sample.timestamps,
-                "timestamp_diffs": [-1, sample.timestamp_diffs],
+                "timestamp_diffs": {
+                    'id': -1,
+                    'minmax': [min(sample.timestamp_diffs), max(sample.timestamp_diffs)],
+                    'arr': sample.timestamp_diffs
+                },
                 "data": sample.data,
                 "data_len": len(sample.data)
             }
 
             if sample.latencies:
-                temp_dict['latencies'] = [-1, sample.latencies]
-
+                temp_dict['latencies'] = {
+                    'id': -1,
+                    'minmax': [min(sample.latencies), max(sample.latencies)],
+                    'arr': sample.latencies
+                }
             ret_dict[i] = json.dumps(temp_dict)
 
         return json.dumps(ret_dict)
