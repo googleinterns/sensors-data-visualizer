@@ -49,6 +49,8 @@ export class SideMenuComponent {
 
   files = [];
   showNormalize = false;
+  normalizationX = false;
+  normalizationY = false;
   message: any;
   datasets = [];
   isHandset$: Observable<boolean> = this.breakpointObserver
@@ -90,7 +92,8 @@ export class SideMenuComponent {
                 .loadDataset(tabNumber, plotRef, viewContainerRef, sample)
                 .then(ref => {
                   this.datasets.push(ref);
-                  console.log('new dataset', this.datasets);
+                  this.normalizationX ? ref.normalizeX(true) : null;
+                  this.normalizationY ? ref.normalizeY(true) : null;
                 });
             }
             plotRef.addSamples(samples);
@@ -161,14 +164,14 @@ export class SideMenuComponent {
     this.files = [];
   }
 
-  normalizeX() {
-    console.log('normalizing x');
-    this.datasets.forEach(dataset => dataset.normalizeX());
+  normalizeX(event) {
+    this.normalizationX = event.checked ? true : false;
+    this.datasets.forEach(dataset => dataset.normalizeX(event.checked));
   }
 
-  normalizeY() {
-    console.log('normalizing y');
-    this.datasets.forEach(dataset => dataset.normalizeY());
+  normalizeY(event) {
+    this.normalizationY = event.checked ? true : false;
+    this.datasets.forEach(dataset => dataset.normalizeY(event.checked));
   }
 
   toggleOptions() {

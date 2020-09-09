@@ -199,7 +199,10 @@ export class DatasetComponent {
   /**
    * Toggles the normalization of this dataset.
    */
-  normalizeX() {
+  normalizeX(toggle: boolean) {
+    if (toggle === this.normalizationX[0]) {
+      return;
+    }
     // If currently normalized, de-normalize.
     if (this.normalizationX[0]) {
       this.normalizationX[0] = false;
@@ -208,7 +211,7 @@ export class DatasetComponent {
         this.normalizeXHelper(1)
       );
     } else {
-      this.normalizationX = [true, Number(this.sample.timestamps['arr'][0])];
+      this.normalizationX = [true, Number(this.sample.timestamps[0])];
       this.plotRef.normalizeX(
         Array.from(this.ids.values()),
         this.normalizeXHelper(-1)
@@ -223,21 +226,23 @@ export class DatasetComponent {
    *  the timestamps, if toggle == 1, it will de-normalize.
    */
   normalizeXHelper(toggle: number) {
-    const new_timestamps = new Array<number>(
-      this.sample.timestamps['arr'].length
-    );
+    const new_timestamps = new Array<number>(this.sample.timestamps.length);
     for (let i = 0; i < new_timestamps.length; i++) {
       new_timestamps[i] =
-        this.sample.timestamps['arr'][i] +
-        Number(this.normalizationX[1]) * toggle;
+        this.sample.timestamps[i] + Number(this.normalizationX[1]) * toggle;
     }
     return new_timestamps;
   }
 
   /**
+   * Normalizes the Y-axis for all traces in this sample between [-1, 1].
+   * Math source at:
    * https://stats.stackexchange.com/questions/178626/how-to-normalize-data-between-1-and-1
    */
-  normalizeY() {
+  normalizeY(toggle: boolean) {
+    if (toggle === this.normalizationY) {
+      return;
+    }
     //If currently normalized, de-normalize.
     if (this.normalizationY) {
       this.normalizationY = false;
