@@ -14,7 +14,7 @@ limitations under the License. */
 
 // Angular Imports.
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
-import {Component, ViewChild, ViewChildren, ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Component, ViewChild, ElementRef} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
 
@@ -24,8 +24,6 @@ import {UploadDirective} from '../upload.directive';
 import {UploadService} from '../upload.service';
 
 import {IdManagerService} from '../id-manager.service';
-import {DatasetComponent} from '../dataset/dataset.component';
-import { Template } from '@angular/compiler/src/render3/r3_ast';
 
 @Component({
   selector: 'app-side-menu',
@@ -66,17 +64,15 @@ export class SideMenuComponent {
     private idMan: IdManagerService
   ) {
     this.sharedService.sharedMessage.subscribe((event: any) => {
-      console.log('smenu message recieved: ', event);
       if (typeof event === 'object' && event !== null) {
-        console.log('valid object');
         switch (event.type) {
           case 'stats': {
             //TODO handle assigning ids to the new stats data.
             break;
           }
           case 'upload': {
-            console.log('smenu Plotting dataset...');
             // Plot new datasets added by the upload button.
+            console.log('smenu dashboard', this.dashboard);
             const tabNumber = this.dashboard.currentTab;
             const viewContainerRef = this.uploadDirective.viewContainerRef;
             const samples = [];
@@ -89,7 +85,12 @@ export class SideMenuComponent {
               samples.push(sample);
 
               this.sharedService
-                .loadDataset(tabNumber, plotRef, viewContainerRef, sample)
+                .loadDataset(
+                  tabNumber,
+                  this.dashboard,
+                  viewContainerRef,
+                  sample
+                )
                 .then(ref => {
                   this.datasets.push(ref);
                   this.normalizationX ? ref.normalizeX(true) : null;

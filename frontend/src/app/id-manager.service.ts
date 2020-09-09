@@ -40,8 +40,7 @@ export class IdManagerService {
   }
 
   /**
-   * TODO integrate with stats data.
-   * @param trace The data trace to be assigned an ID
+   * Return a single new ID.
    */
   public assignSingleID(trace) {
     return (trace['id'] = this.nextID++);

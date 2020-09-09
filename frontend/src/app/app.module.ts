@@ -16,6 +16,8 @@ limitations under the License. */
 import {LayoutModule} from '@angular/cdk/layout';
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
@@ -24,9 +26,12 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCardModule} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatDialogModule} from '@angular/material/dialog';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatGridListModule} from '@angular/material/grid-list';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material/list';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSidenavModule} from '@angular/material/sidenav';
@@ -37,6 +42,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 // Main app UI components.
 import {AppComponent} from './app.component';
 import {DatasetComponent} from './dataset/dataset.component';
+import {InitDialogComponent} from './init-dialog/init-dialog.component';
 import {MainDashboardComponent} from './main-dashboard/main-dashboard.component';
 import {PlotComponent} from './plot/plot.component';
 import {SideMenuComponent} from './side-menu/side-menu.component';
@@ -45,6 +51,7 @@ import {UploadDirective} from './upload.directive';
 // Imports for Plotly.
 import {PlotlyModule} from 'angular-plotly.js';
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import {StyleDialogComponent} from './style-dialog/style-dialog.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -56,19 +63,25 @@ PlotlyModule.plotlyjs = PlotlyJS;
     PlotComponent,
     SideMenuComponent,
     UploadDirective,
+    InitDialogComponent,
+    StyleDialogComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    FormsModule,
     HttpClientModule,
     LayoutModule,
     MatButtonToggleModule,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
+    MatDialogModule,
     MatExpansionModule,
     MatGridListModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatListModule,
     MatMenuModule,
     MatSidenavModule,
@@ -76,6 +89,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     MatTabsModule,
     MatToolbarModule,
     PlotlyModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -14,7 +14,7 @@ limitations under the License. */
 
 // Angular Imports.
 import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
-import {Component, ViewChildren, QueryList} from '@angular/core';
+import {Component, ViewChildren, QueryList, AfterViewInit} from '@angular/core';
 import {map} from 'rxjs/operators';
 
 // Project Imports.
@@ -25,7 +25,7 @@ import {PlotComponent} from '../plot/plot.component';
   templateUrl: './main-dashboard.component.html',
   styleUrls: ['./main-dashboard.component.css'],
 })
-export class MainDashboardComponent {
+export class MainDashboardComponent implements AfterViewInit {
   // Selects the plot component present on the page. Allows the grandparent component (side-menu)
   // to access the plot that is a child of this component.
   @ViewChildren(PlotComponent) plot: QueryList<PlotComponent>;
@@ -36,15 +36,15 @@ export class MainDashboardComponent {
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map(({matches}) => {
       // Displays the two cards with the given grid sizes.
-      return [
-        {title: 'Legend', cols: 7, rows: 1},
-        {title: 'Options', cols: 3, rows: 1},
-      ];
+      return [{title: 'Legend', cols: 7, rows: 1}];
     })
   );
 
   constructor(private breakpointObserver: BreakpointObserver) {}
 
+  ngAfterViewInit() {
+    this.plot.first.setSelfRef(this.plot.first);
+  }
   /**
    * Creates a new tab by pushing the name of the tab to this.tabs.
    * When a new item is added to this.tabs, the html will add a new tab.
@@ -62,7 +62,6 @@ export class MainDashboardComponent {
    * selects a new tab. The index field is the index of the tab selected.
    */
   switchTab(event) {
-    console.log('switching..', event);
     this.currentTab = event.index;
   }
 }
