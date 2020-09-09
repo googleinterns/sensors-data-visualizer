@@ -174,9 +174,20 @@ export class PlotComponent {
     ids.forEach(id => this.idMap.delete(id));
   }
 
+  /**
+   * Assigns new timestamps to an entire dataset.
+   * @param traces The IDs for which to assign new timestamps.
+   * @param timestamps The new timestamps to assign. These are either
+   *  newly normalized or the original timestamps.
+   */
   normalizeX(traces: Array<number>, timestamps: Array<number>) {
     traces.forEach(traceID => {
       this.plot_data[this.idMap.get(traceID)].x = timestamps;
     });
+  }
+
+  normalizeY(traceID: number, data: Array<number>) {
+    console.log('plot y norm', traceID, data);
+    this.plot_data[this.idMap.get(traceID)].y = data;
   }
 }

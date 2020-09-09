@@ -194,27 +194,72 @@ export class DatasetComponent {
     this.containerRef.destroy();
   }
 
+  /**
+   * Toggles the normalization of this dataset.
+   */
   normalizeX() {
     // If currently normalized, de-normalize.
     if (this.normalization[0]) {
       this.normalization[0] = false;
       this.plotRef.normalizeX(
         Array.from(this.ids.values()),
-        this.sample.timestamps
+        this.normalizeXHelper(1)
       );
     } else {
       this.normalization = [true, Number(this.sample.timestamps[0])];
-      const new_timestamps = new Array<number>(this.sample.timestamps.length);
-      for (let i = 0; i < this.sample.timestamps.length; i++) {
-        new_timestamps[i] =
-          this.sample.timestamps[i] - Number(this.normalization[1]);
-      }
-      console.log('ts', new_timestamps);
-      this.plotRef.normalizeX(Array.from(this.ids.values()), new_timestamps);
+      this.plotRef.normalizeX(
+        Array.from(this.ids.values()),
+        this.normalizeXHelper(-1)
+      );
     }
+  }
+
+  /**
+   * Handles the addition or subtraction needed to normalize timestamps.
+   * @param toggle Operand that determines if the timestamps are being
+   *  normalized or de-normalized. If toggle == -1, the helper will normalize
+   *  the timestamps, if toggle == 1, it will de-normalize.
+   */
+  normalizeXHelper(toggle: number) {
+    const new_timestamps = new Array<number>(this.sample.timestamps.length);
+    for (let i = 0; i < new_timestamps.length; i++) {
+      new_timestamps[i] =
+        this.sample.timestamps[i] + Number(this.normalization[1]) * toggle;
+    }
+    return new_timestamps;
   }
 
   normalizeY() {
     console.log('sample', this.sample);
+    for (const i in this.sample.data) {
+      const [min, max] = this.minAndMax(this.sample.data[i][1]);
+      const new_data = new Array<number>(this.sample.data[0][1].length);
+      this.sample.data[i][1].forEach((value, index) => {
+        console.log('t', value, index);
+        if (value === 0) {
+          new_data[index] = 0;
+        } else {
+          new_data[index] = 2 * ((value - min) / (max - min)) - 1;
+        }
+      });
+      this.sample.data[i][1] = new_data;
+      this.plotRef.normalizeY(this.sample.data[i][0], new_data);
+    }
+    console.log('y norm sample', this.sample);
+  }
+
+  /**
+   * Calculates the min and max of a trace in a single pass. Used instead
+   * of doing both Math.min() and Math.max().
+   * @param trace The array to iterate over.
+   */
+  minAndMax(trace: Array<number>) {
+    let max = -Infinity;
+    let min = Infinity;
+    trace.forEach(num => {
+      num > max ? (max = num) : null;
+      num < min ? (min = num) : null;
+    });
+    return [min, max];
   }
 }
