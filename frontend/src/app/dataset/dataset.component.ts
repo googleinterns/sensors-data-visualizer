@@ -339,11 +339,11 @@ export class DatasetComponent {
       return;
     }
     const plot = this.dashboard.plot.toArray()[this.tabNumbers[0]];
-    const new_data = new Array<number>(this.sample.data[0]['arr'].length);
     //If currently normalized, de-normalize.
     if (this.normalizationY) {
       this.normalizationY = false;
       for (const i in this.sample.data) {
+        const new_data = new Array<number>(this.sample.data[0]['arr'].length);
         this.sample.data[i]['arr'].forEach((value, index) => {
           if (value === 0) {
             new_data[index] = 0;
@@ -358,6 +358,7 @@ export class DatasetComponent {
     } else {
       this.normalizationY = true;
       for (const i in this.sample.data) {
+        const new_data = new Array<number>(this.sample.data[0]['arr'].length);
         this.sample.data[i]['arr'].forEach((value, index) => {
           if (value === 0) {
             new_data[index] = 0;
