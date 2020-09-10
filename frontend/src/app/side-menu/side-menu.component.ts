@@ -165,16 +165,27 @@ export class SideMenuComponent {
     this.files = [];
   }
 
+  /**
+   * Triggers a x-normalization of all datasets contained in the app.
+   * @param event Contains the status of the frontend slide toggle.
+   */
   normalizeX(event) {
     this.normalizationX = event.checked ? true : false;
     this.datasets.forEach(dataset => dataset.normalizeX(event.checked));
   }
 
+  /**
+   * Triggers a y-normalization of all datasets contained in the app.
+   * @param event Contains the status of the frontend slide toggle.
+   */
   normalizeY(event) {
     this.normalizationY = event.checked ? true : false;
     this.datasets.forEach(dataset => dataset.normalizeY(event.checked));
   }
 
+  /**
+   * Opens and closes the normalization options menu on the frontend.
+   */
   toggleOptions() {
     this.showNormalize = !this.showNormalize;
   }
