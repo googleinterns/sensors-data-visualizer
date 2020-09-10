@@ -233,14 +233,14 @@ export class DatasetComponent {
 
           plots[0].addTrace(
             this.sample.timestamps,
-            event.body.avgs[i]['arr'],
+            event.body.avgs[i],
             avg_id,
             i + ' running avg',
             false
           );
           plots[1].addTrace(
             this.sample.timestamps,
-            event.body.stdevs[i]['arr'],
+            event.body.stdevs[i],
             stdev_id,
             i + ' stdev',
             false

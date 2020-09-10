@@ -21,15 +21,33 @@ class Sample:
     """Sample holds the data recorded for a sensor.
 
     Attributes:
-        sensor_name: A string holding the name of the sensor.
-        sensor_id: The unique ID of a sensor.
-        timestamps: A list of each recorded timestamp in the sample.
-        timestamp_diffs: A list where index i contains timestamps[i] - timestamps[i-1]. If i==0, timestamps_diff[i] = 0.
-        data: A dictionary that holds a list of each dimmensions recorded datapoints. Initialized to hold 1D data,
-            But can be extended to hold an arbitary number of dimmensions.
-                e.g. data[0] holds a list of all the data's first dimmension datapoints, usually the x-axis.
-        latencies: A List of the recorded latency of each datapoint
-        next_index: Index where the next datapoint will be added for every list in the sample
+        sensor_name: string - The name of the sensor.
+        sensor_id: string - The unique ID of a sensor.
+        timestamps: float[] - Each recorded timestamp in the sample.
+        timestamp_diffs: {
+            id: integer - Always set to -1, a placeholder value for the frontend to replace.
+            minmax: float[] - The minimum and maximum value in the data array.
+                                minmax = [min(timestamp_diffs['arr']), max(timestamp_diffs['arr'])]
+            arr: float[] - The data values recorded for timestamp differences.
+        }
+        data: {
+            0: {
+                id: integer - Always set to -1, a placeholder value for the frontend to replace.
+                minmax: float[] - The minimum and maximum value in the data array.
+                                    minmax = [min(data[0]['arr']), max(data[0]['arr'])]
+                arr: float[] - The data values recorded for channel 0.
+            },
+            1: {...},
+            ...
+            n: {...}
+        },
+        data_len: integer - The number of channels in data, equal to len(data),
+        latencies: { (Optional)
+            id: integer - Always set to -1, a placeholder value for the frontend to replace.
+            minmax: float[] - The minimum and maximum value in the data array.
+                                minmax = [min(latencies['arr']), max(latencies['arr'])]
+            arr: float[] - The data values recorded for latencies.
+        }
     """
 
     def __init__(self, sensor_name: str, sensor_id: str):
@@ -271,9 +289,14 @@ class Parser:
         ret_dict = {}
 
         for i, sample in enumerate(samples):
-            # sample.data[key]['id'] is a placeholder for the unique id
-            # assigned to each trace in the frontend.
             for key in sample.data.keys():
+                """ All traces containing plotable data must contain the fields:
+                    id: Always set to -1, a placeholder value for the frontend to replace.
+                    minmax: The minimum and maximum value in the data array. Used for normalization.
+                                minmax = [min(timestamp_diffs['arr']), max(timestamp_diffs['arr'])]
+                    arr: The data values recorded. These values will be plotted on the y-axis while the
+                            timestamps are plotted on the x-axis.
+                """
                 sample.data[key] = {
                     'id': -1,
                     'minmax': [min(sample.data[key]), max(sample.data[key])],
