@@ -342,7 +342,18 @@ export class DatasetComponent {
     this.normalizationY = !this.normalizationY;
     for (const i in this.sample.data) {
       const new_data = new Array<number>(this.sample.data[0]['arr'].length);
-      this.normalizeYHelper(i, !this.normalizationY, new_data);
+      const [min, max] = this.sample.data[i]['minmax'];
+      // Edge case where a straight line trace would cause a divide by 0.
+      // If a trace with all 0s occurs, it is not normalized in normalizeYHelper.
+      if (min !== 0 && min === max) {
+        if (toggle) {
+          new_data.fill(min >= 0 ? 1 : -1);
+        } else {
+          new_data.fill(min);
+        }
+      } else {
+        this.normalizeYHelper(i, !this.normalizationY, new_data, min, max);
+      }
       plot.normalizeY(this.sample.data[i]['id'], new_data);
     }
   }
@@ -353,13 +364,20 @@ export class DatasetComponent {
    * @param i The channel of this.sample.data to iterate over.
    * @param normalize Whether to normalize or denormalize.
    * @param new_data The new array to fill with values.
+   * @param min The minimum value in the trace.
+   * @param max The maximum value in the trace.
    */
-  normalizeYHelper(i: string, normalize: boolean, new_data: Array<number>) {
+  normalizeYHelper(
+    i: string,
+    normalize: boolean,
+    new_data: Array<number>,
+    min: number,
+    max: number
+  ) {
     this.sample.data[i]['arr'].forEach((value, index) => {
       if (value === 0) {
         new_data[index] = 0;
       } else {
-        const [min, max] = this.sample.data[i]['minmax'];
         if (normalize) {
           new_data[index] = (max - min) * ((value + 1) / 2) + min;
         } else {
