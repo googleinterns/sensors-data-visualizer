@@ -339,37 +339,34 @@ export class DatasetComponent {
       return;
     }
     const plot = this.dashboard.plot.toArray()[this.tabNumbers[0]];
-    //If currently normalized, de-normalize.
-    if (this.normalizationY) {
-      this.normalizationY = false;
-      for (const i in this.sample.data) {
-        const new_data = new Array<number>(this.sample.data[0]['arr'].length);
-        this.sample.data[i]['arr'].forEach((value, index) => {
-          if (value === 0) {
-            new_data[index] = 0;
-          } else {
-            const [min, max] = this.sample.data[i]['minmax'];
-            new_data[index] = (max - min) * ((value + 1) / 2) + min;
-          }
-        });
-        this.sample.data[i]['arr'] = new_data;
-        plot.normalizeY(this.sample.data[i]['id'], new_data);
-      }
-    } else {
-      this.normalizationY = true;
-      for (const i in this.sample.data) {
-        const new_data = new Array<number>(this.sample.data[0]['arr'].length);
-        this.sample.data[i]['arr'].forEach((value, index) => {
-          if (value === 0) {
-            new_data[index] = 0;
-          } else {
-            const [min, max] = this.sample.data[i]['minmax'];
-            new_data[index] = 2 * ((value - min) / (max - min)) - 1;
-          }
-        });
-        this.sample.data[i]['arr'] = new_data;
-        plot.normalizeY(this.sample.data[i]['id'], new_data);
-      }
+    this.normalizationY = !this.normalizationY;
+    for (const i in this.sample.data) {
+      const new_data = new Array<number>(this.sample.data[0]['arr'].length);
+      this.normalizeYHelper(i, !this.normalizationY, new_data);
+      plot.normalizeY(this.sample.data[i]['id'], new_data);
     }
+  }
+
+  /**
+   * Iterates over a data channel, (de)normalizing it and filling the new_data
+   * array with values.
+   * @param i The channel of this.sample.data to iterate over.
+   * @param normalize Whether to normalize or denormalize.
+   * @param new_data The new array to fill with values.
+   */
+  normalizeYHelper(i: string, normalize: boolean, new_data: Array<number>) {
+    this.sample.data[i]['arr'].forEach((value, index) => {
+      if (value === 0) {
+        new_data[index] = 0;
+      } else {
+        const [min, max] = this.sample.data[i]['minmax'];
+        if (normalize) {
+          new_data[index] = (max - min) * ((value + 1) / 2) + min;
+        } else {
+          new_data[index] = 2 * ((value - min) / (max - min)) - 1;
+        }
+      }
+    });
+    this.sample.data[i]['arr'] = new_data;
   }
 }
