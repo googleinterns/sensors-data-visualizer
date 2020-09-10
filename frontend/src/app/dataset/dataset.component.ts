@@ -178,14 +178,14 @@ export class DatasetComponent {
         avg_period: periods.avg,
         stdev_period: periods.stdev,
         channels: {
-          ts_diffs: this.sample.timestamp_diffs[1],
+          ts_diffs: this.sample.timestamp_diffs['arr'],
         },
       };
       for (const i in this.sample.data) {
-        data.channels[i] = this.sample.data[i][1];
+        data.channels[i] = this.sample.data[i]['arr'];
       }
       if (this.hasLatencies) {
-        data.channels['latencies'] = this.sample.latencies[1];
+        data.channels['latencies'] = this.sample.latencies['arr'];
       }
       this.requestStats(data, channel);
     } else {
@@ -218,13 +218,14 @@ export class DatasetComponent {
           event.body.type === 'stats'
       ) { /*eslint-enable */
         console.log('DS received: ', event.body);
+        console.log('avgs', event.body['avgs']);
+        console.log('stdevs', event.body['stdevs']);
         const plots = [
           this.dashboard.plot.toArray()[this.dashboard.currentTab - 1], // Tab for avgs
           this.dashboard.plot.toArray()[this.dashboard.currentTab], // Tab for stdevs.
         ];
 
         for (const i in event.body.avgs) {
-          console.log('stats', event.body.avgs);
           const avg_id = this.idMan.assignSingleID(event.body.avgs[i]);
           const stdev_id = this.idMan.assignSingleID(event.body.stdevs[i]);
           this.ids.set('avg' + i, avg_id);
@@ -239,7 +240,7 @@ export class DatasetComponent {
           );
           plots[1].addTrace(
             this.sample.timestamps,
-            event.body.stdevs[i]['arrs'],
+            event.body.stdevs[i]['arr'],
             stdev_id,
             i + ' stdev',
             false
@@ -293,7 +294,9 @@ export class DatasetComponent {
   }
 
   /**
-   * Toggles the normalization of this dataset.
+   * Normalizes this datasets timestamps and sends the update to
+   * the plot component to be displayed to the user.
+   * @param toggle The status of the frontend slide toggle.
    */
   normalizeX(toggle: boolean) {
     if (toggle === this.normalizationX[0]) {
@@ -329,22 +332,23 @@ export class DatasetComponent {
    * Normalizes the Y-axis for all traces in this sample between [-1, 1].
    * Math source at:
    * https://stats.stackexchange.com/questions/178626/how-to-normalize-data-between-1-and-1
+   * @param toggle The status of the frontend slide toggle.
    */
   normalizeY(toggle: boolean) {
     if (toggle === this.normalizationY) {
       return;
     }
     const plot = this.dashboard.plot.toArray()[this.tabNumbers[0]];
+    const new_data = new Array<number>(this.sample.data[0]['arr'].length);
     //If currently normalized, de-normalize.
     if (this.normalizationY) {
       this.normalizationY = false;
       for (const i in this.sample.data) {
-        const new_data = new Array<number>(this.sample.data[0]['arr'].length);
-        const [min, max] = this.sample.data[i]['minmax'];
         this.sample.data[i]['arr'].forEach((value, index) => {
           if (value === 0) {
             new_data[index] = 0;
           } else {
+            const [min, max] = this.sample.data[i]['minmax'];
             new_data[index] = (max - min) * ((value + 1) / 2) + min;
           }
         });
@@ -354,12 +358,11 @@ export class DatasetComponent {
     } else {
       this.normalizationY = true;
       for (const i in this.sample.data) {
-        const new_data = new Array<number>(this.sample.data[0]['arr'].length);
-        const [min, max] = this.sample.data[i]['minmax'];
         this.sample.data[i]['arr'].forEach((value, index) => {
           if (value === 0) {
             new_data[index] = 0;
           } else {
+            const [min, max] = this.sample.data[i]['minmax'];
             new_data[index] = 2 * ((value - min) / (max - min)) - 1;
           }
         });
