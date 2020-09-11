@@ -106,7 +106,8 @@ export class DatasetComponent {
    */
   normalizationX = [false, -1];
   normalizationY = false;
-  generatedHistogram = false;
+  // A set of each channel for which a histogram has been generated.
+  generatedHistogram = new Set<string>();
 
   constructor(
     private sharedService: UploadService,
@@ -128,6 +129,7 @@ export class DatasetComponent {
           ['show', true], // Always initially shows channel data.
           ['stdev', false], // But a request is required to show stats, so these are false.
           ['avg', false],
+          ['histogram', false],
         ])
       );
     }
@@ -138,6 +140,7 @@ export class DatasetComponent {
         ['show', false],
         ['stdev', false],
         ['avg', false],
+        ['histogram', false],
       ])
     );
 
@@ -150,6 +153,7 @@ export class DatasetComponent {
           ['show', false],
           ['stdev', false],
           ['avg', false],
+          ['histogram', false],
         ])
       );
     }
@@ -243,8 +247,6 @@ export class DatasetComponent {
       const id = toggleStats
         ? channel + this.currentOptions
         : String(this.currentOptions);
-
-      console.log('toggling', this.ids, id, this.ids.get(id));
       this.dashboard.plot.toArray()[tab].toggleTrace(this.ids.get(id));
 
       this.currentShowing
@@ -261,7 +263,7 @@ export class DatasetComponent {
    * @param channel The data channel for which the stats were requested.
    */
   requestStats(data, channel) {
-    console.log('sending to server....', data);
+    console.log('sending to server....');
     this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
       if (/*eslint-disable*/
           typeof event === 'object' &&
@@ -278,7 +280,6 @@ export class DatasetComponent {
           const stdev_id = this.idMan.assignSingleID(event.body.stdevs[i]);
           this.ids.set('avg' + i, avg_id);
           this.ids.set('stdev' + i, stdev_id);
-          console.log('ds id', this.ids);
 
           plots[0].addTrace(
             this.sample.timestamps,
@@ -299,7 +300,6 @@ export class DatasetComponent {
             .set(channel, true);
         }
         // Turn on the plot that the user requested.
-        console.log('ds togging', channel + this.currentOptions);
         plots[channel === 'avg' ? 0 : 1].toggleTrace(
           this.ids.get(channel + this.currentOptions)
         );
@@ -440,32 +440,62 @@ export class DatasetComponent {
     this.sample.data[i]['arr'] = new_data;
   }
 
-  toggleHistogram(event) {
-    console.log('histogram toggle', event, this.currentOptions);
-
-    if (event.checked) {
-      if (this.tabNumbers.get('histogram') !== -1) {
-
-      } else {
-        const new_tab = this.dashboard.newTab(
-          'Histogram' + this.currentOptions + this.sample.sensor_name
+  toggleHistogram() {
+    if (this.generatedHistogram.has(this.currentOptions)) {
+      const toggle = !this.currentShowing
+        .get(String(this.currentOptions))
+        .get('histogram');
+      this.currentShowing
+        .get(String(this.currentOptions))
+        .set('histogram', toggle);
+      this.dashboard.plot
+        .toArray()
+        [this.tabNumbers.get('histogram')].toggleTrace(
+          this.ids.get('histogram' + this.currentOptions)
         );
-        const sorted = {
-          arr: Array.from(this.sample.data[this.currentOptions]['arr']),
-          id: -1,
-          name: 'histogram' + ' ' + this.currentOptions,
-        };
-        this.idMan.assignSingleID(sorted);
-        sorted['arr'].sort((a, b) => Number(a) - Number(b));
-        this.ids.set('histogram' + this.currentOptions, sorted['id']);
+    } else {
+      this.generatedHistogram.add(this.currentOptions);
+      this.currentShowing
+        .get(String(this.currentOptions))
+        .set('histogram', true);
+      let new_array = [];
 
+      switch (this.currentOptions) {
+        case 'timestamp_diffs':
+          new_array = Array.from(this.sample.timestamp_diffs['arr']);
+          break;
+        case 'latencies':
+          new_array = Array.from(this.sample.latencies['arr']);
+          break;
+        default:
+          new_array = Array.from(this.sample.data[this.currentOptions]['arr']);
+          break;
+      }
+      const sorted = {
+        arr: new_array,
+        id: -1,
+        name: 'histogram' + ' ' + this.currentOptions,
+      };
+
+      this.idMan.assignSingleID(sorted);
+      sorted['arr'].sort((a, b) => Number(a) - Number(b));
+      this.ids.set('histogram' + this.currentOptions, sorted['id']);
+
+      if (this.tabNumbers.get('histogram') === -1) {
+        const new_tab = this.dashboard.newTab(
+          'Histogram ' + this.sample.sensor_name
+        );
         this.tabNumbers.set('histogram', new_tab);
-        // Since tabs are added in main-dashboard.html through an asynchronos
+        // Since tabs are added in main-dashboard.html through an asynchronous
         // *ngFor loop, it is necassary to wait for the changes to occur before
         // sending the new plot its data.
         this.dashboard.tabQueryList.changes.subscribe(() => {
           this.dashboard.plot.toArray()[new_tab].createHistogram(sorted);
         });
+      } else {
+        this.dashboard.plot
+          .toArray()
+          [this.tabNumbers.get('histogram')].createHistogram(sorted);
       }
     }
   }
