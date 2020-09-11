@@ -95,9 +95,9 @@ export class DatasetComponent {
         ])
       );
     }
-    this.ids.set('ts_diff', sample.timestamp_diffs['id']);
+    this.ids.set('timestamp_diffs', sample.timestamp_diffs['id']);
     this.currentShowing.set(
-      'ts_diffs',
+      'timestamp_diffs',
       new Map([
         ['show', false],
         ['stdev', false],
@@ -176,7 +176,7 @@ export class DatasetComponent {
         avg_period: periods.avg,
         stdev_period: periods.stdev,
         channels: {
-          ts_diffs: this.sample.timestamp_diffs['arr'],
+          timestamp_diffs: this.sample.timestamp_diffs['arr'],
         },
       };
       for (const i in this.sample.data) {
@@ -192,6 +192,7 @@ export class DatasetComponent {
         ? channel + this.currentOptions
         : String(this.currentOptions);
 
+      console.log('toggling', this.ids, id, this.ids.get(id));
       this.dashboard.plot.toArray()[tab].toggleTrace(this.ids.get(id));
 
       this.currentShowing
@@ -225,6 +226,7 @@ export class DatasetComponent {
           const stdev_id = this.idMan.assignSingleID(event.body.stdevs[i]);
           this.ids.set('avg' + i, avg_id);
           this.ids.set('stdev' + i, stdev_id);
+          console.log('ds id', this.ids);
 
           plots[0].addTrace(
             this.sample.timestamps,
@@ -245,6 +247,7 @@ export class DatasetComponent {
             .set(channel, true);
         }
         // Turn on the plot that the user requested.
+        console.log('ds togging', channel + this.currentOptions);
         plots[channel === 'avg' ? 0 : 1].toggleTrace(
           this.ids.get(channel + this.currentOptions)
         );

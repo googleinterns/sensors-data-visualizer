@@ -95,6 +95,7 @@ export class SideMenuComponent {
           for (const i in parsed) {
             let sample = JSON.parse(parsed[i]);
             sample = this.idMan.assignIDs(sample);
+            console.log('sample', sample);
             samples.push(sample);
 
             this.sharedService

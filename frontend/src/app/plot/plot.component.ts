@@ -194,6 +194,7 @@ export class PlotComponent {
    */
   toggleTrace(id: number) {
     const index = this.idMap.get(id);
+    console.log('toggling plot', id, this.plot_data);
     this.plot_data[index].visible = !this.plot_data[index].visible;
   }
 

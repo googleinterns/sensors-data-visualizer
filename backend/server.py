@@ -60,7 +60,6 @@ def upload_file():
         f.save(secure_filename(f.filename))
         
         samples = GoogleSensorParser([f.filename]).parse_files()
-
         return {'type': 'upload', 'data': samples}
 
 @app.route('/stats', methods = ['POST'])
