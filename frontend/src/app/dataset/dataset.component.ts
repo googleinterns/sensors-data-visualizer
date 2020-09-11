@@ -440,6 +440,10 @@ export class DatasetComponent {
     this.sample.data[i]['arr'] = new_data;
   }
 
+  /**
+   * Toggles the histogram on/off and generates a histogram
+   * if none has been generated so far.
+   */
   toggleHistogram() {
     if (this.generatedHistogram.has(this.currentOptions)) {
       const toggle = !this.currentShowing
@@ -478,7 +482,6 @@ export class DatasetComponent {
       };
 
       this.idMan.assignSingleID(sorted);
-      sorted['arr'].sort((a, b) => Number(a) - Number(b));
       this.ids.set('histogram' + this.currentOptions, sorted['id']);
 
       if (this.tabNumbers.get('histogram') === -1) {
