@@ -55,9 +55,6 @@ export class StyleDialogComponent {
         this.currentOptions = 'markers';
         this.currentChecked = ['markers', trace.marker.symbol];
       }
-    } else {
-      this.currentOptions = 'histogram';
-      this.currentChecked = ['histogram', null];
     }
     this.traceName = trace.name;
   }
@@ -81,8 +78,6 @@ export class StyleDialogComponent {
       this.plotRef.toggleLineStyle(this.traceID, mode + '+markers');
     } else if (mode === 'markers') {
       this.plotRef.toggleLineStyle(this.traceID, mode);
-    } else {
-      this.plotRef.toggleHistogram(this.traceID);
     }
   }
 
@@ -99,8 +94,6 @@ export class StyleDialogComponent {
           : false;
       case 'lines':
         return this.currentOptions === 'lines';
-      case 'histogram':
-        return this.currentOptions === 'histogram';
     }
   }
 
