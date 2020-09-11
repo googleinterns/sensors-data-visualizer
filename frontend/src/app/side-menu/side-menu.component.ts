@@ -49,7 +49,6 @@ export class SideMenuComponent {
   showNormalize = false;
   normalizationX = false;
   normalizationY = false;
-  message: any;
   datasets = [];
 
   // Handles resizing of window. Boilerplate from Angular side-nav.
@@ -69,9 +68,8 @@ export class SideMenuComponent {
   /**
    * sendFile(file) is called when the user presses the upload button.
    * Uses the UploadService to send the formData then
-   * when a response arrives uses UploadService to
-   * share the response with other listening components.
-   * The message shared is an array of Sample objects.
+   * when a response arrives parses it, plots it and creates a dataset
+   * component for each sample.
    * @param file The file to send to the backend.
    */
   sendFile(file) {
