@@ -42,6 +42,9 @@ export class MainDashboardComponent implements AfterViewInit {
 
   constructor(private breakpointObserver: BreakpointObserver) {}
 
+  /**
+   * Saves a reference to the initial plot component after initialization.
+   */
   ngAfterViewInit() {
     this.plot.first.setSelfRef(this.plot.first);
   }

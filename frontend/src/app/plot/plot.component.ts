@@ -62,7 +62,6 @@ export class PlotComponent {
       mode: 'markers',
       id: -1,
       marker: {symbol: 'diamond'},
-      id: 0,
       visible: true,
       name: 'Placeholder Point',
       xbins: null,
@@ -160,8 +159,8 @@ export class PlotComponent {
       for (const j in samples[i].data) {
         this.addTrace(
           samples[i].timestamps,
-          samples[i].data[j][1],
-          samples[i].data[j][0],
+          samples[i].data[j]['arr'],
+          samples[i].data[j]['id'],
           j + ' ' + samples[i].sensor_name,
           true
         );
@@ -170,8 +169,8 @@ export class PlotComponent {
       // toggles it in the dataset menu.
       this.addTrace(
         samples[i].timestamps,
-        samples[i].timestamp_diffs[1],
-        samples[i].timestamp_diffs[0],
+        samples[i].timestamp_diffs['arr'],
+        samples[i].timestamp_diffs['id'],
         'TS Diff ' + samples[i].sensor_name,
         false
       );
@@ -180,8 +179,8 @@ export class PlotComponent {
       if ('latencies' in samples[i]) {
         this.addTrace(
           samples[i].timestamps,
-          samples[i].latencies[1],
-          samples[i].latencies[0],
+          samples[i].latencies['arr'],
+          samples[i].latencies['id'],
           'Latencies ' + samples[i].sensor_name,
           false
         );
@@ -240,6 +239,22 @@ export class PlotComponent {
       this.idMap.set(this.plot_data[i].id, Number(i));
     }
     ids.forEach(id => this.idMap.delete(id));
+  }
+
+  /**
+   * Assigns new timestamps to an entire dataset.
+   * @param traces The IDs for which to assign new timestamps.
+   * @param timestamps The new timestamps to assign. These are either
+   *  newly normalized or the original timestamps.
+   */
+  normalizeX(traces: Array<number>, timestamps: Array<number>) {
+    traces.forEach(traceID => {
+      this.plot_data[this.idMap.get(traceID)].x = timestamps;
+    });
+  }
+
+  normalizeY(traceID: number, data: Array<number>) {
+    this.plot_data[this.idMap.get(traceID)].y = data;
   }
 
   /**

@@ -22,10 +22,11 @@ from flask_cors import CORS
 import json
 import numpy as np
 
-import pandas as pd
-
 from parser import GoogleSensorParser
 from parser import Parser
+
+from stats import compute_running_avg
+from stats import compute_stdev
 
 from werkzeug.utils import secure_filename
 
@@ -89,43 +90,6 @@ def compute_stats():
             stdevs[j] = compute_stdev(received['channels'][j], avgs[j], stdev_period)
 
         return {'type': 'stats', 'avgs': avgs, 'stdevs': stdevs}
-
-def compute_running_avg(trace, period=100):
-    """Computes the running average of a single data trace.
-
-    Attributes:
-        trace: The Python list data trace to compute averages for.
-        period: The size of the window of previous data points that are
-            used in the moving average computation.
-
-    Returns: Python list containing the running average at each point.
-    """
-    n = len(trace)
-    if period > n:
-        period = n
-
-    avgs = pd.Series(trace).rolling(period, min_periods=1).mean()
-    return avgs.to_list()
-
-def compute_stdev(trace, avgs, period=100):
-    """Computes the standard deviation of a single data trace.
-
-    Attributes:
-        trace: The Python list data trace to compute stdev for.
-        avgs: The previously computed averages for the same trace, used
-            in the computation of the first period-1 standard deviations.
-        period: The size of the window of previous data points that are
-            used in the standard deviation computation.
-
-    Returns: Python list containing the standard deviation at each point.
-    """
-    n = len(trace)
-    if period > n:
-        period = n
-
-    stdevs = pd.Series(trace).rolling(period, min_periods=1).std()
-    stdevs[0] = 0
-    return stdevs.to_list()
 
 if __name__ == '__main__':
     app.run(debug=True)

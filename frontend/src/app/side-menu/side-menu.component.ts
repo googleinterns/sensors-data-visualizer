@@ -46,8 +46,11 @@ export class SideMenuComponent {
   @ViewChild('checkBox') checkBox;
 
   files = [];
+  showNormalize = false;
+  normalizationX = false;
+  normalizationY = false;
   message: any;
-
+  datasets = [];
   isHandset$: Observable<boolean> = this.breakpointObserver
     .observe(Breakpoints.Handset)
     .pipe(
@@ -64,7 +67,6 @@ export class SideMenuComponent {
       if (typeof event === 'object' && event !== null) {
         switch (event.type) {
           case 'stats': {
-            //TODO handle assigning ids to the new stats data.
             break;
           }
           case 'upload': {
@@ -80,12 +82,18 @@ export class SideMenuComponent {
               sample = this.idMan.assignIDs(sample);
               samples.push(sample);
 
-              this.sharedService.loadDataset(
-                tabNumber,
-                this.dashboard,
-                viewContainerRef,
-                sample
-              );
+              this.sharedService
+                .loadDataset(
+                  tabNumber,
+                  this.dashboard,
+                  viewContainerRef,
+                  sample
+                )
+                .then(ref => {
+                  this.datasets.push(ref);
+                  this.normalizationX ? ref.normalizeX(true) : null;
+                  this.normalizationY ? ref.normalizeY(true) : null;
+                });
             }
             plotRef.addSamples(samples);
             break;
@@ -153,5 +161,38 @@ export class SideMenuComponent {
     fileUpload.click();
 
     this.files = [];
+  }
+
+  /**
+   * Triggers a x-normalization of all datasets contained in the app.
+   * @param event Contains the status of the frontend slide toggle.
+   */
+  normalizeX(event) {
+    this.normalizationX = event.checked ? true : false;
+    this.datasets.forEach(dataset => dataset.normalizeX(event.checked));
+  }
+
+  /**
+   * Triggers a y-normalization of all datasets contained in the app.
+   * @param event Contains the status of the frontend slide toggle.
+   */
+  normalizeY(event) {
+    this.normalizationY = event.checked ? true : false;
+    this.datasets.forEach(dataset => dataset.normalizeY(event.checked));
+  }
+
+  /**
+   * Opens and closes the normalization options menu on the frontend.
+   */
+  toggleOptions() {
+    this.showNormalize = !this.showNormalize;
+  }
+
+  /**
+   * Used by html to determine if the 'normalize options'
+   * button should be shown.
+   */
+  dataAdded() {
+    return this.datasets.length > 0;
   }
 }

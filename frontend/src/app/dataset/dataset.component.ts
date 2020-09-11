@@ -62,6 +62,14 @@ export class DatasetComponent {
   currentShowing: Map<string, Map<string, boolean>> = new Map();
   isChecked = true;
 
+  /**
+   * normalizationX[0] = If this dataset is currently normalized on x-axis.
+   * normalizationX[1] = The original Timestamp 0 for the array so
+   *  that it can be converted back and forth.
+   */
+  normalizationX = [false, -1];
+  normalizationY = false;
+
   constructor(
     private sharedService: UploadService,
     private idMan: IdManagerService,
@@ -69,6 +77,7 @@ export class DatasetComponent {
   ) {
     this.hasLatencies = false;
   }
+
   /**
    * Setter method to initialize the dataset with appropriate sample data.
    * @param sample The sample object received by UploadService from the backend.
@@ -76,7 +85,7 @@ export class DatasetComponent {
   public setSample(sample) {
     this.sample = sample;
     for (const i in sample.data) {
-      this.ids.set(i, sample.data[i][0]);
+      this.ids.set(i, sample.data[i]['id']);
       this.currentShowing.set(
         i, // The data channel key.
         new Map([
@@ -86,7 +95,7 @@ export class DatasetComponent {
         ])
       );
     }
-    this.ids.set('ts_diffs', sample.timestamp_diffs[0]);
+    this.ids.set('ts_diff', sample.timestamp_diffs['id']);
     this.currentShowing.set(
       'ts_diffs',
       new Map([
@@ -98,7 +107,7 @@ export class DatasetComponent {
 
     if ('latencies' in sample) {
       this.hasLatencies = true;
-      this.ids.set('latencies', sample.latencies[0]);
+      this.ids.set('latencies', sample.latencies['id']);
       this.currentShowing.set(
         'latencies',
         new Map([
@@ -140,7 +149,6 @@ export class DatasetComponent {
       const dialogRef = this.dialog.open(InitDialogComponent);
       dialogRef.componentInstance.maxSize = maxSize;
       dialogRef.afterClosed().subscribe((periods: any) => {
-        console.log('data', periods);
         resolve(periods);
       });
     });
@@ -157,7 +165,6 @@ export class DatasetComponent {
       const periods: any = await this.openDialog(this.sample.timestamps.length);
       // If the user cancels.
       if (periods === false) {
-        console.log(this.currentOptions, channel);
         this.currentShowing
           .get(String(this.currentOptions))
           .set(channel, false);
@@ -169,14 +176,14 @@ export class DatasetComponent {
         avg_period: periods.avg,
         stdev_period: periods.stdev,
         channels: {
-          ts_diffs: this.sample.timestamp_diffs[1],
+          ts_diffs: this.sample.timestamp_diffs['arr'],
         },
       };
       for (const i in this.sample.data) {
-        data.channels[i] = this.sample.data[i][1];
+        data.channels[i] = this.sample.data[i]['arr'];
       }
       if (this.hasLatencies) {
-        data.channels['latencies'] = this.sample.latencies[1];
+        data.channels['latencies'] = this.sample.latencies['arr'];
       }
       this.requestStats(data, channel);
     } else {
@@ -208,15 +215,14 @@ export class DatasetComponent {
           event.body !== undefined &&
           event.body.type === 'stats'
       ) { /*eslint-enable */
-        console.log('DS received: ', event.body);
         const plots = [
           this.dashboard.plot.toArray()[this.dashboard.currentTab - 1], // Tab for avgs
           this.dashboard.plot.toArray()[this.dashboard.currentTab], // Tab for stdevs.
         ];
 
         for (const i in event.body.avgs) {
-          const avg_id = this.idMan.assignSingleID();
-          const stdev_id = this.idMan.assignSingleID();
+          const avg_id = this.idMan.assignSingleID(event.body.avgs[i]);
+          const stdev_id = this.idMan.assignSingleID(event.body.stdevs[i]);
           this.ids.set('avg' + i, avg_id);
           this.ids.set('stdev' + i, stdev_id);
 
@@ -275,10 +281,105 @@ export class DatasetComponent {
    * Removes all traces from plot and removes self from dataset list.
    */
   deleteDataset() {
-    console.log('Deleting myself...', this.ids.values());
+    console.log('Self destructing...', this.ids.values());
     this.dashboard.plot
       .toArray()
       [this.tabNumbers[0]].deleteDataset(new Set<number>(this.ids.values()));
     this.containerRef.destroy();
+  }
+
+  /**
+   * Normalizes this datasets timestamps and sends the update to
+   * the plot component to be displayed to the user.
+   * @param toggle The status of the frontend slide toggle.
+   */
+  normalizeX(toggle: boolean) {
+    if (toggle === this.normalizationX[0]) {
+      return;
+    }
+    const plot = this.dashboard.plot.toArray()[this.tabNumbers[0]];
+    // If currently normalized, de-normalize.
+    if (this.normalizationX[0]) {
+      this.normalizationX[0] = false;
+      plot.normalizeX(Array.from(this.ids.values()), this.normalizeXHelper(1));
+    } else {
+      this.normalizationX = [true, Number(this.sample.timestamps[0])];
+      plot.normalizeX(Array.from(this.ids.values()), this.normalizeXHelper(-1));
+    }
+  }
+
+  /**
+   * Handles the addition or subtraction needed to normalize timestamps.
+   * @param toggle Operand that determines if the timestamps are being
+   *  normalized or de-normalized. If toggle == -1, the helper will normalize
+   *  the timestamps, if toggle == 1, it will de-normalize.
+   */
+  normalizeXHelper(toggle: number) {
+    const new_timestamps = new Array<number>(this.sample.timestamps.length);
+    for (let i = 0; i < new_timestamps.length; i++) {
+      new_timestamps[i] =
+        this.sample.timestamps[i] + Number(this.normalizationX[1]) * toggle;
+    }
+    return new_timestamps;
+  }
+
+  /**
+   * Normalizes the Y-axis for all traces in this sample between [-1, 1].
+   * Math source at:
+   * https://stats.stackexchange.com/questions/178626/how-to-normalize-data-between-1-and-1
+   * @param toggle The status of the frontend slide toggle.
+   */
+  normalizeY(toggle: boolean) {
+    if (toggle === this.normalizationY) {
+      return;
+    }
+    const plot = this.dashboard.plot.toArray()[this.tabNumbers[0]];
+    this.normalizationY = !this.normalizationY;
+    for (const i in this.sample.data) {
+      const new_data = new Array<number>(this.sample.data[0]['arr'].length);
+      const [min, max] = this.sample.data[i]['minmax'];
+
+      this.normalizeYHelper(i, toggle, new_data, min, max);
+      plot.normalizeY(this.sample.data[i]['id'], new_data);
+    }
+  }
+
+  /**
+   * Iterates over a data channel, (de)normalizing it and filling the new_data
+   * array with values.
+   * @param i The channel of this.sample.data to iterate over.
+   * @param normalize Whether to normalize or denormalize.
+   * @param new_data The new array to fill with values.
+   * @param min The minimum value in the trace.
+   * @param max The maximum value in the trace.
+   */
+  normalizeYHelper(
+    i: string,
+    normalize: boolean,
+    new_data: Array<number>,
+    min: number,
+    max: number
+  ) {
+    // Edge case where a straight line trace would cause a divide by 0.
+    if (min === max) {
+      if (min === 0) {
+        new_data.fill(0);
+      } else if (normalize) {
+        new_data.fill(min >= 0 ? 1 : -1);
+      } else {
+        new_data.fill(min);
+      }
+      this.sample.data[i]['arr'] = new_data;
+      return;
+    }
+
+    this.sample.data[i]['arr'].forEach((value, index) => {
+      if (normalize) {
+        new_data[index] = 2 * ((value - min) / (max - min)) - 1;
+      } else {
+        new_data[index] = (max - min) * ((value + 1) / 2) + min;
+      }
+    });
+    this.sample.data[i]['arr'] = new_data;
   }
 }
