@@ -310,4 +310,24 @@ export class PlotComponent {
     this.plot_data[this.idMap.get(traceID)].marker['color'] =
       'rgb(' + r + ', ' + g + ', ' + b + ')';
   }
+
+  createHistogram(sorted) {
+    this.checkDataAdded();
+
+    this.plot_data.push({
+      x: sorted['arr'],
+      y: sorted['arr'],
+      type: 'histogram',
+      mode: '',
+      id: sorted['id'],
+      marker: {
+        symbol: '',
+      },
+      visible: true,
+      name: sorted['name'],
+    });
+
+    this.plot_layout['xaxis'] = {title: 'Range of values'};
+    this.plot_layout['yaxis'] = {title: 'Count'};
+  }
 }

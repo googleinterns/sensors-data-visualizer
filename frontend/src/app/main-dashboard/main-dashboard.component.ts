@@ -17,6 +17,7 @@ import {Component, ViewChildren, QueryList, AfterViewInit} from '@angular/core';
 
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
+import { MatTab } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-main-dashboard',
@@ -27,7 +28,9 @@ export class MainDashboardComponent implements AfterViewInit {
   // Selects the plot component present on the page. Allows the grandparent component (side-menu)
   // to access the plot that is a child of this component.
   @ViewChildren(PlotComponent) plot: QueryList<PlotComponent>;
+  @ViewChildren(MatTab) tabQueryList: QueryList<MatTab>;
   currentTab = 0;
+  // Tracked by the *ngFor loop in main-dashboard.html to create/remove tabs.
   tabs = ['Tab0'];
 
   constructor() {}
@@ -42,9 +45,10 @@ export class MainDashboardComponent implements AfterViewInit {
    * Creates a new tab by pushing the name of the tab to this.tabs.
    * When a new item is added to this.tabs, the html will add a new tab.
    * Also updates this.currentTab so that the new data is plotted in the new tab.
+   * @param title The name of the tab.
    */
-  public newTab() {
-    this.tabs.push('Test');
+  public newTab(title: string) {
+    this.tabs.push(title);
     this.currentTab = this.tabs.length - 1;
     return this.currentTab;
   }

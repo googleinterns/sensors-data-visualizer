@@ -128,7 +128,7 @@ export class SideMenuComponent {
   uploadFiles() {
     const fileUpload = this.fileUpload.nativeElement;
     if (this.checkBox.checked) {
-      this.dashboard.newTab();
+      this.dashboard.newTab('New Tab');
     }
 
     fileUpload.onchange = () => {
