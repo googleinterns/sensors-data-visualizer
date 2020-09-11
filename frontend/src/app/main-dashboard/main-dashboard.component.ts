@@ -29,7 +29,6 @@ export class MainDashboardComponent implements AfterViewInit {
   @ViewChildren(PlotComponent) plot: QueryList<PlotComponent>;
   currentTab = 0;
   tabs = ['Tab0'];
-  /** Based on the screen size, switch from standard to one column per row */
 
   constructor() {}
 
