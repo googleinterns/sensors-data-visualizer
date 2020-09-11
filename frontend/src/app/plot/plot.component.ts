@@ -217,7 +217,11 @@ export class PlotComponent {
   showOptionsMenu(traceID: number) {
     return new Promise(resolve => {
       const optionsRef = this.dialog.open(StyleDialogComponent);
-      optionsRef.componentInstance.init(traceID, this.selfRef);
+      optionsRef.componentInstance.init(
+        traceID,
+        this.selfRef,
+        this.isAHistogram
+      );
       optionsRef.afterClosed().subscribe(options => {
         resolve(options);
       });
@@ -316,7 +320,6 @@ export class PlotComponent {
   createHistogram(sorted) {
     this.isAHistogram = true;
     this.checkDataAdded();
-
     const index = this.plot_data.push({
       x: sorted['arr'],
       y: sorted['arr'],
@@ -335,5 +338,6 @@ export class PlotComponent {
     };
     this.plot_layout['xaxis'] = {title: 'Range of values'};
     this.plot_layout['yaxis'] = {title: 'Count'};
+    this.idMap.set(sorted['id'], index - 1);
   }
 }

@@ -466,13 +466,13 @@ export class DatasetComponent {
 
       switch (this.currentOptions) {
         case 'timestamp_diffs':
-          new_array = Array.from(this.sample.timestamp_diffs['arr']);
+          new_array = this.sample.timestamp_diffs['arr'];
           break;
         case 'latencies':
-          new_array = Array.from(this.sample.latencies['arr']);
+          new_array = this.sample.latencies['arr'];
           break;
         default:
-          new_array = Array.from(this.sample.data[this.currentOptions]['arr']);
+          new_array = this.sample.data[this.currentOptions]['arr'];
           break;
       }
       const sorted = {

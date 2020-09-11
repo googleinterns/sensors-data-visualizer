@@ -15,7 +15,8 @@ limitations under the License. -->
 <h1>Style Options</h1>
 <h3>Trace: {{traceName}}</h3>
 
-<!-- Toggle: Scatter , Line, Histogram -->
+<!-- Toggle: Scatter , Line-->
+<div *ngIf="!histogram">
 <mat-button-toggle-group>
     <mat-button-toggle [checked]="checked(0, 'markers')" (click)="showOptions('markers')">Scatter</mat-button-toggle>
     <mat-button-toggle [checked]="checked(0, 'lines')" (click)="showOptions('lines')">Line</mat-button-toggle>
@@ -32,7 +33,7 @@ limitations under the License. -->
         </mat-button-toggle-group>
     </div>
 </mat-expansion-panel>
-
+</div>
 <!-- Change colors -->
 <h3>Color Options:</h3>
 <div class="picker">
