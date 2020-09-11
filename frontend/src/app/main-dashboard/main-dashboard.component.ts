@@ -13,9 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
 import {Component, ViewChildren, QueryList, AfterViewInit} from '@angular/core';
-import {map} from 'rxjs/operators';
 
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
@@ -33,14 +31,7 @@ export class MainDashboardComponent implements AfterViewInit {
   tabs = ['Tab0'];
   /** Based on the screen size, switch from standard to one column per row */
 
-  cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({matches}) => {
-      // Displays the two cards with the given grid sizes.
-      return [{title: 'Legend', cols: 7, rows: 1}];
-    })
-  );
-
-  constructor(private breakpointObserver: BreakpointObserver) {}
+  constructor() {}
 
   /**
    * Saves a reference to the initial plot component after initialization.
