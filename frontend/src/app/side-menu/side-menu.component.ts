@@ -51,6 +51,8 @@ export class SideMenuComponent {
   normalizationY = false;
   message: any;
   datasets = [];
+
+  // Handles resizing of window. Boilerplate from Angular side-nav.
   isHandset$: Observable<boolean> = this.breakpointObserver
     .observe(Breakpoints.Handset)
     .pipe(
