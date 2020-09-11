@@ -19,12 +19,17 @@ import {Injectable} from '@angular/core';
   providedIn: 'root',
 })
 export class IdManagerService {
+  /**
+   * Service that assigns sequential IDs to individual data traces.
+   * Since a low number of traces are expected this just assigns sequential
+   * numbers to each trace without caring about reusing IDs.
+   */
   nextID = 0;
   constructor() {}
 
   /**
    * Given some sample, assignIDs will return that sample with an ID for
-   * each trace. I.E. trace = [id, [trace data]].
+   * each trace. I.E. trace['id'] = id;
    * @param sample The sample that needs IDs assigned to it.
    */
   public assignIDs(sample) {
