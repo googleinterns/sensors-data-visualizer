@@ -32,7 +32,6 @@ export class InitDialogComponent {
     if (this.inRange(this.avg) && this.inRange(this.stdev)) {
       this.dialogRef.close({stdev: this.stdev, avg: this.avg});
     } else {
-      console.log('out of range');
       this.valid = false;
     }
   }

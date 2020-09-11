@@ -149,7 +149,6 @@ export class DatasetComponent {
       const dialogRef = this.dialog.open(InitDialogComponent);
       dialogRef.componentInstance.maxSize = maxSize;
       dialogRef.afterClosed().subscribe((periods: any) => {
-        console.log('data', periods);
         resolve(periods);
       });
     });
@@ -166,7 +165,6 @@ export class DatasetComponent {
       const periods: any = await this.openDialog(this.sample.timestamps.length);
       // If the user cancels.
       if (periods === false) {
-        console.log(this.currentOptions, channel);
         this.currentShowing
           .get(String(this.currentOptions))
           .set(channel, false);
@@ -217,9 +215,6 @@ export class DatasetComponent {
           event.body !== undefined &&
           event.body.type === 'stats'
       ) { /*eslint-enable */
-        console.log('DS received: ', event.body);
-        console.log('avgs', event.body['avgs']);
-        console.log('stdevs', event.body['stdevs']);
         const plots = [
           this.dashboard.plot.toArray()[this.dashboard.currentTab - 1], // Tab for avgs
           this.dashboard.plot.toArray()[this.dashboard.currentTab], // Tab for stdevs.

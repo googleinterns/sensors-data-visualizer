@@ -67,12 +67,10 @@ export class SideMenuComponent {
       if (typeof event === 'object' && event !== null) {
         switch (event.type) {
           case 'stats': {
-            //TODO handle assigning ids to the new stats data.
             break;
           }
           case 'upload': {
             // Plot new datasets added by the upload button.
-            console.log('smenu dashboard', this.dashboard);
             const tabNumber = this.dashboard.currentTab;
             const viewContainerRef = this.uploadDirective.viewContainerRef;
             const samples = [];
