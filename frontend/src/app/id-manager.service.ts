@@ -28,7 +28,6 @@ export class IdManagerService {
    * @param sample The sample that needs IDs assigned to it.
    */
   public assignIDs(sample) {
-    console.log('id man sample', sample);
     sample.timestamp_diffs['id'] = this.nextID++;
     if ('latencies' in sample) {
       sample.latencies['id'] = this.nextID++;
