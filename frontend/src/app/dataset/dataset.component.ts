@@ -101,6 +101,7 @@ export class DatasetComponent {
    */
   normalizationX = [false, -1];
   normalizationY = false;
+  requestingStats = false;
 
   constructor(
     private sharedService: UploadService,
@@ -239,7 +240,7 @@ export class DatasetComponent {
    * @param channel The data channel for which the stats were requested.
    */
   requestStats(data, channel) {
-    console.log('sending to server....', data);
+    this.requestingStats = true;
     this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
       if (/*eslint-disable*/
           typeof event === 'object' &&
@@ -281,6 +282,7 @@ export class DatasetComponent {
         plots[channel === 'avg' ? 0 : 1].toggleTrace(
           this.ids.get(channel + this.currentOptions)
         );
+        this.requestingStats = false;
       }
     });
   }
