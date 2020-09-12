@@ -76,7 +76,7 @@ export class PlotComponent {
    * https://plotly.com/javascript/reference/layout/
    */
   plot_layout = {
-    title: 'Add a new dataset.',
+    title: 'Add a new dataset by clicking the upload button.',
     legend: 'false',
     hovermode: 'closest',
     autosize: true,
