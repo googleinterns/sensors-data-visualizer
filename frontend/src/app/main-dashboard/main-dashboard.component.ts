@@ -31,7 +31,7 @@ export class MainDashboardComponent implements AfterViewInit {
   @ViewChildren(MatTab) tabQueryList: QueryList<MatTab>;
   currentTab = 0;
   // Tracked by the *ngFor loop in main-dashboard.html to create/remove tabs.
-  tabs = ['Tab0'];
+  tabs = ['No Data Added'];
 
   constructor() {}
 
