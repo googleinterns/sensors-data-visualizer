@@ -50,10 +50,13 @@ export class SideMenuComponent {
   normalizationX = false;
   normalizationY = false;
   datasets = [];
+
+  // This group of variables is uses in the progress bar.
   currUpload = false;
   currParse = false;
+  currReceiving = false;
   uploadPercent = 0;
-  parsePercent = 0;
+  receivePercent = 0;
 
   // Handles resizing of window. Boilerplate from Angular side-nav.
   isHandset$: Observable<boolean> = this.breakpointObserver
@@ -81,21 +84,27 @@ export class SideMenuComponent {
     formData.append('file', file.data);
     file.inProgress = true;
 
+    this.currUpload = true;
     this.sharedService
       .sendFormData(formData, '/upload')
       .subscribe((event: any) => {
+        // Display progress bars to the user.
         switch (event.type) {
           case 1:
             this.uploadPercent = 100 * (event.loaded / event.total);
-            this.uploadPercent === 100
-              ? (this.currUpload = false)
-              : (this.currUpload = true);
+            if (this.uploadPercent === 100) {
+              this.currUpload = false;
+              this.currParse = true;
+            }
             break;
           case 3:
-            this.parsePercent = 100 * (event.loaded / event.total);
-            this.parsePercent === 100
-              ? (this.currParse = false)
-              : (this.currParse = true);
+            this.currParse = false;
+            this.currReceiving = true;
+            this.receivePercent = 100 * (event.loaded / event.total);
+            if (this.receivePercent === 100) {
+              this.currReceiving = false;
+              this.receivePercent = this.uploadPercent = 0;
+            }
             break;
         }
         if (
