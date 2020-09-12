@@ -115,11 +115,23 @@ export class DatasetComponent {
     private dialog: MatDialog
   ) {}
 
+  public initDataset(tabNumber: number, sample, dashboard, compRef) {
+    this.tabNumbers.set('plot', tabNumber);
+    this.dashboard = dashboard;
+    this.containerRef = compRef;
+    this.setSample(sample);
+
+    /*eslint-disable*/ 
+    // Change the tab name to this samples sensor name.
+    console.log('dash', this.dashboard.tabQueryList);
+    this.dashboard.tabQueryList.toArray()
+      [tabNumber].textLabel = this.sample.sensor_name;
+  } /*eslint-enable*/
   /**
    * Setter method to initialize the dataset with appropriate sample data.
    * @param sample The sample object received by UploadService from the backend.
    */
-  public setSample(sample) {
+  setSample(sample) {
     this.sample = sample;
     for (const i in sample.data) {
       this.ids.set(i, sample.data[i]['id']);
@@ -157,32 +169,6 @@ export class DatasetComponent {
         ])
       );
     }
-  }
-
-  /**
-   * Initializes the dataset with a reference to the main dashboard.
-   * This enables the dataset to create new tabs and access any plots.
-   * @param ref A reference to the main dashboard.
-   */
-  public setDashboardRef(ref) {
-    this.dashboard = ref;
-  }
-
-  /**
-   * Initializes the dataset with a reference to itself. This enables
-   * the dataset to self-destruct when needed.
-   * @param ref A reference to this component.
-   */
-  public setContainerRef(ref: ComponentRef<DatasetComponent>) {
-    this.containerRef = ref;
-  }
-
-  /**
-   * Sets the tabNumbers['plot'] value when created by upload.service.ts
-   * @param num The tab number where the main plot data is displayed.
-   */
-  public setTabNumber(num: number) {
-    this.tabNumbers.set('plot', num);
   }
 
   /**
