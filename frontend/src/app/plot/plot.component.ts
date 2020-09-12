@@ -79,6 +79,7 @@ export class PlotComponent {
     title: 'Add a new dataset.',
     legend: 'false',
     hovermode: 'closest',
+    autosize: true,
   };
   /**
    * Configuration options, further documentaion at:
