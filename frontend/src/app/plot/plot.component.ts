@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {Component} from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
 
 // Project Imports.
 import {error} from '@angular/compiler/src/util';
@@ -29,7 +29,7 @@ import {MatDialog} from '@angular/material/dialog';
 /**
  * Handles the Plotly plot and the plots' data.
  */
-export class PlotComponent {
+export class PlotComponent implements AfterViewInit {
   /**
    * plot_data is an array of maps that define what is plotted.
    * It is initialized with a (0,0) point so that the plot appears when the page is opened.
@@ -93,6 +93,9 @@ export class PlotComponent {
   selfRef;
   constructor(private dialog: MatDialog) {}
 
+  ngAfterViewInit() {
+    this.plot_data[0].marker['size'] = 20;
+  }
   /**
    * Save a reference to self when created. This self reference is used when
    * opening the plot options menu so that the menu can directly change the plot.
@@ -315,7 +318,7 @@ export class PlotComponent {
   /**
    * Creates a histogram plot with the given sorted data. The x and y axes are the same as
    * plotly automatically converts the Y-axis to the number of values in each axis.
-   * @param sorted Contains the sorted data array, id and name of the histogram to create.
+   * @param sorted Contains the data array, id and name of the histogram to create.
    *  Passed by dataset.component.ts toggleHistogram()
    */
   createHistogram(sorted) {
@@ -335,7 +338,7 @@ export class PlotComponent {
     });
     this.plot_data[index - 1].marker['line'] = {
       color: 'rgb(0, 0, 0)',
-      width: 1,
+      width: 0.7,
     };
     this.plot_layout['xaxis'] = {title: 'Range of values'};
     this.plot_layout['yaxis'] = {title: 'Count'};
