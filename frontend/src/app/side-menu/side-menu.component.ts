@@ -50,6 +50,10 @@ export class SideMenuComponent {
   normalizationX = false;
   normalizationY = false;
   datasets = [];
+  currUpload = false;
+  currParse = false;
+  uploadPercent = 0;
+  parsePercent = 0;
 
   // Handles resizing of window. Boilerplate from Angular side-nav.
   isHandset$: Observable<boolean> = this.breakpointObserver
@@ -80,6 +84,20 @@ export class SideMenuComponent {
     this.sharedService
       .sendFormData(formData, '/upload')
       .subscribe((event: any) => {
+        switch (event.type) {
+          case 1:
+            this.uploadPercent = 100 * (event.loaded / event.total);
+            this.uploadPercent === 100
+              ? (this.currUpload = false)
+              : (this.currUpload = true);
+            break;
+          case 3:
+            this.parsePercent = 100 * (event.loaded / event.total);
+            this.parsePercent === 100
+              ? (this.currParse = false)
+              : (this.currParse = true);
+            break;
+        }
         if (
           typeof event === 'object' &&
           event.body !== undefined &&
