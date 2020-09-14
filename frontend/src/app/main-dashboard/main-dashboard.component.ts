@@ -65,5 +65,6 @@ export class MainDashboardComponent implements AfterViewInit {
    */
   switchTab(event) {
     this.currentTab = event.index;
+    this.plot.toArray()[this.currentTab].forceResize();
   }
 }
