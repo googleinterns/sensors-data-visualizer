@@ -39,6 +39,8 @@ export class MainDashboardComponent implements AfterViewInit {
    * Saves a reference to the initial plot component after initialization.
    */
   ngAfterViewInit() {
+    // The resize argument is set to false since the inital plot is nice and
+    // follows the CSS, but new plots need to be forced to.
     this.plot.first.setSelfRef(this.plot.first, false);
   }
   /**
@@ -53,7 +55,10 @@ export class MainDashboardComponent implements AfterViewInit {
     this.tabQueryList.changes.subscribe(() => {
       this.plot
         .toArray()
-        [this.currentTab].setSelfRef(this.plot.toArray()[this.currentTab], true);
+        [this.currentTab].setSelfRef(
+          this.plot.toArray()[this.currentTab],
+          true
+        );
     });
     return this.currentTab;
   }

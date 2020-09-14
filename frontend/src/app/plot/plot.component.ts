@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {Component, AfterViewInit} from '@angular/core';
+import {Component} from '@angular/core';
 
 // Project Imports.
 import {error} from '@angular/compiler/src/util';
@@ -92,8 +92,8 @@ export class PlotComponent {
   // Tracks if this plot contains only histograms.
   isAHistogram = false;
   selfRef;
-  // Tracks if this plot has not yet been viewed.
-  initView = false;
+  // Tracks if this plot needs to be resized.
+  resize: boolean;
 
   constructor(private dialog: MatDialog) {}
 
@@ -101,12 +101,13 @@ export class PlotComponent {
    * Forces a plot resize by adding a single invisible point to the plot,
    * which triggers a plotly resize. This is a hacky way to make sure the
    * plot fills its entire container, without it the plot is too small.
+   * The invisible point is removed whenever a trace is added so it doesn't
+   * cause any problems.
    */
   forceResize() {
-    if (this.initView) {
-      console.log('resize');
+    if (this.resize) {
       this.addTrace([0], [0], -2, 'fake', false);
-      this.initView = false;
+      this.resize = false;
       this.idMap.set(-2, this.plot_data.length - 1);
     }
   }
@@ -114,12 +115,13 @@ export class PlotComponent {
   /**
    * Save a reference to self when created. This self reference is used when
    * opening the plot options menu so that the menu can directly change the plot.
+   * Also sets the resize boolean.
    * @param ref A reference to this component.
-   * @param initView Tracks if this plot has been viewed yet.
+   * @param resize Tracks if this plot has been viewed yet.
    */
-  public setSelfRef(ref, initView: boolean) {
+  public setSelfRef(ref, resize: boolean) {
     this.selfRef = ref;
-    this.initView = initView;
+    this.resize = resize;
   }
 
   /**
@@ -127,11 +129,8 @@ export class PlotComponent {
    * Helper method for addTrace and addSamples methods.
    */
   checkDataAdded() {
-    console.log('data pre check added', this.plot_data);
-    console.log('id map pre check added', this.idMap);
     if (this.idMap.has(-2)) {
       this.plot_data.pop();
-      console.log('data after pop', this.plot_data);
       this.idMap.delete(-2);
     }
     if (this.plot_data.length === 1 && this.plot_data[0].id === -1) {
