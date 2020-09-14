@@ -265,9 +265,10 @@ export class DatasetComponent {
           event.body !== undefined &&
           event.body.type === 'stats'
       ) { /*eslint-enable */
+        console.log('request stats plots', this.dashboard.plot.toArray());
         const plots = [
-          this.dashboard.plot.toArray()[this.dashboard.currentTab - 1], // Tab for avgs
-          this.dashboard.plot.toArray()[this.dashboard.currentTab], // Tab for stdevs.
+          this.dashboard.plot.toArray()[this.tabNumbers['plot']], // Tab for avg.
+          this.dashboard.plot.toArray()[this.tabNumbers['stdev']], // Tab for stdev.
         ];
 
         for (const i in event.body.avgs) {

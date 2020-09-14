@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 // Angular Imports.
-import {AfterViewInit, Component} from '@angular/core';
+import {Component, AfterViewInit} from '@angular/core';
 
 // Project Imports.
 import {error} from '@angular/compiler/src/util';
@@ -29,7 +29,7 @@ import {MatDialog} from '@angular/material/dialog';
 /**
  * Handles the Plotly plot and the plots' data.
  */
-export class PlotComponent implements AfterViewInit {
+export class PlotComponent {
   /**
    * plot_data is an array of maps that define what is plotted.
    * It is initialized with a (0,0) point so that the plot appears when the page is opened.
@@ -93,7 +93,7 @@ export class PlotComponent implements AfterViewInit {
   isAHistogram = false;
   selfRef;
   // Tracks if this plot has not yet been viewed.
-  initView = true;
+  initView = false;
 
   constructor(private dialog: MatDialog) {}
 
@@ -105,21 +105,21 @@ export class PlotComponent implements AfterViewInit {
   forceResize() {
     if (this.initView) {
       console.log('resize');
-      this.addTrace([0], [0], -1, '-2', false);
+      this.addTrace([0], [0], -2, 'fake', false);
       this.initView = false;
+      this.idMap.set(-2, this.plot_data.length - 1);
     }
   }
 
-  ngAfterViewInit() {
-    this.plot_data[0].marker['size'] = 20;
-  }
   /**
    * Save a reference to self when created. This self reference is used when
    * opening the plot options menu so that the menu can directly change the plot.
    * @param ref A reference to this component.
+   * @param initView Tracks if this plot has been viewed yet.
    */
-  public setSelfRef(ref) {
+  public setSelfRef(ref, initView: boolean) {
     this.selfRef = ref;
+    this.initView = initView;
   }
 
   /**
@@ -127,6 +127,13 @@ export class PlotComponent implements AfterViewInit {
    * Helper method for addTrace and addSamples methods.
    */
   checkDataAdded() {
+    console.log('data pre check added', this.plot_data);
+    console.log('id map pre check added', this.idMap);
+    if (this.idMap.has(-2)) {
+      this.plot_data.pop();
+      console.log('data after pop', this.plot_data);
+      this.idMap.delete(-2);
+    }
     if (this.plot_data.length === 1 && this.plot_data[0].id === -1) {
       this.plot_data.pop();
       this.plot_layout.title = '';
