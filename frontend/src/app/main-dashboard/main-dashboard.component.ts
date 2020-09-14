@@ -17,7 +17,7 @@ import {Component, ViewChildren, QueryList, AfterViewInit} from '@angular/core';
 
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
-import { MatTab } from '@angular/material/tabs';
+import {MatTab} from '@angular/material/tabs';
 
 @Component({
   selector: 'app-main-dashboard',
@@ -39,7 +39,7 @@ export class MainDashboardComponent implements AfterViewInit {
    * Saves a reference to the initial plot component after initialization.
    */
   ngAfterViewInit() {
-    this.plot.first.setSelfRef(this.plot.first);
+    this.plot.first.setSelfRef(this.plot.first, false);
   }
   /**
    * Creates a new tab by pushing the name of the tab to this.tabs.
@@ -53,7 +53,7 @@ export class MainDashboardComponent implements AfterViewInit {
     this.tabQueryList.changes.subscribe(() => {
       this.plot
         .toArray()
-        [this.currentTab].setSelfRef(this.plot.toArray()[this.currentTab]);
+        [this.currentTab].setSelfRef(this.plot.toArray()[this.currentTab], true);
     });
     return this.currentTab;
   }
