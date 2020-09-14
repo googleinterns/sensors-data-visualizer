@@ -77,7 +77,8 @@ export class PlotComponent implements AfterViewInit {
    */
   plot_layout = {
     title: 'Add a new dataset by clicking the upload button.',
-    legend: 'false',
+    // Disable toggling of trace visibility through plotly legend clicks.
+    legend: {itemclick: false, itemdoubleclick: false},
     hovermode: 'closest',
     autosize: true,
   };
@@ -151,7 +152,7 @@ export class PlotComponent implements AfterViewInit {
       visible: show,
       name: name,
     });
-
+    this.plot_data[this.plot_data.length - 1].marker['size'] = 10;
     this.idMap.set(id, this.plot_data.length - 1);
   }
 

@@ -115,6 +115,14 @@ export class DatasetComponent {
     private dialog: MatDialog
   ) {}
 
+  /**
+   * Initializes the dataset with all needed references and data. Also updates
+   * the name of the tab where the main data is plotted.
+   * @param tabNumber The tab number where the main plot data exists.
+   * @param sample The sample object for this dataset.
+   * @param dashboard A reference to the main dashboard.
+   * @param compRef A reference to this component, used in removal operations.
+   */
   public initDataset(tabNumber: number, sample, dashboard, compRef) {
     this.tabNumbers.set('plot', tabNumber);
     this.dashboard = dashboard;
@@ -123,10 +131,10 @@ export class DatasetComponent {
 
     /*eslint-disable*/ 
     // Change the tab name to this samples sensor name.
-    console.log('dash', this.dashboard.tabQueryList);
     this.dashboard.tabQueryList.toArray()
       [tabNumber].textLabel = this.sample.sensor_name;
   } /*eslint-enable*/
+
   /**
    * Setter method to initialize the dataset with appropriate sample data.
    * @param sample The sample object received by UploadService from the backend.
