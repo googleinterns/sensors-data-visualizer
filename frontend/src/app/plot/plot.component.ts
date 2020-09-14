@@ -49,10 +49,9 @@ export class PlotComponent {
    *      marker.symbol: The shape markers take. Options used: 'circle', 'diamond', 'star'.
    *      https://plotly.com/python/marker-style/#custom-marker-symbols
    *    id: The id used by Sensor Visualizer to uniquely identify traces so they can be
-   *      removed, altered, or referenced in some way.
+   *      removed, altered, or referenced in some way. This field is not used by plotly.
    *    visible: If true, the trace will show up. If false, the trace is invisible.
    *    name: The trace name displayed to the user.
-   *    xbins: The size of the buckets in the histogram if type === 'histogram' TODO
    */
   plot_data = [
     {
@@ -64,7 +63,6 @@ export class PlotComponent {
       marker: {symbol: 'diamond'},
       visible: true,
       name: 'Placeholder Point',
-      xbins: null,
     },
   ];
 
@@ -74,16 +72,19 @@ export class PlotComponent {
    * a single trace on hover, rather than every trace in
    * a dataset which would happen if hovermode was not specified.
    * Selecting a single trace allows for the options menu to know
-   * which trace is being changed.
+   * which trace is being changed. Further documenation at:
+   * https://plotly.com/javascript/reference/layout/
    */
   plot_layout = {
     title: 'Add a new dataset.',
     legend: 'false',
     hovermode: 'closest',
   };
+  /**
+   * Configuration options, further documentaion at:
+   * https://plotly.com/javascript/configuration-options/
+   */
   plot_config = {scrollZoom: true, displayModeBar: true};
-  message: any;
-
   // A map from id number to array index that will speed up toggle operations.
   idMap = new Map<number, number>();
   selfRef;
@@ -110,10 +111,10 @@ export class PlotComponent {
   }
   /**
    * Add a single trace to the plot and set its id in idMap.
-   * @param x The x data to plot.
-   * @param y The y data to plot.
-   * @param id
-   * @param name
+   * @param x The x data to plot. Length must match length(y).
+   * @param y The y data to plot. Length must match length(x).
+   * @param id The unique ID for the trace being added.
+   * @param name The name of the trace to display to the user.
    * @param show If true, shows the trace, else hides the trace from view until toggled.
    */
   public addTrace(
@@ -125,11 +126,11 @@ export class PlotComponent {
   ) {
     if (x.length !== y.length) {
       console.log('x: ', x, ' y: ', y);
-      throw error(
+      throw error( /*eslint-disable*/
         'x and y arrays must match in length' +
         ' len x: ' + x.length +
         ' len y: ' + y.length);
-    }
+    } /*eslint-enable*/
     this.checkDataAdded();
 
     this.plot_data.push({
@@ -141,7 +142,6 @@ export class PlotComponent {
       id: id,
       visible: show,
       name: name,
-      xbins: null,
     });
 
     this.idMap.set(id, this.plot_data.length - 1);
@@ -253,6 +253,11 @@ export class PlotComponent {
     });
   }
 
+  /**
+   * Apply the de/normalization performed in dataset.component.ts
+   * @param traceID The ID of the trace to change.
+   * @param data The new data to use.
+   */
   normalizeY(traceID: number, data: Array<number>) {
     this.plot_data[this.idMap.get(traceID)].y = data;
   }
@@ -292,7 +297,6 @@ export class PlotComponent {
    */
   toggleHistogram(traceID: number) {
     this.plot_data[this.idMap.get(traceID)].type = 'histogram';
-    //TODO bin sizes
   }
 
   /**

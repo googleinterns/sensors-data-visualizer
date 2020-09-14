@@ -49,8 +49,9 @@ export class SideMenuComponent {
   showNormalize = false;
   normalizationX = false;
   normalizationY = false;
-  message: any;
   datasets = [];
+
+  // Handles resizing of window. Boilerplate from Angular side-nav.
   isHandset$: Observable<boolean> = this.breakpointObserver
     .observe(Breakpoints.Handset)
     .pipe(
@@ -62,55 +63,13 @@ export class SideMenuComponent {
     private breakpointObserver: BreakpointObserver,
     private sharedService: UploadService,
     private idMan: IdManagerService
-  ) {
-    this.sharedService.sharedMessage.subscribe((event: any) => {
-      if (typeof event === 'object' && event !== null) {
-        switch (event.type) {
-          case 'stats': {
-            break;
-          }
-          case 'upload': {
-            // Plot new datasets added by the upload button.
-            const tabNumber = this.dashboard.currentTab;
-            const viewContainerRef = this.uploadDirective.viewContainerRef;
-            const samples = [];
-            const plotRef = this.dashboard.plot.toArray()[tabNumber];
-            const parsed = JSON.parse(event.data);
-
-            for (const i in parsed) {
-              let sample = JSON.parse(parsed[i]);
-              sample = this.idMan.assignIDs(sample);
-              samples.push(sample);
-
-              this.sharedService
-                .loadDataset(
-                  tabNumber,
-                  this.dashboard,
-                  viewContainerRef,
-                  sample
-                )
-                .then(ref => {
-                  this.datasets.push(ref);
-                  this.normalizationX ? ref.normalizeX(true) : null;
-                  this.normalizationY ? ref.normalizeY(true) : null;
-                });
-            }
-            plotRef.addSamples(samples);
-            break;
-          }
-          // To add new possible features, add a route to backend/server.py
-          // and add a case statement here matching the name of that route.
-        }
-      }
-    });
-  }
+  ) {}
 
   /**
    * sendFile(file) is called when the user presses the upload button.
    * Uses the UploadService to send the formData then
-   * when a response arrives uses UploadService to
-   * share the response with other listening components.
-   * The message shared is an array of Sample objects.
+   * when a response arrives parses it, plots it and creates a dataset
+   * component for each sample.
    * @param file The file to send to the backend.
    */
   sendFile(file) {
@@ -126,7 +85,27 @@ export class SideMenuComponent {
           event.body !== undefined &&
           event.body.type === 'upload'
         ) {
-          this.sharedService.nextMessage(event.body);
+          // Plot new datasets added by the upload button.
+          const tabNumber = this.dashboard.currentTab;
+          const viewContainerRef = this.uploadDirective.viewContainerRef;
+          const samples = [];
+          const plotRef = this.dashboard.plot.toArray()[tabNumber];
+          const parsed = JSON.parse(event.body.data);
+
+          for (const i in parsed) {
+            let sample = JSON.parse(parsed[i]);
+            sample = this.idMan.assignIDs(sample);
+            samples.push(sample);
+
+            this.sharedService
+              .loadDataset(tabNumber, this.dashboard, viewContainerRef, sample)
+              .then(ref => {
+                this.datasets.push(ref);
+                this.normalizationX ? ref.normalizeX(true) : null;
+                this.normalizationY ? ref.normalizeY(true) : null;
+              });
+          }
+          plotRef.addSamples(samples);
         }
       });
   }

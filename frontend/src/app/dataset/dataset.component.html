@@ -32,7 +32,7 @@ limitations under the License. -->
             *ngIf="hasLatencies">
                 Latency
             </mat-button-toggle>
-            <mat-button-toggle (click)="showOptions('ts_diffs')">
+            <mat-button-toggle (click)="showOptions('timestamp_diffs')">
                 Timestamp Difference
             </mat-button-toggle>
         </mat-button-toggle-group>
@@ -47,6 +47,9 @@ limitations under the License. -->
             </mat-expansion-panel-header>
             <mat-slide-toggle [checked]="currentOn('show')" (change)="toggleTrace('show')">
                 Show Channel
+            </mat-slide-toggle>
+            <mat-slide-toggle [checked]="currentOn('histogram')" (change)="toggleHistogram($event)">
+                Histogram
             </mat-slide-toggle>
             <mat-slide-toggle [checked]="currentOn('stdev')" (change)="toggleTrace('stdev')">
                 Standard Deviation

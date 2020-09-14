@@ -34,6 +34,37 @@ export class DatasetComponent {
    * tabNumbers[1] holds the tab where statistics data is located.
    */
   tabNumbers: number[];
+  /**
+   * The sample object returned by the backend.
+   * Attributes:
+      sensor_name: string - The name of the sensor.
+      sensor_id: string - The unique ID of a sensor.
+      timestamps: float[] - Each recorded timestamp in the sample.
+      timestamp_diffs: {
+          id: integer - Always set to -1, a placeholder value for the frontend to replace.
+          minmax: float[] - The minimum and maximum value in the data array.
+                              minmax = [min(timestamp_diffs['arr']), max(timestamp_diffs['arr'])]
+          arr: float[] - The data values recorded for timestamp differences.
+      }
+      data: {
+          0: {
+              id: integer - Always set to -1, a placeholder value for the frontend to replace.
+              minmax: float[] - The minimum and maximum value in the data array.
+                                  minmax = [min(data[0]['arr']), max(data[0]['arr'])]
+              arr: float[] - The data values recorded for channel 0.
+          },
+          1: {...},
+          ...
+          n: {...}
+      },
+      data_len: integer - The number of channels in data, equal to len(data),
+      latencies: { (Optional)
+          id: integer - Always set to -1, a placeholder value for the frontend to replace.
+          minmax: float[] - The minimum and maximum value in the data array.
+                              minmax = [min(latencies['arr']), max(latencies['arr'])]
+          arr: float[] - The data values recorded for latencies.
+      }
+   */
   sample: any;
   /**
    * A reference to the main dashboard that allows this data set to
@@ -41,27 +72,28 @@ export class DatasetComponent {
    * the side-menu component.
    */
   dashboard: MainDashboardComponent;
+  /**
+   * A reference to self. This is used to self destruct the
+   * dataset when it is deleted by the user.
+   */
   containerRef: ComponentRef<DatasetComponent>;
   /**
    * A map from channel name/number to trace id.
    * I.E. ids.get('latencies') holds the trace id for latency data.
    */
   ids = new Map<string, number>();
-  hasLatencies: boolean;
+  hasLatencies = false;
+  // Tracks the state of the options menu for data channels.
   panelOpenState = false;
-  /**
-   * Tracks which options menu is currently selected by the user.
-   */
+  // Tracks which options menu is currently selected by the user.
   currentOptions: any = null;
   /**
-   * A map from data channel to slider type to boolean that is used to correctly
+   * A map from data channel to slider type to boolean that is used to
    * show the user which stats and channels are showing or not.
    * I.E. If the user has switched on channel 1 standard deviation then
    * currentShowing.get('1').get('stdev') is true.
    */
   currentShowing: Map<string, Map<string, boolean>> = new Map();
-  isChecked = true;
-
   /**
    * normalizationX[0] = If this dataset is currently normalized on x-axis.
    * normalizationX[1] = The original Timestamp 0 for the array so
@@ -74,9 +106,7 @@ export class DatasetComponent {
     private sharedService: UploadService,
     private idMan: IdManagerService,
     private dialog: MatDialog
-  ) {
-    this.hasLatencies = false;
-  }
+  ) {}
 
   /**
    * Setter method to initialize the dataset with appropriate sample data.
@@ -95,9 +125,9 @@ export class DatasetComponent {
         ])
       );
     }
-    this.ids.set('ts_diff', sample.timestamp_diffs['id']);
+    this.ids.set('timestamp_diffs', sample.timestamp_diffs['id']);
     this.currentShowing.set(
-      'ts_diffs',
+      'timestamp_diffs',
       new Map([
         ['show', false],
         ['stdev', false],
@@ -176,7 +206,7 @@ export class DatasetComponent {
         avg_period: periods.avg,
         stdev_period: periods.stdev,
         channels: {
-          ts_diffs: this.sample.timestamp_diffs['arr'],
+          timestamp_diffs: this.sample.timestamp_diffs['arr'],
         },
       };
       for (const i in this.sample.data) {
@@ -208,7 +238,7 @@ export class DatasetComponent {
    * @param channel The data channel for which the stats were requested.
    */
   requestStats(data, channel) {
-    console.log('sending to server....', data);
+    console.log('sending to server....');
     this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
       if (/*eslint-disable*/
           typeof event === 'object' &&

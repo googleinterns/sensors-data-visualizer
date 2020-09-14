@@ -18,15 +18,12 @@ import {
   ComponentRef,
   Injectable,
   ViewContainerRef,
-  QueryList,
 } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject} from 'rxjs';
 
 // Project Imports
 import {DatasetComponent} from './dataset/dataset.component';
-import {PlotComponent} from './plot/plot.component';
-import { MainDashboardComponent } from './main-dashboard/main-dashboard.component';
+import {MainDashboardComponent} from './main-dashboard/main-dashboard.component';
 
 @Injectable({
   providedIn: 'root',
@@ -40,11 +37,9 @@ export class UploadService {
   /**
    * @param serverUrl The location of the backend parser server. Default when running
    * locally is localhost:5000/upload since Flask runs on port 5000.
+   * This is the only place in the frontend where serverUrl needs to be specified.
    */
   serverUrl = 'http://localhost:5000/';
-
-  private message = new BehaviorSubject('Init');
-  sharedMessage = this.message.asObservable();
 
   constructor(
     private httpClient: HttpClient,
@@ -63,21 +58,13 @@ export class UploadService {
       observe: 'events',
     });
   }
-
-  /**
-   * Updates the message field with new samples. Any components that are subscribed
-   * to the message will receive the new samples.
-   * @param samples The samples to be shared with any listening components.
-   */
-  public nextMessage(samples: any) {
-    this.message.next(samples);
-  }
-
   /**
    * Creates a dataset component and inserts it into the page at ref.
    * Called by side-menu.component inside sendFile(file) when a server response is received.
-   * @param plotRef A reference to the plot component so that the datase is eventually able to access it.
-   * @param ref A reference to the side-menu component so that the new dataset can be added to it.
+   * @param tabNumber: The tab where the primary data for this dataset is plotted.
+   * @param dashboard A reference to the main dashboard so that new tabs can be created
+   *  and plots can be accessed.
+   * @param ref A reference to the side-menu component so that the new dataset can be added.
    * @param data The sample object this dataset will store.
    */
   async loadDataset(
@@ -86,7 +73,6 @@ export class UploadService {
     ref: ViewContainerRef,
     data
   ) {
-    const {DatasetComponent} = await import('./dataset/dataset.component');
     const component: any = DatasetComponent;
     const compRef: ComponentRef<DatasetComponent> = ref.createComponent(
       this.resolver.resolveComponentFactory(component)
