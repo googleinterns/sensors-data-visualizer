@@ -92,7 +92,23 @@ export class PlotComponent implements AfterViewInit {
   // Tracks if this plot contains only histograms.
   isAHistogram = false;
   selfRef;
+  // Tracks if this plot has not yet been viewed.
+  initView = true;
+
   constructor(private dialog: MatDialog) {}
+
+  /**
+   * Forces a plot resize by adding a single invisible point to the plot,
+   * which triggers a plotly resize. This is a hacky way to make sure the
+   * plot fills its entire container, without it the plot is too small.
+   */
+  forceResize() {
+    if (this.initView) {
+      console.log('resize');
+      this.addTrace([0], [0], -1, '-2', false);
+      this.initView = false;
+    }
+  }
 
   ngAfterViewInit() {
     this.plot_data[0].marker['size'] = 20;
