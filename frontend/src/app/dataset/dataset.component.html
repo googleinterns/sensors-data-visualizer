@@ -48,7 +48,7 @@ limitations under the License. -->
             <mat-slide-toggle [checked]="currentOn('show')" (change)="toggleTrace('show')">
                 Show Channel
             </mat-slide-toggle>
-            <mat-slide-toggle [checked]="currentOn('histogram')" (change)="toggleHistogram($event)">
+            <mat-slide-toggle [checked]="currentOn('histogram')" (change)="toggleHistogram()">
                 Histogram
             </mat-slide-toggle>
             <mat-slide-toggle [checked]="currentOn('stdev')" (change)="toggleTrace('stdev')">
