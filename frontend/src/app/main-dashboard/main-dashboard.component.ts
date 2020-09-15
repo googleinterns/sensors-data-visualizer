@@ -17,7 +17,7 @@ import {Component, ViewChildren, QueryList, AfterViewInit} from '@angular/core';
 
 // Project Imports.
 import {PlotComponent} from '../plot/plot.component';
-import { MatTab } from '@angular/material/tabs';
+import {MatTab} from '@angular/material/tabs';
 
 @Component({
   selector: 'app-main-dashboard',

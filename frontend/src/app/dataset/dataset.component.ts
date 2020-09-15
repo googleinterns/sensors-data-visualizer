@@ -248,7 +248,6 @@ export class DatasetComponent {
         ? channel + this.currentOptions
         : String(this.currentOptions);
       this.dashboard.plot.toArray()[tab].toggleTrace(this.ids.get(id));
-
       this.currentShowing
         .get(String(this.currentOptions))
         .set(channel, !this.currentOn(channel));

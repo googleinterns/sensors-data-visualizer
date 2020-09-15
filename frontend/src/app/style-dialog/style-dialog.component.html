@@ -15,7 +15,7 @@ limitations under the License. -->
 <h1>Style Options</h1>
 <h3>Trace: {{traceName}}</h3>
 
-<!-- Toggle: Scatter , Line-->
+<!-- Toggle between scatter and line.-->
 <div *ngIf="!histogram">
 <mat-button-toggle-group>
     <mat-button-toggle [checked]="checked(0, 'markers')" (click)="showOptions('markers')">Scatter</mat-button-toggle>
