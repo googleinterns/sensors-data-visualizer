@@ -87,6 +87,8 @@ export class PlotComponent {
   plot_config = {scrollZoom: true, displayModeBar: true};
   // A map from id number to array index that will speed up toggle operations.
   idMap = new Map<number, number>();
+  // Tracks if this plot contains only histograms.
+  isAHistogram = false;
   selfRef;
   constructor(private dialog: MatDialog) {}
 
@@ -107,7 +109,9 @@ export class PlotComponent {
     if (this.plot_data.length === 1 && this.plot_data[0].id === -1) {
       this.plot_data.pop();
       this.plot_layout.title = '';
+      return true;
     }
+    return false;
   }
   /**
    * Add a single trace to the plot and set its id in idMap.
@@ -213,7 +217,11 @@ export class PlotComponent {
   showOptionsMenu(traceID: number) {
     return new Promise(resolve => {
       const optionsRef = this.dialog.open(StyleDialogComponent);
-      optionsRef.componentInstance.init(traceID, this.selfRef);
+      optionsRef.componentInstance.init(
+        traceID,
+        this.selfRef,
+        this.isAHistogram
+      );
       optionsRef.afterClosed().subscribe(options => {
         resolve(options);
       });
@@ -292,14 +300,6 @@ export class PlotComponent {
   }
 
   /**
-   * Changes the type of plot to a histogram.
-   * @param traceID The ID of the trace to change.
-   */
-  toggleHistogram(traceID: number) {
-    this.plot_data[this.idMap.get(traceID)].type = 'histogram';
-  }
-
-  /**
    * Changes the color of a trace.
    * @param traceID The trace to change.
    * @param r red channel
@@ -309,5 +309,35 @@ export class PlotComponent {
   changeColor(traceID: number, r: number, g: number, b: number) {
     this.plot_data[this.idMap.get(traceID)].marker['color'] =
       'rgb(' + r + ', ' + g + ', ' + b + ')';
+  }
+
+  /**
+   * Creates a histogram plot with the given sorted data. The x and y axes are the same as
+   * plotly automatically converts the Y-axis to the number of values in each axis.
+   * @param sorted Contains the sorted data array, id and name of the histogram to create.
+   *  Passed by dataset.component.ts toggleHistogram()
+   */
+  createHistogram(sorted) {
+    this.isAHistogram = true;
+    this.checkDataAdded();
+    const index = this.plot_data.push({
+      x: sorted['arr'],
+      y: sorted['arr'],
+      type: 'histogram',
+      mode: '',
+      id: sorted['id'],
+      marker: {
+        symbol: '',
+      },
+      visible: true,
+      name: sorted['name'],
+    });
+    this.plot_data[index - 1].marker['line'] = {
+      color: 'rgb(0, 0, 0)',
+      width: 1,
+    };
+    this.plot_layout['xaxis'] = {title: 'Range of values'};
+    this.plot_layout['yaxis'] = {title: 'Count'};
+    this.idMap.set(sorted['id'], index - 1);
   }
 }

@@ -62,8 +62,9 @@ export class UploadService {
    * Creates a dataset component and inserts it into the page at ref.
    * Called by side-menu.component inside sendFile(file) when a server response is received.
    * @param tabNumber: The tab where the primary data for this dataset is plotted.
-   * @param dashboard A reference to the main dashboard so that new tabs can be created and plots can be accessed.
-   * @param ref A reference to the side-menu component so that the new dataset can be added to it.
+   * @param dashboard A reference to the main dashboard so that new tabs can be created
+   *  and plots can be accessed.
+   * @param ref A reference to the side-menu component so that the new dataset can be added.
    * @param data The sample object this dataset will store.
    */
   async loadDataset(
@@ -76,7 +77,7 @@ export class UploadService {
     const compRef: ComponentRef<DatasetComponent> = ref.createComponent(
       this.resolver.resolveComponentFactory(component)
     );
-    compRef.instance.tabNumbers = [tabNumber, -1];
+    compRef.instance.setTabNumber(tabNumber);
     compRef.instance.setSample(data);
     compRef.instance.setDashboardRef(dashboard);
     compRef.instance.setContainerRef(compRef);

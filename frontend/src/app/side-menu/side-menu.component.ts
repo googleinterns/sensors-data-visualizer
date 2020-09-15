@@ -122,7 +122,6 @@ export class SideMenuComponent {
           for (const i in parsed) {
             let sample = JSON.parse(parsed[i]);
             sample = this.idMan.assignIDs(sample);
-            console.log('sample', sample);
             samples.push(sample);
 
             this.sharedService
@@ -155,7 +154,7 @@ export class SideMenuComponent {
   uploadFiles() {
     const fileUpload = this.fileUpload.nativeElement;
     if (this.checkBox.checked) {
-      this.dashboard.newTab();
+      this.dashboard.newTab('New Tab');
     }
 
     fileUpload.onchange = () => {

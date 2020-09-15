@@ -6,12 +6,13 @@ Debugging sensors using raw sensor data is not intuitive. Sensor data represents
 
 # Setup Instructions
 1. Install Node.js >= 12.0 from https://nodejs.org/en/download/
-2. Install Angular CLI: `npm install -g @angular/cli`
+2. Install Angular CLI: `npm install -g @angular/cli --save-dev`
 3. Install Angular devkit: `npm install --save-dev @angular-devkit/build-angular`
 4. Install flask: `pip install flask`
 5. Install flask_cors: `pip install flask_cors`
-6. Run `git clone https://github.com/googleinterns/sensors-data-visualizer.git`
-7. `cd sensors-data-visualizer`
+6. Install pandas: `pip install pandas`
+7. Run `git clone https://github.com/googleinterns/sensors-data-visualizer.git`
+8. `cd sensors-data-visualizer`
 
 # Frontend Build Instructions
 1. `cd frontend`
