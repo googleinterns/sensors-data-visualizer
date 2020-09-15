@@ -90,6 +90,13 @@ export class SideMenuComponent {
       .subscribe((event: any) => {
         // Display progress bars to the user.
         switch (event.type) {
+          /**
+           * event.type can take values [0, 5]. Details can be found at
+           * https://angular.io/api/common/http/HttpEventType#Response
+           * The progress bar tracker uses event.type 1, and 3 to determine progress.
+           * Type 1 events represent UploadProgress.
+           * Type 3 events represent DownloadProgress.
+           */
           case 1:
             this.uploadPercent = 100 * (event.loaded / event.total);
             if (this.uploadPercent === 100) {
