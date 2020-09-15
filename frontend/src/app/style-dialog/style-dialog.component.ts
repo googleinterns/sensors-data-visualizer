@@ -27,7 +27,7 @@ export class StyleDialogComponent {
   traceID: number;
   plotRef;
   currentChecked;
-
+  histogram: boolean;
   constructor() {}
 
   /**
@@ -38,13 +38,15 @@ export class StyleDialogComponent {
    * @param ref A reference to the plot where the trace lives
    *  so that its options can be changed.
    */
-  init(traceID: number, ref) {
+  init(traceID: number, ref, histogram: boolean) {
     this.traceID = traceID;
     this.plotRef = ref;
     this.panelOpenState = true;
+    this.histogram = histogram;
 
     const trace = this.plotRef.plot_data[this.plotRef.idMap.get(traceID)];
-    if (trace.type === 'scattergl') {
+    console.log('trace', this.plotRef);
+    if (!this.histogram && trace.type === 'scattergl') {
       if (trace.mode === 'lines+markers') {
         this.currentOptions = 'lines';
         this.currentChecked = ['lines', trace.marker.symbol];

@@ -30,10 +30,15 @@ import {MatDialog} from '@angular/material/dialog';
 export class DatasetComponent {
   /**
    * Tracks the tabs where data for this dataset is located.
-   * tabNumbers[0] holds the tab where standard data is located.
-   * tabNumbers[1] holds the tab where statistics data is located.
+   * tabNumbers['plot'] holds the tab where standard data and running avgs are located.
+   * tabNumbers['stdev'] holds the tab where stdevs data is located.
+   * tabNumbers['histogram'] holds the tab where histogram data is located.
    */
-  tabNumbers: number[];
+  tabNumbers = new Map<string, number>([
+    ['plot', -1],
+    ['stdev', -1],
+    ['histogram', -1],
+  ]);
   /**
    * The sample object returned by the backend.
    * Attributes:
@@ -101,6 +106,8 @@ export class DatasetComponent {
    */
   normalizationX = [false, -1];
   normalizationY = false;
+  // A set of each channel for which a histogram has been generated.
+  generatedHistogram = new Set<string>();
 
   constructor(
     private sharedService: UploadService,
@@ -122,6 +129,7 @@ export class DatasetComponent {
           ['show', true], // Always initially shows channel data.
           ['stdev', false], // But a request is required to show stats, so these are false.
           ['avg', false],
+          ['histogram', false],
         ])
       );
     }
@@ -132,6 +140,7 @@ export class DatasetComponent {
         ['show', false],
         ['stdev', false],
         ['avg', false],
+        ['histogram', false],
       ])
     );
 
@@ -144,6 +153,7 @@ export class DatasetComponent {
           ['show', false],
           ['stdev', false],
           ['avg', false],
+          ['histogram', false],
         ])
       );
     }
@@ -165,6 +175,14 @@ export class DatasetComponent {
    */
   public setContainerRef(ref: ComponentRef<DatasetComponent>) {
     this.containerRef = ref;
+  }
+
+  /**
+   * Sets the tabNumbers['plot'] value when created by upload.service.ts
+   * @param num The tab number where the main plot data is displayed.
+   */
+  public setTabNumber(num: number) {
+    this.tabNumbers.set('plot', num);
   }
 
   /**
@@ -191,7 +209,7 @@ export class DatasetComponent {
   async toggleTrace(channel) {
     const toggleStats = channel === 'avg' || channel === 'stdev';
     // If toggling stats data that hasn't been requested yet.
-    if (toggleStats && this.tabNumbers[1] === -1) {
+    if (toggleStats && this.tabNumbers.get('stdev') === -1) {
       const periods: any = await this.openDialog(this.sample.timestamps.length);
       // If the user cancels.
       if (periods === false) {
@@ -200,7 +218,12 @@ export class DatasetComponent {
           .set(channel, false);
         return;
       }
-      this.tabNumbers[1] = this.dashboard.newTab();
+      this.tabNumbers.set(
+        'stdev',
+        this.dashboard.newTab(
+          'stdevs' + this.currentOptions + this.sample.sensor_name
+        )
+      );
       // Package data to send to the backend.
       const data = {
         avg_period: periods.avg,
@@ -217,13 +240,15 @@ export class DatasetComponent {
       }
       this.requestStats(data, channel);
     } else {
-      const tab = channel === 'stdev' ? this.tabNumbers[1] : this.tabNumbers[0];
+      const tab =
+        channel === 'stdev'
+          ? this.tabNumbers.get('stdev')
+          : this.tabNumbers.get('plot');
       const id = toggleStats
         ? channel + this.currentOptions
         : String(this.currentOptions);
 
       this.dashboard.plot.toArray()[tab].toggleTrace(this.ids.get(id));
-
       this.currentShowing
         .get(String(this.currentOptions))
         .set(channel, !this.currentOn(channel));
@@ -314,7 +339,9 @@ export class DatasetComponent {
     console.log('Self destructing...', this.ids.values());
     this.dashboard.plot
       .toArray()
-      [this.tabNumbers[0]].deleteDataset(new Set<number>(this.ids.values()));
+      [this.tabNumbers['plot']].deleteDataset(
+        new Set<number>(this.ids.values())
+      );
     this.containerRef.destroy();
   }
 
@@ -327,7 +354,7 @@ export class DatasetComponent {
     if (toggle === this.normalizationX[0]) {
       return;
     }
-    const plot = this.dashboard.plot.toArray()[this.tabNumbers[0]];
+    const plot = this.dashboard.plot.toArray()[this.tabNumbers.get('plot')];
     // If currently normalized, de-normalize.
     if (this.normalizationX[0]) {
       this.normalizationX[0] = false;
@@ -363,7 +390,7 @@ export class DatasetComponent {
     if (toggle === this.normalizationY) {
       return;
     }
-    const plot = this.dashboard.plot.toArray()[this.tabNumbers[0]];
+    const plot = this.dashboard.plot.toArray()[this.tabNumbers.get('plot')];
     this.normalizationY = !this.normalizationY;
     for (const i in this.sample.data) {
       const new_data = new Array<number>(this.sample.data[0]['arr'].length);
@@ -411,5 +438,68 @@ export class DatasetComponent {
       }
     });
     this.sample.data[i]['arr'] = new_data;
+  }
+
+  /**
+   * Toggles the histogram on/off and generates a histogram
+   * if none has been generated so far.
+   */
+  toggleHistogram() {
+    if (this.generatedHistogram.has(this.currentOptions)) {
+      const toggle = !this.currentShowing
+        .get(String(this.currentOptions))
+        .get('histogram');
+      this.currentShowing
+        .get(String(this.currentOptions))
+        .set('histogram', toggle);
+      this.dashboard.plot
+        .toArray()
+        [this.tabNumbers.get('histogram')].toggleTrace(
+          this.ids.get('histogram' + this.currentOptions)
+        );
+    } else {
+      this.generatedHistogram.add(this.currentOptions);
+      this.currentShowing
+        .get(String(this.currentOptions))
+        .set('histogram', true);
+      let new_array = [];
+
+      switch (this.currentOptions) {
+        case 'timestamp_diffs':
+          new_array = this.sample.timestamp_diffs['arr'];
+          break;
+        case 'latencies':
+          new_array = this.sample.latencies['arr'];
+          break;
+        default:
+          new_array = this.sample.data[this.currentOptions]['arr'];
+          break;
+      }
+      const sorted = {
+        arr: new_array,
+        id: -1,
+        name: 'histogram' + ' ' + this.currentOptions,
+      };
+
+      this.idMan.assignSingleID(sorted);
+      this.ids.set('histogram' + this.currentOptions, sorted['id']);
+
+      if (this.tabNumbers.get('histogram') === -1) {
+        const new_tab = this.dashboard.newTab(
+          'Histogram ' + this.sample.sensor_name
+        );
+        this.tabNumbers.set('histogram', new_tab);
+        // Since tabs are added in main-dashboard.html through an asynchronous
+        // *ngFor loop, it is necassary to wait for the changes to occur before
+        // sending the new plot its data.
+        this.dashboard.tabQueryList.changes.subscribe(() => {
+          this.dashboard.plot.toArray()[new_tab].createHistogram(sorted);
+        });
+      } else {
+        this.dashboard.plot
+          .toArray()
+          [this.tabNumbers.get('histogram')].createHistogram(sorted);
+      }
+    }
   }
 }
