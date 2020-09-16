@@ -272,9 +272,10 @@ export class DatasetComponent {
           event.body.type === 'stats'
       ) { /*eslint-enable */
         const plots = [
-          this.dashboard.plot.toArray()[this.dashboard.currentTab - 1], // Tab for avgs
-          this.dashboard.plot.toArray()[this.dashboard.currentTab], // Tab for stdevs.
+          this.dashboard.plot.toArray()[this.tabNumbers.get('plot')], // Tab for avgs
+          this.dashboard.plot.toArray()[this.tabNumbers.get('stdev')], // Tab for stdevs.
         ];
+        console.log('request stats plotting in', plots);
 
         for (const i in event.body.avgs) {
           const avg_id = this.idMan.assignSingleID(event.body.avgs[i]);
