@@ -57,6 +57,7 @@ limitations under the License. -->
             <mat-slide-toggle [checked]="currentOn('avg')" (change)="toggleTrace('avg')">
                 Running Average
             </mat-slide-toggle>
+            <mat-spinner *ngIf="requestingStats"></mat-spinner>
         </mat-expansion-panel>
     <button [matMenuTriggerFor]="menu" mat-mini-fab color="primary">
         <mat-icon>delete</mat-icon>

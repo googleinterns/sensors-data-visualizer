@@ -25,6 +25,12 @@ limitations under the License. -->
     </button>
     <mat-checkbox #checkBox>New Tab</mat-checkbox>
     <input type="file" #fileUpload id="fileUpload" name="fileUpload" multiple="multiple"  style="display: none;"/>
+    <p *ngIf="currUpload">Uploading...</p>
+    <p *ngIf="currParse">Parsing...</p>
+    <p *ngIf="currReceiving">Receiving and Plotting...</p>
+    <mat-progress-bar *ngIf="currUpload || currParse || currReceiving" mode="determinate" [value]="uploadPercent"></mat-progress-bar>
+    <mat-progress-bar *ngIf="currParse" color="accent" mode="indeterminate" ></mat-progress-bar>
+    <mat-progress-bar *ngIf="currUpload || currParse || currReceiving" color="warn" mode="determinate" [value]="receivePercent"></mat-progress-bar>
 
     <mat-nav-list>
       <h2 id="title">Datasets</h2>

@@ -14,6 +14,7 @@ limitations under the License. */
 
 // Angular Imports.
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+import {HttpEventType} from '@angular/common/http';
 import {Component, ViewChild, ElementRef} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
@@ -51,6 +52,13 @@ export class SideMenuComponent {
   normalizationY = false;
   datasets = [];
 
+  // This group of variables is uses in the progress bar.
+  currUpload = false;
+  currParse = false;
+  currReceiving = false;
+  uploadPercent = 0;
+  receivePercent = 0;
+
   // Handles resizing of window. Boilerplate from Angular side-nav.
   isHandset$: Observable<boolean> = this.breakpointObserver
     .observe(Breakpoints.Handset)
@@ -77,9 +85,40 @@ export class SideMenuComponent {
     formData.append('file', file.data);
     file.inProgress = true;
 
+    this.currUpload = true;
     this.sharedService
       .sendFormData(formData, '/upload')
       .subscribe((event: any) => {
+        // Display progress bars to the user.
+        switch (event.type) {
+          /**
+           * event.type can take values [0, 5]. Details can be found at
+           * https://angular.io/api/common/http/HttpEventType#Response
+           * The progress bar tracker uses event.type 1, 3 and 4 to determine progress.
+           * Type 1 events represent UploadProgress.
+           * Type 3 events represent DownloadProgress.
+           * Type 4 events represent Response. (The full response has been received.)
+           * Types other than 1, 3 and 4 aren't needed to determine overall progress.
+           */
+          case HttpEventType.UploadProgress:
+            this.uploadPercent = 100 * (event.loaded / event.total);
+            if (this.uploadPercent === 100) {
+              this.currUpload = false;
+              this.currParse = true;
+            }
+            break;
+          case HttpEventType.DownloadProgress:
+            this.currParse = false;
+            this.currReceiving = true;
+            this.receivePercent = 100 * (event.loaded / event.total);
+            break;
+          case HttpEventType.Response:
+            this.currReceiving = false;
+            this.receivePercent = this.uploadPercent = 0;
+            break;
+          default:
+            break;
+        }
         if (
           typeof event === 'object' &&
           event.body !== undefined &&
