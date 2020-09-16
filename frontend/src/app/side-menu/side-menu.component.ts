@@ -115,6 +115,9 @@ export class SideMenuComponent {
           case HttpEventType.Response:
             this.currReceiving = false;
             this.receivePercent = this.uploadPercent = 0;
+            break;
+          default:
+            break;
         }
         if (
           typeof event === 'object' &&
