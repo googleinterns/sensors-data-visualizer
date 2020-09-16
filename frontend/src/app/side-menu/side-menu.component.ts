@@ -14,6 +14,7 @@ limitations under the License. */
 
 // Angular Imports.
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+import {HttpEventType} from '@angular/common/http';
 import {Component, ViewChild, ElementRef} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
@@ -93,26 +94,27 @@ export class SideMenuComponent {
           /**
            * event.type can take values [0, 5]. Details can be found at
            * https://angular.io/api/common/http/HttpEventType#Response
-           * The progress bar tracker uses event.type 1, and 3 to determine progress.
+           * The progress bar tracker uses event.type 1, 3 and 4 to determine progress.
            * Type 1 events represent UploadProgress.
            * Type 3 events represent DownloadProgress.
+           * Type 4 events represent Response. (The full response has been received.)
+           * Types other than 1, 3 and 4 aren't needed to determine overall progress.
            */
-          case 1:
+          case HttpEventType.UploadProgress:
             this.uploadPercent = 100 * (event.loaded / event.total);
             if (this.uploadPercent === 100) {
               this.currUpload = false;
               this.currParse = true;
             }
             break;
-          case 3:
+          case HttpEventType.DownloadProgress:
             this.currParse = false;
             this.currReceiving = true;
             this.receivePercent = 100 * (event.loaded / event.total);
-            if (this.receivePercent === 100) {
-              this.currReceiving = false;
-              this.receivePercent = this.uploadPercent = 0;
-            }
             break;
+          case HttpEventType.Response:
+            this.currReceiving = false;
+            this.receivePercent = this.uploadPercent = 0;
         }
         if (
           typeof event === 'object' &&
