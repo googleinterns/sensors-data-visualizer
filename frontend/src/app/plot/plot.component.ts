@@ -295,6 +295,9 @@ export class PlotComponent {
     if (mode === 'none') {
       trace.mode = 'lines';
     } else {
+      if (trace.mode === 'lines') {
+        trace.mode = 'lines+markers';
+      }
       trace.marker.symbol = mode;
     }
   }

@@ -45,7 +45,6 @@ export class StyleDialogComponent {
     this.histogram = histogram;
 
     const trace = this.plotRef.plot_data[this.plotRef.idMap.get(traceID)];
-    console.log('trace', this.plotRef);
     if (!this.histogram && trace.type === 'scattergl') {
       if (trace.mode === 'lines+markers') {
         this.currentOptions = 'lines';

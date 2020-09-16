@@ -341,7 +341,7 @@ export class DatasetComponent {
     console.log('Self destructing...', this.ids.values());
     const plotsRef = this.dashboard.plot.toArray();
     const datasetIDs = new Set<number>(this.ids.values());
-    console.log('plots', plotsRef);
+
     plotsRef[this.tabNumbers.get('plot')].deleteDataset(datasetIDs);
 
     if (this.tabNumbers.get('stdev') !== -1) {
