@@ -275,8 +275,6 @@ export class DatasetComponent {
           this.dashboard.plot.toArray()[this.tabNumbers.get('plot')], // Tab for avgs
           this.dashboard.plot.toArray()[this.tabNumbers.get('stdev')], // Tab for stdevs.
         ];
-        console.log('request stats plotting in', plots);
-
         for (const i in event.body.avgs) {
           const avg_id = this.idMan.assignSingleID(event.body.avgs[i]);
           const stdev_id = this.idMan.assignSingleID(event.body.stdevs[i]);
@@ -339,7 +337,7 @@ export class DatasetComponent {
    * Removes all traces from plot and removes self from dataset list.
    */
   deleteDataset() {
-    console.log('Self destructing...', this.ids.values());
+    console.log('Self destructing...');
     const plotsRef = this.dashboard.plot.toArray();
     const datasetIDs = new Set<number>(this.ids.values());
 
@@ -502,9 +500,17 @@ export class DatasetComponent {
         // Since tabs are added in main-dashboard.html through an asynchronous
         // *ngFor loop, it is necassary to wait for the changes to occur before
         // sending the new plot its data.
-        this.dashboard.tabQueryList.changes.subscribe(() => {
-          this.dashboard.plot.toArray()[new_tab].createHistogram(sorted);
-        });
+        const subscription = this.dashboard.tabQueryList.changes.subscribe(
+          () => {
+            this.dashboard.plot.toArray()[new_tab].createHistogram(sorted);
+            subscription.unsubscribe();
+            /**The above unsubscribe line took 2 hours to add and caused much pain.
+             * If the subscription is not unsubscribed from, it will continue listening,
+             * forever. This causes an identical histogram to be added every time
+             * a new tab is added.
+             */
+          }
+        );
       } else {
         this.dashboard.plot
           .toArray()
