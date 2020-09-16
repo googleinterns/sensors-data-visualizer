@@ -197,8 +197,9 @@ export class DatasetComponent {
     return new Promise(resolve => {
       const dialogRef = this.dialog.open(InitDialogComponent);
       dialogRef.componentInstance.maxSize = maxSize;
-      dialogRef.afterClosed().subscribe((periods: any) => {
+      const closeDialog = dialogRef.afterClosed().subscribe((periods: any) => {
         resolve(periods);
+        closeDialog.unsubscribe();
       });
     });
   }
@@ -265,47 +266,50 @@ export class DatasetComponent {
    */
   requestStats(data, channel) {
     this.requestingStats = true;
-    this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
-      if (/*eslint-disable*/
-          typeof event === 'object' &&
-          event.body !== undefined &&
-          event.body.type === 'stats'
-      ) { /*eslint-enable */
-        const plots = [
-          this.dashboard.plot.toArray()[this.tabNumbers.get('plot')], // Tab for avgs
-          this.dashboard.plot.toArray()[this.tabNumbers.get('stdev')], // Tab for stdevs.
-        ];
-        for (const i in event.body.avgs) {
-          const avg_id = this.idMan.assignSingleID(event.body.avgs[i]);
-          const stdev_id = this.idMan.assignSingleID(event.body.stdevs[i]);
-          this.ids.set('avg' + i, avg_id);
-          this.ids.set('stdev' + i, stdev_id);
+    const statsRequest = this.sharedService
+      .sendFormData(data, 'stats')
+      .subscribe((event: any) => {
+        if (/*eslint-disable*/
+            typeof event === 'object' &&
+            event.body !== undefined &&
+            event.body.type === 'stats'
+        ) { /*eslint-enable */
+          const plots = [
+            this.dashboard.plot.toArray()[this.tabNumbers.get('plot')], // Tab for avgs
+            this.dashboard.plot.toArray()[this.tabNumbers.get('stdev')], // Tab for stdevs.
+          ];
+          for (const i in event.body.avgs) {
+            const avg_id = this.idMan.assignSingleID(event.body.avgs[i]);
+            const stdev_id = this.idMan.assignSingleID(event.body.stdevs[i]);
+            this.ids.set('avg' + i, avg_id);
+            this.ids.set('stdev' + i, stdev_id);
 
-          plots[0].addTrace(
-            this.sample.timestamps,
-            event.body.avgs[i],
-            avg_id,
-            i + ' running avg',
-            false
+            plots[0].addTrace(
+              this.sample.timestamps,
+              event.body.avgs[i],
+              avg_id,
+              i + ' running avg',
+              false
+            );
+            plots[1].addTrace(
+              this.sample.timestamps,
+              event.body.stdevs[i],
+              stdev_id,
+              i + ' stdev',
+              false
+            );
+            this.currentShowing
+              .get(String(this.currentOptions))
+              .set(channel, true);
+          }
+          // Turn on the plot that the user requested.
+          plots[channel === 'avg' ? 0 : 1].toggleTrace(
+            this.ids.get(channel + this.currentOptions)
           );
-          plots[1].addTrace(
-            this.sample.timestamps,
-            event.body.stdevs[i],
-            stdev_id,
-            i + ' stdev',
-            false
-          );
-          this.currentShowing
-            .get(String(this.currentOptions))
-            .set(channel, true);
+          this.requestingStats = false;
+          statsRequest.unsubscribe();
         }
-        // Turn on the plot that the user requested.
-        plots[channel === 'avg' ? 0 : 1].toggleTrace(
-          this.ids.get(channel + this.currentOptions)
-        );
-        this.requestingStats = false;
-      }
-    });
+      });
   }
 
   /**
