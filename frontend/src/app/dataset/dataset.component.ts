@@ -298,14 +298,14 @@ export class DatasetComponent {
               i + ' stdev',
               false
             );
-            this.currentShowing
-              .get(String(this.currentOptions))
-              .set(channel, true);
           }
           // Turn on the plot that the user requested.
           plots[channel === 'avg' ? 0 : 1].toggleTrace(
             this.ids.get(channel + this.currentOptions)
           );
+          this.currentShowing
+            .get(String(this.currentOptions))
+            .set(channel, true);
           this.requestingStats = false;
           statsRequest.unsubscribe();
         }
