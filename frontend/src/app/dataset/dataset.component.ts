@@ -339,11 +339,18 @@ export class DatasetComponent {
    */
   deleteDataset() {
     console.log('Self destructing...', this.ids.values());
-    this.dashboard.plot
-      .toArray()
-      [this.tabNumbers['plot']].deleteDataset(
-        new Set<number>(this.ids.values())
-      );
+    const plotsRef = this.dashboard.plot.toArray();
+    const datasetIDs = new Set<number>(this.ids.values());
+    console.log('plots', plotsRef);
+    plotsRef[this.tabNumbers.get('plot')].deleteDataset(datasetIDs);
+
+    if (this.tabNumbers.get('stdev') !== -1) {
+      plotsRef[this.tabNumbers.get('stdev')].deleteDataset(datasetIDs);
+    }
+
+    if (this.tabNumbers.get('histogram') !== -1) {
+      plotsRef[this.tabNumbers.get('histogram')].deleteDataset(datasetIDs);
+    }
     this.containerRef.destroy();
   }
 
