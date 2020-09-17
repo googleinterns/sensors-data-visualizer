@@ -31,7 +31,7 @@ export class MainDashboardComponent implements AfterViewInit {
   @ViewChildren(MatTab) tabQueryList: QueryList<MatTab>;
   currentTab = 0;
   // Tracked by the *ngFor loop in main-dashboard.html to create/remove tabs.
-  tabs = ['Tab0'];
+  tabs = ['No Data Added'];
 
   constructor() {}
 
@@ -39,7 +39,9 @@ export class MainDashboardComponent implements AfterViewInit {
    * Saves a reference to the initial plot component after initialization.
    */
   ngAfterViewInit() {
-    this.plot.first.setSelfRef(this.plot.first);
+    // The resize argument is set to false since the inital plot is nice and
+    // follows the CSS, but new plots need to be forced to.
+    this.plot.first.setSelfRef(this.plot.first, false);
   }
   /**
    * Creates a new tab by pushing the name of the tab to this.tabs.
@@ -53,7 +55,10 @@ export class MainDashboardComponent implements AfterViewInit {
     this.tabQueryList.changes.subscribe(() => {
       this.plot
         .toArray()
-        [this.currentTab].setSelfRef(this.plot.toArray()[this.currentTab]);
+        [this.currentTab].setSelfRef(
+          this.plot.toArray()[this.currentTab],
+          true
+        );
     });
     return this.currentTab;
   }
@@ -65,5 +70,6 @@ export class MainDashboardComponent implements AfterViewInit {
    */
   switchTab(event) {
     this.currentTab = event.index;
+    this.plot.toArray()[this.currentTab].forceResize();
   }
 }

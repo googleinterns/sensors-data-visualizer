@@ -76,9 +76,11 @@ export class PlotComponent {
    * https://plotly.com/javascript/reference/layout/
    */
   plot_layout = {
-    title: 'Add a new dataset.',
-    legend: 'false',
+    title: 'Add a new dataset by clicking the upload button.',
+    // Disable toggling of trace visibility through plotly legend clicks.
+    legend: {itemclick: false, itemdoubleclick: false},
     hovermode: 'closest',
+    autosize: true,
   };
   /**
    * Configuration options, further documentaion at:
@@ -90,15 +92,36 @@ export class PlotComponent {
   // Tracks if this plot contains only histograms.
   isAHistogram = false;
   selfRef;
+  // Tracks if this plot needs to be resized.
+  resize: boolean;
+
   constructor(private dialog: MatDialog) {}
+
+  /**
+   * Forces a plot resize by adding a single invisible point to the plot,
+   * which triggers a plotly resize. This is a hacky way to make sure the
+   * plot fills its entire container, without it the plot is too small.
+   * The invisible point is removed whenever a trace is added so it doesn't
+   * cause any problems.
+   */
+  forceResize() {
+    if (this.resize) {
+      this.addTrace([0], [0], -2, 'fake', false);
+      this.resize = false;
+      this.idMap.set(-2, this.plot_data.length - 1);
+    }
+  }
 
   /**
    * Save a reference to self when created. This self reference is used when
    * opening the plot options menu so that the menu can directly change the plot.
+   * Also sets the resize boolean.
    * @param ref A reference to this component.
+   * @param resize Tracks if this plot has been viewed yet.
    */
-  public setSelfRef(ref) {
+  public setSelfRef(ref, resize: boolean) {
     this.selfRef = ref;
+    this.resize = resize;
   }
 
   /**
@@ -106,6 +129,10 @@ export class PlotComponent {
    * Helper method for addTrace and addSamples methods.
    */
   checkDataAdded() {
+    if (this.idMap.has(-2)) {
+      this.plot_data.pop();
+      this.idMap.delete(-2);
+    }
     if (this.plot_data.length === 1 && this.plot_data[0].id === -1) {
       this.plot_data.pop();
       this.plot_layout.title = '';
@@ -147,7 +174,7 @@ export class PlotComponent {
       visible: show,
       name: name,
     });
-
+    this.plot_data[this.plot_data.length - 1].marker['size'] = 10;
     this.idMap.set(id, this.plot_data.length - 1);
   }
 
@@ -314,7 +341,7 @@ export class PlotComponent {
   /**
    * Creates a histogram plot with the given sorted data. The x and y axes are the same as
    * plotly automatically converts the Y-axis to the number of values in each axis.
-   * @param sorted Contains the sorted data array, id and name of the histogram to create.
+   * @param sorted Contains the data array, id and name of the histogram to create.
    *  Passed by dataset.component.ts toggleHistogram()
    */
   createHistogram(sorted) {
@@ -334,7 +361,7 @@ export class PlotComponent {
     });
     this.plot_data[index - 1].marker['line'] = {
       color: 'rgb(0, 0, 0)',
-      width: 1,
+      width: 0.7,
     };
     this.plot_layout['xaxis'] = {title: 'Range of values'};
     this.plot_layout['yaxis'] = {title: 'Count'};

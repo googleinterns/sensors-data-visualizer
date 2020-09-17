@@ -77,10 +77,7 @@ export class UploadService {
     const compRef: ComponentRef<DatasetComponent> = ref.createComponent(
       this.resolver.resolveComponentFactory(component)
     );
-    compRef.instance.setTabNumber(tabNumber);
-    compRef.instance.setSample(data);
-    compRef.instance.setDashboardRef(dashboard);
-    compRef.instance.setContainerRef(compRef);
+    compRef.instance.initDataset(tabNumber, data, dashboard, compRef);
     return compRef.instance;
   }
 }

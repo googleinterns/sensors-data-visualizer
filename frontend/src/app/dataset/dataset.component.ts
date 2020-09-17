@@ -117,10 +117,30 @@ export class DatasetComponent {
   ) {}
 
   /**
+   * Initializes the dataset with all needed references and data. Also updates
+   * the name of the tab where the main data is plotted.
+   * @param tabNumber The tab number where the main plot data exists.
+   * @param sample The sample object for this dataset.
+   * @param dashboard A reference to the main dashboard.
+   * @param compRef A reference to this component, used in removal operations.
+   */
+  public initDataset(tabNumber: number, sample, dashboard, compRef) {
+    this.tabNumbers.set('plot', tabNumber);
+    this.dashboard = dashboard;
+    this.containerRef = compRef;
+    this.setSample(sample);
+
+    /*eslint-disable*/ 
+    // Change the tab name to this samples sensor name.
+    this.dashboard.tabQueryList.toArray()
+      [tabNumber].textLabel = this.sample.sensor_name;
+  } /*eslint-enable*/
+
+  /**
    * Setter method to initialize the dataset with appropriate sample data.
    * @param sample The sample object received by UploadService from the backend.
    */
-  public setSample(sample) {
+  setSample(sample) {
     this.sample = sample;
     for (const i in sample.data) {
       this.ids.set(i, sample.data[i]['id']);
@@ -158,32 +178,6 @@ export class DatasetComponent {
         ])
       );
     }
-  }
-
-  /**
-   * Initializes the dataset with a reference to the main dashboard.
-   * This enables the dataset to create new tabs and access any plots.
-   * @param ref A reference to the main dashboard.
-   */
-  public setDashboardRef(ref) {
-    this.dashboard = ref;
-  }
-
-  /**
-   * Initializes the dataset with a reference to itself. This enables
-   * the dataset to self-destruct when needed.
-   * @param ref A reference to this component.
-   */
-  public setContainerRef(ref: ComponentRef<DatasetComponent>) {
-    this.containerRef = ref;
-  }
-
-  /**
-   * Sets the tabNumbers['plot'] value when created by upload.service.ts
-   * @param num The tab number where the main plot data is displayed.
-   */
-  public setTabNumber(num: number) {
-    this.tabNumbers.set('plot', num);
   }
 
   /**
@@ -272,8 +266,8 @@ export class DatasetComponent {
           event.body.type === 'stats'
       ) { /*eslint-enable */
         const plots = [
-          this.dashboard.plot.toArray()[this.dashboard.currentTab - 1], // Tab for avgs
-          this.dashboard.plot.toArray()[this.dashboard.currentTab], // Tab for stdevs.
+          this.dashboard.plot.toArray()[this.tabNumbers.get('plot')], // Tab for avg.
+          this.dashboard.plot.toArray()[this.tabNumbers.get('stdev')], // Tab for stdev.
         ];
 
         for (const i in event.body.avgs) {

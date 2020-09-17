@@ -35,6 +35,10 @@ limitations under the License. */
   overflow-y: hidden;
 }
 
+#app-main-dashboard {
+  height: 100%;
+}
+
 #uploadButton {
   margin-left: 5%;
 }
