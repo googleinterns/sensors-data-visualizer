@@ -18,9 +18,11 @@ limitations under the License. -->
   array in main-dashboard.component.ts (initialized with a single tab) and
   creates a tab for each element in that array. When a new element is added
   to the array a new tab is also added. -->
-  <mat-tab-group (selectedTabChange)="switchTab($event)" id="plot-container">
+  <mat-tab-group (selectedTabChange)="switchTab($event)">
     <mat-tab *ngFor="let tab of tabs; let index = index" [label]="tab">
-      <app-plot #{{index}}></app-plot>
+      <div id="plot-container">
+        <app-plot></app-plot>
+      </div>
     </mat-tab>
   </mat-tab-group>
 </div>
