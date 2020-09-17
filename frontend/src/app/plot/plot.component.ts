@@ -234,6 +234,9 @@ export class PlotComponent {
    *  event.points gives the information for the clicked point.
    */
   async styleOptions(event) {
+    if (event.points[0].data.id < 0) {
+      return;
+    }
     await this.showOptionsMenu(event.points[0].data.id);
   }
 
@@ -242,16 +245,13 @@ export class PlotComponent {
    * @param traceID Which trace was clicked by the user.
    */
   showOptionsMenu(traceID: number) {
-    return new Promise(resolve => {
+    return new Promise(() => {
       const optionsRef = this.dialog.open(StyleDialogComponent);
       optionsRef.componentInstance.init(
         traceID,
         this.selfRef,
         this.isAHistogram
       );
-      optionsRef.afterClosed().subscribe(options => {
-        resolve(options);
-      });
     });
   }
 
@@ -322,6 +322,9 @@ export class PlotComponent {
     if (mode === 'none') {
       trace.mode = 'lines';
     } else {
+      if (trace.mode === 'lines') {
+        trace.mode = 'lines+markers';
+      }
       trace.marker.symbol = mode;
     }
   }

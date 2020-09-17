@@ -86,7 +86,7 @@ export class SideMenuComponent {
     file.inProgress = true;
 
     this.currUpload = true;
-    this.sharedService
+    const fileUpload = this.sharedService
       .sendFormData(formData, '/upload')
       .subscribe((event: any) => {
         // Display progress bars to the user.
@@ -145,6 +145,7 @@ export class SideMenuComponent {
               });
           }
           plotRef.addSamples(samples);
+          fileUpload.unsubscribe();
         }
       });
   }

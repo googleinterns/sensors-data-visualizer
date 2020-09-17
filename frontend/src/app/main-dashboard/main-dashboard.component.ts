@@ -52,13 +52,11 @@ export class MainDashboardComponent implements AfterViewInit {
   public newTab(title: string) {
     this.tabs.push(title);
     this.currentTab = this.tabs.length - 1;
-    this.tabQueryList.changes.subscribe(() => {
+    const listChange = this.tabQueryList.changes.subscribe(() => {
       this.plot
         .toArray()
-        [this.currentTab].setSelfRef(
-          this.plot.toArray()[this.currentTab],
-          true
-        );
+        [this.currentTab].setSelfRef(this.plot.toArray()[this.currentTab]);
+      listChange.unsubscribe();
     });
     return this.currentTab;
   }

@@ -19,6 +19,12 @@ import {Component} from '@angular/core';
   templateUrl: './style-dialog.component.html',
   styleUrls: ['./style-dialog.component.css']
 })
+/**
+ * Some helpful links with style options:
+ * https://plotly.com/javascript/line-charts/
+ * https://plotly.com/javascript/line-and-scatter/
+ * https://plotly.com/python/marker-style/#
+ */
 export class StyleDialogComponent {
   traceName: string;
   panelOpenState = false;
@@ -45,7 +51,6 @@ export class StyleDialogComponent {
     this.histogram = histogram;
 
     const trace = this.plotRef.plot_data[this.plotRef.idMap.get(traceID)];
-    console.log('trace', this.plotRef);
     if (!this.histogram && trace.type === 'scattergl') {
       if (trace.mode === 'lines+markers') {
         this.currentOptions = 'lines';

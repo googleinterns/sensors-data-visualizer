@@ -191,8 +191,9 @@ export class DatasetComponent {
     return new Promise(resolve => {
       const dialogRef = this.dialog.open(InitDialogComponent);
       dialogRef.componentInstance.maxSize = maxSize;
-      dialogRef.afterClosed().subscribe((periods: any) => {
+      const closeDialog = dialogRef.afterClosed().subscribe((periods: any) => {
         resolve(periods);
+        closeDialog.unsubscribe();
       });
     });
   }
@@ -259,48 +260,50 @@ export class DatasetComponent {
    */
   requestStats(data, channel) {
     this.requestingStats = true;
-    this.sharedService.sendFormData(data, 'stats').subscribe((event: any) => {
-      if (/*eslint-disable*/
-          typeof event === 'object' &&
-          event.body !== undefined &&
-          event.body.type === 'stats'
-      ) { /*eslint-enable */
-        const plots = [
-          this.dashboard.plot.toArray()[this.tabNumbers.get('plot')], // Tab for avg.
-          this.dashboard.plot.toArray()[this.tabNumbers.get('stdev')], // Tab for stdev.
-        ];
+    const statsRequest = this.sharedService
+      .sendFormData(data, 'stats')
+      .subscribe((event: any) => {
+        if (/*eslint-disable*/
+            typeof event === 'object' &&
+            event.body !== undefined &&
+            event.body.type === 'stats'
+        ) { /*eslint-enable */
+          const plots = [
+            this.dashboard.plot.toArray()[this.tabNumbers.get('plot')], // Tab for avgs
+            this.dashboard.plot.toArray()[this.tabNumbers.get('stdev')], // Tab for stdevs.
+          ];
+          for (const i in event.body.avgs) {
+            const avg_id = this.idMan.assignSingleID(event.body.avgs[i]);
+            const stdev_id = this.idMan.assignSingleID(event.body.stdevs[i]);
+            this.ids.set('avg' + i, avg_id);
+            this.ids.set('stdev' + i, stdev_id);
 
-        for (const i in event.body.avgs) {
-          const avg_id = this.idMan.assignSingleID(event.body.avgs[i]);
-          const stdev_id = this.idMan.assignSingleID(event.body.stdevs[i]);
-          this.ids.set('avg' + i, avg_id);
-          this.ids.set('stdev' + i, stdev_id);
-
-          plots[0].addTrace(
-            this.sample.timestamps,
-            event.body.avgs[i],
-            avg_id,
-            i + ' running avg',
-            false
-          );
-          plots[1].addTrace(
-            this.sample.timestamps,
-            event.body.stdevs[i],
-            stdev_id,
-            i + ' stdev',
-            false
+            plots[0].addTrace(
+              this.sample.timestamps,
+              event.body.avgs[i],
+              avg_id,
+              i + ' running avg',
+              false
+            );
+            plots[1].addTrace(
+              this.sample.timestamps,
+              event.body.stdevs[i],
+              stdev_id,
+              i + ' stdev',
+              false
+            );
+          }
+          // Turn on the plot that the user requested.
+          plots[channel === 'avg' ? 0 : 1].toggleTrace(
+            this.ids.get(channel + this.currentOptions)
           );
           this.currentShowing
             .get(String(this.currentOptions))
             .set(channel, true);
+          this.requestingStats = false;
+          statsRequest.unsubscribe();
         }
-        // Turn on the plot that the user requested.
-        plots[channel === 'avg' ? 0 : 1].toggleTrace(
-          this.ids.get(channel + this.currentOptions)
-        );
-        this.requestingStats = false;
-      }
-    });
+      });
   }
 
   /**
@@ -332,12 +335,19 @@ export class DatasetComponent {
    * Removes all traces from plot and removes self from dataset list.
    */
   deleteDataset() {
-    console.log('Self destructing...', this.ids.values());
-    this.dashboard.plot
-      .toArray()
-      [this.tabNumbers['plot']].deleteDataset(
-        new Set<number>(this.ids.values())
-      );
+    console.log('Self destructing...');
+    const plotsRef = this.dashboard.plot.toArray();
+    const datasetIDs = new Set<number>(this.ids.values());
+
+    plotsRef[this.tabNumbers.get('plot')].deleteDataset(datasetIDs);
+
+    if (this.tabNumbers.get('stdev') !== -1) {
+      plotsRef[this.tabNumbers.get('stdev')].deleteDataset(datasetIDs);
+    }
+
+    if (this.tabNumbers.get('histogram') !== -1) {
+      plotsRef[this.tabNumbers.get('histogram')].deleteDataset(datasetIDs);
+    }
     this.containerRef.destroy();
   }
 
@@ -488,9 +498,17 @@ export class DatasetComponent {
         // Since tabs are added in main-dashboard.html through an asynchronous
         // *ngFor loop, it is necassary to wait for the changes to occur before
         // sending the new plot its data.
-        this.dashboard.tabQueryList.changes.subscribe(() => {
-          this.dashboard.plot.toArray()[new_tab].createHistogram(sorted);
-        });
+        const subscription = this.dashboard.tabQueryList.changes.subscribe(
+          () => {
+            this.dashboard.plot.toArray()[new_tab].createHistogram(sorted);
+            subscription.unsubscribe();
+            /**The above unsubscribe line took 2 hours to add and caused much pain.
+             * If the subscription is not unsubscribed from, it will continue listening,
+             * forever. This causes an identical histogram to be added every time
+             * a new tab is added.
+             */
+          }
+        );
       } else {
         this.dashboard.plot
           .toArray()
