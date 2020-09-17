@@ -218,17 +218,13 @@ export class PlotComponent {
    * @param traceID Which trace was clicked by the user.
    */
   showOptionsMenu(traceID: number) {
-    return new Promise(resolve => {
+    return new Promise(() => {
       const optionsRef = this.dialog.open(StyleDialogComponent);
       optionsRef.componentInstance.init(
         traceID,
         this.selfRef,
         this.isAHistogram
       );
-      const optionsMenu = optionsRef.afterClosed().subscribe(options => {
-        resolve(options);
-        optionsMenu.unsubscribe();
-      });
     });
   }
 
