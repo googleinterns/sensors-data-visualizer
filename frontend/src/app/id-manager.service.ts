@@ -40,6 +40,8 @@ export class IdManagerService {
     for (const i in sample.data) {
       sample.data[i]['id'] = this.nextID++;
     }
+
+    console.log('assigned IDs', sample);
     return sample;
   }
 
