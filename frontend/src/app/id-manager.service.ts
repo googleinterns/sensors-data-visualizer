@@ -40,6 +40,7 @@ export class IdManagerService {
     for (const i in sample.data) {
       sample.data[i]['id'] = this.nextID++;
     }
+
     return sample;
   }
 

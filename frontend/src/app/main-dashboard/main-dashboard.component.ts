@@ -55,7 +55,10 @@ export class MainDashboardComponent implements AfterViewInit {
     const listChange = this.tabQueryList.changes.subscribe(() => {
       this.plot
         .toArray()
-        [this.currentTab].setSelfRef(this.plot.toArray()[this.currentTab]);
+        [this.currentTab].setSelfRef(
+          this.plot.toArray()[this.currentTab],
+          true
+        );
       listChange.unsubscribe();
     });
     return this.currentTab;

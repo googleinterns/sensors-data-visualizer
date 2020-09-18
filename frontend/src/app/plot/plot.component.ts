@@ -284,7 +284,9 @@ export class PlotComponent {
    */
   normalizeX(traces: Array<number>, timestamps: Array<number>) {
     traces.forEach(traceID => {
-      this.plot_data[this.idMap.get(traceID)].x = timestamps;
+      if (this.idMap.has(traceID)) {
+        this.plot_data[this.idMap.get(traceID)].x = timestamps;
+      }
     });
   }
 
