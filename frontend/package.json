@@ -29,7 +29,7 @@
     "@angular/platform-browser-dynamic": "~10.0.4",
     "@angular/router": "~10.0.4",
     "angular-plotly.js": "^2.0.0",
-    "plotly.js": "^1.54.7",
+    "plotly.js": "^2.25.2",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
